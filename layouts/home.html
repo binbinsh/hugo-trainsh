@@ -1,6 +1,8 @@
 {{ define "main" }}
   {{ with site.Params.home.intro }}
-    <section class="home-intro">{{ . | markdownify }}</section>
+    <section class="home-intro">
+      <blockquote>{{ . | markdownify }}</blockquote>
+    </section>
   {{ end }}
 
   {{ with site.Taxonomies.tags }}

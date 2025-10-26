@@ -1,23 +1,33 @@
 {{ define "main" }}
+  {{ $toc := .Fragments.ToHTML 2 3 false }}
+  {{ with $toc }}
   <div class="page-with-toc">
-    <aside class="toc-sidebar" aria-label="目录">
+    <aside class="toc-sidebar" aria-label="{{ i18n "toc" }}">
       <nav class="toc-nav">
         <h2>{{ i18n "toc" }}</h2>
-        {{ .Fragments.ToHTML 2 3 false }}
+        {{ . }}
       </nav>
     </aside>
 
     <article class="content">
-      <h1>{{ .Title }}</h1>
-      {{ partial "post/date.html" . }}
+      <h1>{{ $.Title }}</h1>
+      {{ partial "post/date.html" $ }}
 
       <details class="toc-dropdown">
         <summary>{{ i18n "toc" }}</summary>
-        {{ .Fragments.ToHTML 2 3 false }}
+        {{ . }}
       </details>
 
-      {{ .Content }}
-      {{ partial "terms.html" (dict "taxonomy" "tags" "page" . "showLabel" false) }}
+      {{ $.Content }}
+      {{ partial "terms.html" (dict "taxonomy" "tags" "page" $ "showLabel" false) }}
     </article>
   </div>
+  {{ else }}
+  <article class="content">
+    <h1>{{ .Title }}</h1>
+    {{ partial "post/date.html" . }}
+    {{ .Content }}
+    {{ partial "terms.html" (dict "taxonomy" "tags" "page" . "showLabel" false) }}
+  </article>
+  {{ end }}
 {{ end }}

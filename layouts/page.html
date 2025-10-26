@@ -1,6 +1,6 @@
 {{ define "main" }}
   <div class="page-with-toc">
-    <aside class="toc-sidebar" aria-label="目录">
+    <aside class="toc-sidebar" aria-label="{{ i18n "toc" }}">
       <nav class="toc-nav">
         <h2>{{ i18n "toc" }}</h2>
         {{ .Fragments.ToHTML 2 3 false }}
