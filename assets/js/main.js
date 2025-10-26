@@ -121,6 +121,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!article) return;
 
     try {
+      // Helper to reliably get intrinsic dimensions; falls back to probing the src
+      const getImageDimensions = (src, imgEl) => new Promise((resolve) => {
+        const w = (imgEl && imgEl.naturalWidth) || 0;
+        const h = (imgEl && imgEl.naturalHeight) || 0;
+        if (w > 0 && h > 0) {
+          resolve({ width: w, height: h });
+          return;
+        }
+        const probe = new Image();
+        probe.onload = () => {
+          resolve({
+            width: probe.naturalWidth || 1600,
+            height: probe.naturalHeight || 900
+          });
+        };
+        probe.onerror = () => resolve({ width: 1600, height: 900 });
+        probe.src = src;
+      });
+
       const { default: PhotoSwipeLightbox } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
       const lightbox = new PhotoSwipeLightbox({
         gallery: 'article.content',
@@ -138,21 +157,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (anchorItems.length) {
         const { default: LB } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
-        const dataSource = anchorItems.map(({ a, img }) => ({
-          src: a.getAttribute('href'),
-          width: img.naturalWidth || img.width || 800,
-          height: img.naturalHeight || img.height || 600,
-          alt: img.alt || ''
-        }));
         const lbLinks = new LB({
-          dataSource,
           wheelToZoom: true,
           pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js')
         });
         lbLinks.init();
-        anchorItems.forEach(({ a }, i) => {
+        anchorItems.forEach(({ a, img }) => {
           a.style.cursor = 'zoom-in';
-          a.addEventListener('click', (e) => { e.preventDefault(); lbLinks.loadAndOpen(i); });
+          a.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const src = a.getAttribute('href');
+            const dims = await getImageDimensions(src, img);
+            lbLinks.loadAndOpen(0, [{ src, width: dims.width, height: dims.height, alt: img.alt || '' }]);
+          });
         });
       }
 
@@ -160,20 +177,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const orphanImgs = Array.from(article.querySelectorAll('img:not(a img)'));
       if (orphanImgs.length) {
         const { default: LB } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
-        const dataSource = orphanImgs.map((el) => ({
-          src: el.currentSrc || el.src,
-          width: el.naturalWidth || el.width || 800,
-          height: el.naturalHeight || el.height || 600
-        }));
         const lb = new LB({
-          dataSource,
           wheelToZoom: true,
           pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js')
         });
         lb.init();
-        orphanImgs.forEach((img, i) => {
+        orphanImgs.forEach((img) => {
           img.style.cursor = 'zoom-in';
-          img.addEventListener('click', () => lb.loadAndOpen(i));
+          img.addEventListener('click', async () => {
+            const src = img.currentSrc || img.src;
+            const dims = await getImageDimensions(src, img);
+            lb.loadAndOpen(0, [{ src, width: dims.width, height: dims.height, alt: img.alt || '' }]);
+          });
         });
       }
     } catch (e) {
