@@ -19,7 +19,7 @@ For a given taxonomy, render assigned terms as tag chips.
   <div class="post-tags">
     {{- if $showLabel }}<div class="label">{{ $label }}:</div>{{ end }}
     <ul class="tag-list">
-      {{- range . }}
+      {{- range .ByLinkTitle }}
         <li>
           <a class="tag-chip{{ if $small }} tag-sm{{ end }}" href="{{ .RelPermalink }}">#{{ .LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
         </li>

@@ -223,15 +223,19 @@ html[data-theme="dark"] {
     .site-header {
       flex-wrap: wrap;
     }
+    .site-header__right {
+      width: 100%;
+    }
 
     .nav-toggle {
-      display: inline-flex;
+      display: none;
     }
 
     .site-nav {
-      display: none;
+      display: block;
       width: 100%;
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
+      overflow-x: auto;
     }
 
     .site-nav.is-open {
@@ -239,8 +243,9 @@ html[data-theme="dark"] {
     }
 
     .nav-list {
-      flex-direction: column;
-      gap: 0.5rem;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 0.9rem;
       width: 100%;
     }
 
@@ -251,8 +256,8 @@ html[data-theme="dark"] {
     }
 
     .site-nav a {
-      display: block;
-      padding: 0.45rem 0.1rem;
+      display: inline-block;
+      padding: 0.35rem 0.2rem;
     }
   }
 
@@ -802,4 +807,25 @@ html[data-theme="dark"] {
     margin: 0.75rem 0 0;
     background: transparent;
     border-left: 4px solid var(--muted);
+  }
+  
+  /* Soft-wrap long words and URLs inside post content to prevent overflow */
+  article.content,
+  article.content p,
+  article.content li,
+  article.content dd,
+  article.content td,
+  article.content th,
+  article.content blockquote,
+  article.content figcaption,
+  article.content h1,
+  article.content h2,
+  article.content h3,
+  article.content h4,
+  article.content h5,
+  article.content h6,
+  article.content a {
+    overflow-wrap: anywhere;    /* modern: allow breaking inside long tokens */
+    word-break: break-word;     /* WebKit fallback for long tokens */
+    word-wrap: break-word;      /* legacy alias */
   }
