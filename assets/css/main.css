@@ -750,6 +750,26 @@ html[data-theme="dark"] {
     background: #f0f3f7;
     border-color: #c7ced6;
   }
+
+  /* Dark theme adjustments for codeblock header and copy button */
+  html[data-theme="dark"] .codeblock {
+    border-color: var(--border);
+  }
+  html[data-theme="dark"] .codeblock-header {
+    background: var(--surface);
+    border-bottom-color: var(--border);
+    color: var(--fg);
+  }
+  html[data-theme="dark"] .codeblock .copy-btn {
+    background: var(--bg);
+    border-color: var(--border);
+    color: var(--fg);
+  }
+  html[data-theme="dark"] .codeblock .copy-btn:hover {
+    background: var(--hover-bg);
+    border-color: var(--border);
+  }
+
   .codeblock .highlight {
     margin: 0;
     border: none;
@@ -809,22 +829,19 @@ html[data-theme="dark"] {
     border-left: 4px solid var(--muted);
   }
   
-  /* Soft-wrap long words and URLs inside post content to prevent overflow */
+  /* Soft-wrap long words and URLs in content and lists to prevent overflow */
   article.content,
-  article.content p,
-  article.content li,
-  article.content dd,
-  article.content td,
-  article.content th,
-  article.content blockquote,
-  article.content figcaption,
-  article.content h1,
-  article.content h2,
-  article.content h3,
-  article.content h4,
-  article.content h5,
-  article.content h6,
-  article.content a {
+  article.content :is(p, li, dd, td, th, blockquote, figcaption, h1, h2, h3, h4, h5, h6, a),
+  main > article,
+  main > article :is(p, li, dd, td, th, blockquote, figcaption, h1, h2, h3, h4, h5, h6, a),
+  .home-recent,
+  .home-recent :is(p, li, dd, td, th, blockquote, figcaption, h1, h2, h3, h4, h5, h6, a),
+  .term-posts,
+  .term-posts :is(p, li, dd, td, th, blockquote, figcaption, h1, h2, h3, h4, h5, h6, a),
+  #archive-groups .archive-title,
+  #archive-results .archive-result,
+  #archive-results .archive-result a,
+  #archive-results .archive-result p {
     overflow-wrap: anywhere;    /* modern: allow breaking inside long tokens */
     word-break: break-word;     /* WebKit fallback for long tokens */
     word-wrap: break-word;      /* legacy alias */
