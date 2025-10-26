@@ -1,0 +1,64 @@
+name: Deploy theme Demo to Cloudflare Pages
+
+on:
+  push:
+    paths-ignore:
+      - "images/**"
+      - "LICENSE"
+      - "README.md"
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      hugoVersion:
+        description: "Hugo Version"
+        required: false
+        default: "0.146.0"
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.146.0' }}
+    steps:
+      - name: Install Hugo CLI
+        run: |
+          wget -O "${{ runner.temp }}/hugo.deb" "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i "${{ runner.temp }}/hugo.deb"
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build with Hugo (exampleSite)
+        env:
+          HUGO_ENVIRONMENT: production
+          HUGO_ENV: production
+        run: |
+          hugo -s exampleSite --gc --minify --baseURL https://hugo-trainsh.pages.dev
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '3'
+          command: pages deploy ./exampleSite/public --project-name=hugo-trainsh --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Print deployment URLs
+        run: |
+          echo "deployment-url: ${{ steps.deploy.outputs.deployment-url }}"
+          echo "pages-deployment-alias-url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}"
+
+

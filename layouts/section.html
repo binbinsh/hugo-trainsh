@@ -1,10 +1,7 @@
 {{ define "main" }}
   <h1>{{ .Title }}</h1>
   {{ .Content }}
-  {{ range .Pages }}
-    <section>
-      <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-      {{ .Summary }}
-    </section>
+  {{ range .Pages.ByDate.Reverse }}
+    {{ partial "post/summary.html" . }}
   {{ end }}
 {{ end }}

@@ -1,9 +1,47 @@
 {{ define "main" }}
-  {{ .Content }}
-  {{ range site.RegularPages }}
-    <section>
-      <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-      {{ .Summary }}
+  {{ with site.Params.home.intro }}
+    <section class="home-intro">{{ . | markdownify }}</section>
+  {{ end }}
+
+  {{ with site.Taxonomies.tags }}
+    {{ $limit := (site.Params.home.tags.limit | default 10) }}
+    {{ $showCount := (site.Params.home.tags.showCount | default true) }}
+    {{ $tags := .ByCount }}
+    {{ if and (gt $limit 0) (lt $limit (len $tags)) }}
+      {{ $tags = first $limit $tags }}
+    {{ end }}
+    <section class="home-tags">
+      <h2>Popular tags</h2>
+      <ul class="tag-list">
+        {{ range $tags }}
+          <li>
+            <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
+          </li>
+        {{ end }}
+      </ul>
+    </section>
+  {{ end }}
+
+  {{ $recentN := (site.Params.home.recent.limit | default 5) }}
+  {{ $posts := where site.RegularPages "Section" "posts" }}
+  {{ with $posts }}
+    <section class="home-recent">
+      <h2>Recent posts</h2>
+      {{ range first $recentN (.ByDate.Reverse) }}
+        {{ partial "post/summary-no-tags.html" . }}
+      {{ end }}
+      {{ $moreText := (site.Params.home.recent.moreText | default "View all posts") }}
+      {{ if site.Params.home.recent.moreURL }}
+        <p class="more"><a href="{{ site.Params.home.recent.moreURL }}">{{ $moreText }}</a></p>
+      {{ else }}
+        {{ with site.GetPage "/archive" }}
+          <p class="more"><a href="{{ .RelPermalink }}">{{ $moreText }}</a></p>
+        {{ else }}
+          {{ with site.GetPage "/posts" }}
+            <p class="more"><a href="{{ .RelPermalink }}">{{ $moreText }}</a></p>
+          {{ end }}
+        {{ end }}
+      {{ end }}
     </section>
   {{ end }}
 {{ end }}

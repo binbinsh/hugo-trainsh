@@ -1,22 +1,28 @@
 {{- /*
-For a given taxonomy, renders a list of terms assigned to the page.
+For a given taxonomy, render assigned terms as tag chips.
 
-@context {page} page The current page.
-@context {string} taxonomy The taxonomy.
+@context {page} page        The current page
+@context {string} taxonomy  The taxonomy key (e.g. "tags")
+@context {bool} showLabel   Optional; show label (default true)
+@context {bool} small       Optional; render small chip variant (default false)
 
 @example: {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
 */}}
 
 {{- $page := .page }}
 {{- $taxonomy := .taxonomy }}
+{{- $showLabel := cond (isset . "showLabel") (index . "showLabel") (ne $page.Kind "page") -}}
+{{- $small := cond (isset . "small") (index . "small") false -}}
 
 {{- with $page.GetTerms $taxonomy }}
   {{- $label := (index . 0).Parent.LinkTitle }}
-  <div>
-    <div>{{ $label }}:</div>
-    <ul>
+  <div class="post-tags">
+    {{- if $showLabel }}<div class="label">{{ $label }}:</div>{{ end }}
+    <ul class="tag-list">
       {{- range . }}
-        <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
+        <li>
+          <a class="tag-chip{{ if $small }} tag-sm{{ end }}" href="{{ .RelPermalink }}">#{{ .LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
+        </li>
       {{- end }}
     </ul>
   </div>

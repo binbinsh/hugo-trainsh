@@ -1,7 +1,12 @@
 {{ define "main" }}
   <h1>{{ .Title }}</h1>
   {{ .Content }}
-  {{ range .Pages }}
-    <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-  {{ end }}
+
+  <ul class="tag-list">
+    {{ range .Data.Terms.ByCount }}
+      <li>
+        <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
+      </li>
+    {{ end }}
+  </ul>
 {{ end }}

@@ -1,0 +1,25 @@
+name = "hugo-trainsh"
+license = "MIT"
+licenselink = "https://github.com/binbinsh/hugo-trainsh/blob/main/LICENSE"
+description = "A simple Hugo theme."
+
+# The home page of the theme, where the source can be found.
+homepage = "https://github.com/binbinsh/hugo-trainsh"
+
+# If you have a running demo of the theme.
+demosite = "https://hugo-trainsh.pages.dev"
+
+tags = ["blog", "minimal"]
+features = ["fast", "responsive"]
+
+[author]
+name = "Binbin Shen"
+homepage = "https://github.com/binbinsh"
+
+# If porting an existing theme
+[original]
+author = ""
+homepage = ""
+repo = ""
+
+

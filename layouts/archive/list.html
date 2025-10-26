@@ -1,0 +1,29 @@
+{{ define "main" }}
+  <header class="archive-header">
+    <h1>{{ .Title }}</h1>
+    <input id="archive-search" type="search" placeholder="Search posts" autocomplete="off">
+  </header>
+
+  {{ $sections := default (slice "posts") site.Params.mainSections }}
+  {{ $pages := where site.RegularPages "Section" "in" $sections }}
+
+  <section id="archive-groups">
+    {{ range ($pages.GroupByDate "2006" "desc") }}
+      <h2>{{ .Key }}</h2>
+      <ul>
+        {{ range .Pages.ByDate.Reverse }}
+          <li>
+            {{ $machine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+            {{ $human := .Date | time.Format "2006-01-02" }}
+            <time class="date" datetime="{{ $machine }}">{{ $human }}</time>
+            <a href="{{ .RelPermalink }}" class="archive-title">{{ .Title }}</a>
+          </li>
+        {{ end }}
+      </ul>
+    {{ end }}
+  </section>
+
+  <section id="archive-results" hidden></section>
+{{ end }}
+
+

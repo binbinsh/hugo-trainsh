@@ -13,5 +13,51 @@
   <footer>
     {{ partial "footer.html" . }}
   </footer>
+  {{ if .Store.Get "hasMermaid" }}
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+    const resolveThemeConfig = () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const cs = getComputedStyle(document.documentElement);
+      const fg = (cs.getPropertyValue('--fg') || (isDark ? '#e6e6e6' : '#222222')).trim();
+      const bg = (cs.getPropertyValue('--bg') || (isDark ? '#0f1115' : '#ffffff')).trim();
+      const border = (cs.getPropertyValue('--border') || (isDark ? '#2b2f36' : '#e2e6ea')).trim();
+      const accent = (cs.getPropertyValue('--link') || (isDark ? '#79a8ff' : '#4080ff')).trim();
+      return {
+        theme: 'base',
+        themeVariables: {
+          background: bg,
+          mainBkg: bg,
+          primaryColor: bg,
+          primaryTextColor: fg,
+          primaryBorderColor: border,
+          lineColor: accent,
+          secondaryColor: bg,
+          tertiaryColor: bg,
+          textColor: fg
+        }
+      };
+    };
+    const renderMermaid = () => {
+      const config = resolveThemeConfig();
+      mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', ...config });
+      mermaid.run({ querySelector: '.mermaid' });
+    };
+    // Initial render
+    renderMermaid();
+    // Re-render on theme change (html[data-theme] mutations)
+    const mo = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && m.attributeName === 'data-theme') {
+          renderMermaid();
+          break;
+        }
+      }
+    });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    // Also listen for a custom event in case other scripts dispatch it
+    window.addEventListener('themechange', renderMermaid);
+  </script>
+  {{ end }}
 </body>
 </html>

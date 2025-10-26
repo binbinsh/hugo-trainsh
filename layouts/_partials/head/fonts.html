@@ -1,0 +1,32 @@
+{{- /* Detect Chinese content by scanning Han characters in raw content, title, or child page titles */ -}}
+{{- $hasZhInRaw := gt (len (findRE "\\p{Han}" .RawContent)) 0 -}}
+{{- $hasZhInTitle := gt (len (findRE "\\p{Han}" .Title)) 0 -}}
+{{- $hasZhInList := false -}}
+{{- if in (slice "home" "section" "taxonomy" "term") .Kind -}}
+  {{- range first 20 .Pages -}}
+    {{- if gt (len (findRE "\\p{Han}" .Title)) 0 -}}
+      {{- $hasZhInList = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $isZh := or $hasZhInRaw (or $hasZhInTitle $hasZhInList) -}}
+
+{{- /* Detect code blocks early by scanning for fenced code in raw content */ -}}
+{{- $hasCode := gt (len (findRE "(?m)^```" .RawContent)) 0 -}}
+
+{{- if $isZh -}}
+  {{- with resources.Get "fonts/noto-sans-sc-regular.woff2" -}}
+    <link rel="preload" as="font" href="{{ .RelPermalink }}" type="font/woff2" crossorigin="anonymous" fetchpriority="high">
+  {{- end -}}
+{{- else -}}
+  {{- with resources.Get "fonts/inter-latin.var.woff2" -}}
+    <link rel="preload" as="font" href="{{ .RelPermalink }}" type="font/woff2" crossorigin="anonymous" fetchpriority="high">
+  {{- end -}}
+{{- end -}}
+
+{{- if $hasCode -}}
+  {{- with resources.Get "fonts/jetbrains-mono-var.woff2" -}}
+    <link rel="preload" as="font" href="{{ .RelPermalink }}" type="font/woff2" crossorigin="anonymous">
+  {{- end -}}
+{{- end -}}
+

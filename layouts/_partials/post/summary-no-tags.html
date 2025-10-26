@@ -1,0 +1,12 @@
+<article>
+  <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
+  {{ partial "post/date.html" . }}
+  {{ $firstP := (findRE "<p>.*?</p>" .Content 1) }}
+  {{ with index $firstP 0 }}
+    {{ . | safeHTML }}
+  {{ else }}
+    <p>{{ .Summary | plainify }}</p>
+  {{ end }}
+</article>
+
+
