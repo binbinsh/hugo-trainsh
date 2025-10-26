@@ -5,8 +5,6 @@ draft = false
 tags = ['table']
 +++
 
-## Markdown Table
-
 | Left | Center | Right |
 | :--- | :----: | ----: |
 | a | b | c |

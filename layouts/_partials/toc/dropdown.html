@@ -1,0 +1,9 @@
+{{- /* Mobile dropdown TOC block. Usage: {{ partial "toc/dropdown.html" (dict "page" . "toc" $toc) }} */ -}}
+{{- $page := .page -}}
+{{- $toc := cond (isset . "toc") (index . "toc") ($page.Fragments.ToHTML 2 3 false) -}}
+<details class="toc-dropdown">
+  <summary>{{ i18n "toc" }}</summary>
+  {{ $toc }}
+</details>
+
+
