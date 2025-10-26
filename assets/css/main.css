@@ -772,3 +772,30 @@ html[data-theme="dark"] {
     background: var(--surface);
     color: var(--fg);
   }
+
+  /* Blockquote: clean card with left accent bar (auto light/dark via CSS vars) */
+  article.content blockquote {
+    margin: 1rem 0;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--link);
+    border-radius: 8px;
+  }
+  article.content blockquote > :first-child { margin-top: 0; }
+  article.content blockquote > :last-child  { margin-bottom: 0; }
+  article.content blockquote p + p { margin-top: 0.5rem; }
+  /* Inline code within quotes */
+  article.content blockquote code {
+    background: var(--hover-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.3rem;
+  }
+  /* Nested blockquotes: de‑emphasize inner level */
+  article.content blockquote blockquote {
+    margin: 0.75rem 0 0;
+    background: transparent;
+    border-left: 4px solid var(--muted);
+  }
