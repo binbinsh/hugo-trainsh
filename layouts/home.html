@@ -17,7 +17,7 @@
       <ul class="tag-list">
         {{ range $tags }}
           <li>
-            <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
+            <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
           </li>
         {{ end }}
       </ul>

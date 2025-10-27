@@ -490,22 +490,43 @@ html[data-theme="dark"] {
   .tag-chip {
     display: inline-flex;
     align-items: center;
-    padding: 0.35rem 0.9rem;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    color: #41208f;
-    font-size: 0.92em;
-    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    position: relative;
+    padding: 0.35rem 0.75rem;
+    padding-left: 0.5rem;
+    color: #5570cd;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    background: #f0f4ff;
+    border: 1.5px solid #d4e0ff;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    margin-right: 0.4rem;
+    box-shadow: 0 1px 2px rgba(85, 112, 205, 0.08);
+  }
+
+  /* 左侧装饰点 */
+  .tag-chip::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: #5570cd;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
   }
 
   .tag-chip:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
-    border-color: rgba(139, 92, 246, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    color: #3d4d8a;
+    background: #e8efff;
+    border-color: #b8ceff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(85, 112, 205, 0.15);
+  }
+
+  .tag-chip:hover::before {
+    background: #3d4d8a;
   }
 
   .tag-chip:active {
@@ -525,25 +546,38 @@ html[data-theme="dark"] {
 
   /* small variant */
   .tag-chip.tag-sm {
-    padding: 0.28rem 0.8rem;
-    font-size: 0.875em;
+    padding: 0.25rem 0.65rem;
+    padding-left: 0.45rem;
+    font-size: 0.8125rem;
   }
 
-  /* Fallback when backdrop-filter is unsupported */
-  @supports not (backdrop-filter: blur(1px)) {
-    .tag-chip {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-    }
+  .tag-chip.tag-sm::before {
+    width: 3.5px;
+    height: 3.5px;
+    margin-right: 0.4rem;
   }
-  /* Improve tag chip contrast in dark mode */
+
+  /* Dark mode tag styling */
   html[data-theme="dark"] .tag-chip {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.18));
-    border-color: rgba(139, 92, 246, 0.35);
-    color: #e8e8ff;
+    background: #2a2d3a;
+    border-color: #404552;
+    color: #a8b2ff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   }
+
+  html[data-theme="dark"] .tag-chip::before {
+    background: #a8b2ff;
+  }
+
   html[data-theme="dark"] .tag-chip:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.26), rgba(139, 92, 246, 0.26));
-    border-color: rgba(139, 92, 246, 0.5);
+    background: #363a4a;
+    border-color: #4d5265;
+    color: #c5ccff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  html[data-theme="dark"] .tag-chip:hover::before {
+    background: #c5ccff;
   }
 
   .home-recent h2 {

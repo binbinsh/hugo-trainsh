@@ -5,7 +5,7 @@
   <ul class="tag-list">
     {{ range .Data.Terms.Alphabetical }}
       <li>
-        <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
+        <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
       </li>
     {{ end }}
   </ul>
