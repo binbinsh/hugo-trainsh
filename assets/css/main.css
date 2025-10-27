@@ -278,6 +278,7 @@ html[data-theme="dark"] {
   .toc-nav ul {
     list-style: none;
     padding-left: 0;
+    font-size: 0.875rem;
   }
 
   .toc-nav li {
@@ -288,9 +289,31 @@ html[data-theme="dark"] {
     padding-left: 1rem;
   }
 
+  .toc-nav a {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toc-nav h2 {
+    font-size: 1rem;
+  }
+
   .toc-dropdown {
     display: none;
     margin: 1rem 0 1rem;
+  }
+
+  .toc-dropdown ul {
+    font-size: 0.875rem;
+  }
+
+  .toc-dropdown a {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   @media (max-width: 1024px) {
