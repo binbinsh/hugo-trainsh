@@ -846,3 +846,14 @@ html[data-theme="dark"] {
     word-break: break-word;     /* WebKit fallback for long tokens */
     word-wrap: break-word;      /* legacy alias */
   }
+
+  /* Archive list: keep titles on a single line and truncate with ellipsis */
+  #archive-groups .archive-title {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
