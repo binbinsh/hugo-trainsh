@@ -156,8 +156,9 @@ html[data-theme="dark"] {
   html[data-theme="dark"] .archive-header input[type="search"] { background: #0b0d12; color: var(--fg); border-color: var(--border); }
 
   .brand {
-    font-weight: 700;
-    font-size: 1.15rem;
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: 0.01em;
   }
 
   .site-nav {
@@ -278,7 +279,6 @@ html[data-theme="dark"] {
   .toc-nav ul {
     list-style: none;
     padding-left: 0;
-    font-size: 0.875rem;
   }
 
   .toc-nav li {
@@ -303,10 +303,6 @@ html[data-theme="dark"] {
   .toc-dropdown {
     display: none;
     margin: 1rem 0 1rem;
-  }
-
-  .toc-dropdown ul {
-    font-size: 0.875rem;
   }
 
   .toc-dropdown a {
@@ -491,12 +487,21 @@ html[data-theme="dark"] {
     margin: 1.5rem 0;
   }
 
+  /* Tag container spacing below meta/date */
+  .post-tags {
+    margin: 0.25rem 0 0.5rem;
+  }
+
   .tag-list {
     list-style: none;
     padding-left: 0;
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 0.6rem;
+    gap: 0.6rem 0.9rem;
+  }
+  @media (min-width: 768px) {
+    .tag-list { gap: 0.75rem 1rem; }
   }
 
   .tag-list li {
@@ -514,108 +519,64 @@ html[data-theme="dark"] {
     display: inline-flex;
     align-items: center;
     position: relative;
-    padding: 0.35rem 0.75rem;
-    padding-left: 0.5rem;
-    color: #5570cd;
-    font-size: 0.875rem;
+    padding: 0.3rem 0.6rem;
+    color: var(--fg);
+    font-size: 0.8125rem;
     font-weight: 500;
     text-decoration: none;
-    background: #f0f4ff;
-    border: 1.5px solid #d4e0ff;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    margin-right: 0.4rem;
-    box-shadow: 0 1px 2px rgba(85, 112, 205, 0.08);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    margin-right: 0.25rem;
+    box-shadow: none;
   }
 
-  /* 左侧装饰点 */
+  /* Prefix '#' for visual cue */
   .tag-chip::before {
-    content: "";
+    content: "#";
     display: inline-block;
-    width: 4px;
-    height: 4px;
-    background: #5570cd;
-    border-radius: 50%;
-    margin-right: 0.5rem;
+    margin-right: 0.35rem;
+    color: var(--muted);
+    font-weight: 600;
+    line-height: 1;
     flex-shrink: 0;
   }
 
   .tag-chip:hover {
-    color: #3d4d8a;
-    background: #e8efff;
-    border-color: #b8ceff;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(85, 112, 205, 0.15);
+    background: var(--hover-bg);
+    border-color: var(--border);
+    color: var(--fg);
   }
 
   .tag-chip:hover::before {
-    background: #3d4d8a;
+    color: var(--fg);
   }
 
-  .tag-chip:active {
-    transform: translateY(0);
-  }
+  .tag-chip:active { }
 
   .tag-chip .count,
   .tag-chip .tag-count {
     display: none;
   }
 
-  .post-tags .label {
-    margin-right: 0.5rem;
-    color: #666;
-    font-size: 0.9em;
-  }
-
   /* small variant */
   .tag-chip.tag-sm {
-    padding: 0.25rem 0.65rem;
-    padding-left: 0.45rem;
-    font-size: 0.8125rem;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
   }
 
   .tag-chip.tag-sm::before {
-    width: 3.5px;
-    height: 3.5px;
-    margin-right: 0.4rem;
+    margin-right: 0.3rem;
   }
 
-  /* Dark mode tag styling */
-  html[data-theme="dark"] .tag-chip {
-    background: #2a2d3a;
-    border-color: #404552;
-    color: #a8b2ff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  }
-
-  html[data-theme="dark"] .tag-chip::before {
-    background: #a8b2ff;
-  }
-
-  html[data-theme="dark"] .tag-chip:hover {
-    background: #363a4a;
-    border-color: #4d5265;
-    color: #c5ccff;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
-  }
-
-  html[data-theme="dark"] .tag-chip:hover::before {
-    background: #c5ccff;
-  }
+  /* Dark mode uses CSS variables above */
 
   .home-recent h2 {
     margin-bottom: 0.75rem;
   }
 
-  .home-recent article {
-    margin: 0;
-  }
-
-  .home-recent article + article {
-    margin-top: 1.75rem;
-    padding-top: 1.25rem;
-    border-top: 1px dotted #d5dbe1;
-  }
+  
 
   .post-meta {
     color: var(--muted);
@@ -628,25 +589,35 @@ html[data-theme="dark"] {
     margin-bottom: 0.25rem;
   }
 
-  /* Tighten space between list item title and date */
-  .home-recent article h3,
-  .term-posts article h3 {
-    margin-bottom: 0.25rem;
+  /* Normalize heading spacing inside cards */
+  .post-card h3 {
+    margin: 0 0 0.25rem;
   }
+
+  /* Prevent extra outer whitespace from child margins */
+  .post-card > :first-child { margin-top: 0; }
+  .post-card > :last-child  { margin-bottom: 0; }
 
   .home-recent .more {
     margin-top: 1rem;
   }
 
-  /* Term page post separators */
-  .term-posts article {
-    margin: 0;
+  /* Card-style list items */
+  .post-card {
+    padding: 1rem 1rem 2rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
-  .term-posts article + article {
-    margin-top: 1.75rem;
-    padding-top: 1.25rem;
-    border-top: 1px dotted #d5dbe1;
+  .post-card + .post-card {
+    margin-top: 1rem;
+  }
+
+  /* Taxonomy terms page spacing */
+  .taxonomy-terms {
+    margin-top: 0.5rem;
   }
 
   /* Lightbox affordances */
@@ -664,6 +635,40 @@ html[data-theme="dark"] {
   video {
     max-width: 100%;
     height: auto;
+  }
+
+  /* Center standalone media inside content */
+  article.content p > img:only-child,
+  article.content p > video:only-child {
+    display: block;
+    margin: 0.5rem auto;
+  }
+  /* Center lightbox-linked images */
+  article.content p > a[data-pswp-width]:only-child {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  article.content figure {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+  article.content figure > img,
+  article.content figure > a > img,
+  article.content figure > video {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Media captions */
+  article.content figure > figcaption,
+  article.content .caption {
+    margin-top: 0.4rem;
+    text-align: center;
+    font-weight: 700;
+    font-style: italic;
   }
 
   /* Code blocks: CSS counter-based line numbers */

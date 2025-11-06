@@ -18,7 +18,7 @@
       {{ partial "toc/dropdown.html" (dict "page" . "toc" $toc) }}
 
       {{ .Content }}
-      {{ partial "terms.html" (dict "taxonomy" "tags" "page" . "showLabel" false) }}
+      {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
     </article>
   </div>
   {{ else }}
@@ -26,7 +26,7 @@
     <h1>{{ .Title }}</h1>
     {{ partial "post/date.html" . }}
     {{ .Content }}
-    {{ partial "terms.html" (dict "taxonomy" "tags" "page" . "showLabel" false) }}
+    {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
   </article>
   {{ end }}
 {{ end }}

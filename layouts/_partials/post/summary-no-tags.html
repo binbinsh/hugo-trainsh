@@ -1,4 +1,4 @@
-<article>
+<article class="post-card">
   <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
   {{ partial "post/date.html" . }}
   {{ $firstP := (findRE "<p>.*?</p>" .Content 1) }}

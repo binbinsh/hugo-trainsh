@@ -1,7 +1,7 @@
-<article>
+<article class="post-card">
   <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
   {{ partial "post/date.html" . }}
-  {{ partial "terms.html" (dict "taxonomy" "tags" "page" . "showLabel" false "small" true) }}
+  {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
   {{ $firstP := (findRE "<p>.*?</p>" .Content 1) }}
   {{ with index $firstP 0 }}
     {{ . | safeHTML }}

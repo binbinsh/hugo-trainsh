@@ -1,12 +1,14 @@
 {{ define "main" }}
-  <h1>{{ .Title }}</h1>
-  {{ .Content }}
+  <section class="taxonomy-terms">
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
 
-  <ul class="tag-list">
-    {{ range .Data.Terms.Alphabetical }}
-      <li>
-        <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
-      </li>
-    {{ end }}
-  </ul>
+    <ul class="tag-list">
+      {{ range .Data.Terms.Alphabetical }}
+        <li>
+          <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
+        </li>
+      {{ end }}
+    </ul>
+  </section>
 {{ end }}
