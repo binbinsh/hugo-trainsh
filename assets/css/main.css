@@ -106,17 +106,11 @@ html[data-theme="dark"] {
     margin-bottom: 0.8rem;
     transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
   }
-  body > header.is-scrolled {
-    background: rgba(255, 255, 255, 0.75);
-    border-bottom-color: rgba(17, 17, 17, 0.12);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  }
   @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
     body > header { background: rgba(255, 255, 255, 0.92); }
   }
   html[data-theme="dark"] body > header { background: rgba(16, 16, 20, 0.6); border-bottom-color: rgba(255, 255, 255, 0.12); }
-  html[data-theme="dark"] body > header.is-scrolled { background: rgba(16, 16, 20, 0.75); }
-
+  
   footer {
     border-top: 1px solid var(--border);
     margin-top: 2rem;
@@ -179,10 +173,14 @@ html[data-theme="dark"] {
     border-radius: 6px;
     position: relative;
     display: inline-block;
+    transition: color 120ms ease;
   }
 
   .site-nav a:hover {
-    background: var(--hover-bg);
+    text-decoration: underline;
+    text-decoration-color: var(--link);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.24em;
   }
 
   /* Active/current page: bottom underline indicator, no background */

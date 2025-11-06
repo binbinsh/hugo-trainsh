@@ -11,14 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Sticky header scrolled state
-  const headerEl = document.querySelector('body > header');
-  if (headerEl) {
-    const setScrolled = () => headerEl.classList.toggle('is-scrolled', window.scrollY > 8);
-    setScrolled();
-    window.addEventListener('scroll', setScrolled, { passive: true });
-  }
-
   const toc = document.querySelector('.toc-dropdown');
   if (toc) {
     toc.addEventListener('click', (e) => {
