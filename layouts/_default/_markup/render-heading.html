@@ -1,4 +1,7 @@
-<h{{ .Level }} id="{{ .Anchor }}" {{- with .Attributes.class }} class="{{ . }}" {{- end }}>
+<h{{ .Level }} id="{{ .Anchor }}"{{ with .Attributes.class }} class="{{ . }}"{{ end }}>
   {{ .Text }}
-  <a class="anchor" href="#{{ .Anchor }}" aria-label="Link to this section">#</a>
+  <a class="heading-anchor" href="#{{ .Anchor }}" aria-label="Link to this section">
+    <span class="sr-only">Link to this section</span>
+    <span aria-hidden="true">#</span>
+  </a>
 </h{{ .Level }}>
