@@ -1,13 +1,17 @@
+{{- $page := .page | default . -}}
+{{- $showTags := .showTags | default true -}}
+
 <article class="post-card">
-  <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
-  {{ partial "post/date.html" . }}
-  {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
-  {{ $firstP := (findRE "<p>.*?</p>" .Content 1) }}
+  <h3><a href="{{ $page.RelPermalink }}">{{ $page.LinkTitle }}</a></h3>
+  {{ partial "post/date.html" $page }}
+  {{ if $showTags }}
+    {{ partial "terms.html" (dict "taxonomy" "tags" "page" $page) }}
+  {{ end }}
+  {{ $firstP := (findRE "<p>.*?</p>" $page.Content 1) }}
   {{ with index $firstP 0 }}
     {{ . | safeHTML }}
   {{ else }}
-    <p>{{ .Summary | plainify }}</p>
+    <p>{{ $page.Summary | plainify }}</p>
   {{ end }}
 </article>
-
 

@@ -9,7 +9,7 @@
 
   <section class="term-posts">
     {{ range .Pages.ByDate.Reverse }}
-      {{ partial "post/summary-no-tags.html" . }}
+      {{ partial "post/summary.html" (dict "page" . "showTags" false) }}
     {{ end }}
   </section>
 {{ end }}

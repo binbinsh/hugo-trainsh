@@ -1,11 +1,44 @@
-{{ with resources.Get "fonts/inter-latin.var.woff2" }}
+{{ with resources.Get "fonts/plus-jakarta-sans-latin-400-normal.woff2" }}
 @font-face {
-  font-family: "Inter var";
+  font-family: "Plus Jakarta Sans";
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400;
   font-display: swap;
   src: url("{{ .RelPermalink }}") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122;
+  unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F;
+}
+{{ end }}
+
+{{ with resources.Get "fonts/plus-jakarta-sans-latin-500-normal.woff2" }}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("{{ .RelPermalink }}") format("woff2");
+  unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F;
+}
+{{ end }}
+
+{{ with resources.Get "fonts/plus-jakarta-sans-latin-600-normal.woff2" }}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("{{ .RelPermalink }}") format("woff2");
+  unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F;
+}
+{{ end }}
+
+{{ with resources.Get "fonts/plus-jakarta-sans-latin-700-normal.woff2" }}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("{{ .RelPermalink }}") format("woff2");
+  unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+20A0-20CF, U+2100-214F;
 }
 {{ end }}
 
@@ -42,7 +75,12 @@
 {{ end }}
 
 :root {
-    --font-sans: "Inter var", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+    --font-sans-latin: "Plus Jakarta Sans", "Inter", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-sans-display: "Plus Jakarta Sans", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-sans-cjk: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", sans-serif;
+    --font-sans: var(--font-sans-latin);
+    --font-body: var(--font-sans-latin);
+    --font-heading: var(--font-sans-display);
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Fira Code", "Liberation Mono", "Courier New", monospace;
 }
 
@@ -50,21 +88,21 @@
 :root { color-scheme: light; }
 :root {
   --bg: #ffffff;
-  --fg: #222222;
-  --muted: #666666;
+  --fg: #171a1f;
+  --muted: #50545f;
   --border: #e2e6ea;
   --surface: #f7f9fb;
-  --link: #4080ff;
+  --link: #2e6bff;
   --hover-bg: rgba(17, 17, 17, 0.06);
 }
 html[data-theme="dark"] { color-scheme: dark; }
 html[data-theme="dark"] {
-  --bg: #0f1115;
-  --fg: #e6e6e6;
-  --muted: #aaaaaa;
+  --bg: #0d0f13;
+  --fg: #f1f5fb;
+  --muted: #a9b3c3;
   --border: #2b2f36;
-  --surface: #1a1d24;
-  --link: #79a8ff;
+  --surface: #171a22;
+  --link: #88aaff;
   --hover-bg: rgba(255, 255, 255, 0.08);
 }
 
@@ -72,6 +110,9 @@ html[data-theme="dark"] {
   html {
     box-sizing: border-box;
     scrollbar-gutter: stable both-edges;
+    background: var(--bg);
+    min-height: 100%;
+    transition: background-color 0.25s ease;
   }
 
   *, *::before, *::after {
@@ -81,12 +122,30 @@ html[data-theme="dark"] {
   body {
     color: var(--fg);
     background: var(--bg);
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     line-height: 1.5;
     margin: 1rem auto;
     max-width: 880px;
     width: 100%;
     padding-inline: 1rem;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-optical-sizing: auto;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  :lang(zh),
+  :lang(zh-Hans),
+  :lang(zh-CN) {
+    font-family: var(--font-sans-cjk), var(--font-sans-latin);
+    font-feature-settings: "kern" 1;
+  }
+
+  :lang(zh) code,
+  :lang(zh-Hans) code,
+  :lang(zh-CN) code {
+    font-family: var(--font-mono);
   }
 
   code,
@@ -105,9 +164,6 @@ html[data-theme="dark"] {
     border-bottom: 1px solid var(--border);
     margin-bottom: 0.8rem;
     transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-  }
-  @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-    body > header { background: rgba(255, 255, 255, 0.92); }
   }
   html[data-theme="dark"] body > header { background: rgba(16, 16, 20, 0.6); border-bottom-color: rgba(255, 255, 255, 0.12); }
   
@@ -537,18 +593,13 @@ html[data-theme="dark"] {
     align-items: center;
   }
 
-  .tag-count {
-    color: var(--muted);
-    font-size: 0.9em;
-  }
-
   .tag-chip {
     display: inline-flex;
     align-items: center;
     position: relative;
     padding: 0.3rem 0.6rem;
     color: var(--fg);
-    font-size: 0.8125rem;
+    font-size: 0.95rem;
     font-weight: 500;
     text-decoration: none;
     background: var(--surface);
@@ -582,15 +633,10 @@ html[data-theme="dark"] {
 
   .tag-chip:active { }
 
-  .tag-chip .count,
-  .tag-chip .tag-count {
-    display: none;
-  }
-
   /* small variant */
   .tag-chip.tag-sm {
-    padding: 0.2rem 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.22rem 0.5rem;
+    font-size: 0.9rem;
   }
 
   .tag-chip.tag-sm::before {
@@ -608,12 +654,168 @@ html[data-theme="dark"] {
   .post-meta {
     color: var(--muted);
     font-size: 0.9em;
-    margin: 0.2rem 0 0.4rem;
+    margin: 0.15rem 0 0.4rem;
+  }
+
+  /* Single post typography + rhythm */
+  article.content {
+    font-size: 1.05rem;
+    text-rendering: optimizeLegibility;
+  }
+
+  article.content > :first-child {
+    margin-top: 0;
+  }
+
+  article.content p,
+  article.content li,
+  article.content blockquote,
+  article.content dd {
+    line-height: 1.75;
+  }
+
+  article.content p {
+    margin: 1.15rem 0;
+  }
+
+  article.content em,
+  article.content i,
+  article.content cite,
+  article.content dfn {
+    font-style: italic;
+    font-synthesis: style; /* allow synthetic italics for fonts without italic faces */
+  }
+
+  article.content :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--fg);
+    font-weight: 650;
+    text-wrap: balance;
+    font-family: var(--font-heading), var(--font-sans-cjk);
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-optical-sizing: auto;
+  }
+
+  article.content :is(h1, h2, h3, h4, h5, h6):lang(zh),
+  article.content :is(h1, h2, h3, h4, h5, h6):lang(zh-Hans),
+  article.content :is(h1, h2, h3, h4, h5, h6):lang(zh-CN) {
+    font-family: var(--font-sans-cjk), var(--font-sans-display);
+    letter-spacing: 0.02em;
+  }
+
+  article.content :is(h2, h3, h4, h5, h6) {
+    line-height: 1.18;
+    margin-bottom: 0.4rem;
+  }
+
+  article.content h2 {
+    font-size: clamp(1.25rem, 1.05rem + 0.4vw, 1.6rem);
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    margin-top: 1.7rem;
+  }
+
+  article.content h3 {
+    font-size: clamp(1.12rem, 1.02rem + 0.25vw, 1.32rem);
+    font-weight: 590;
+    letter-spacing: 0.01em;
+    margin-top: 1.45rem;
+    color: color-mix(in srgb, var(--fg) 85%, var(--muted));
+  }
+
+  article.content h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    margin-top: 1.2rem;
+  }
+
+  article.content h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-top: 1rem;
+    color: var(--muted);
+  }
+
+  article.content h6 {
+    font-size: 0.86rem;
+    font-weight: 600;
+    letter-spacing: 0.045em;
+    margin-top: 0.95rem;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  article.content :is(h2, h3, h4, h5, h6):first-child {
+    margin-top: 0;
+  }
+
+  article.content :is(h2, h3, h4, h5, h6) + :is(h3, h4, h5, h6) {
+    margin-top: 0.6rem;
+  }
+
+  article.content hr {
+    border: 0;
+    border-top: 1px dashed var(--border);
+    margin: 2.5rem 0;
+  }
+
+  article.content code:not(pre code) {
+    display: inline;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 0.95em;
+  }
+
+  article.content :is(ul, ol):not(.tag-list) {
+    margin: 1.2rem 0 1.5rem;
+    padding-left: 1.6rem;
+  }
+
+  article.content ul:not(.tag-list) { list-style: disc; }
+  article.content ol:not(.tag-list) { list-style: decimal; }
+
+  article.content :is(ul, ol):not(.tag-list) > li + li {
+    margin-top: 0.4rem;
+  }
+
+  article.content :is(ul, ol):not(.tag-list) > li::marker {
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  article.content :is(ul, ol):not(.tag-list) > li > :is(ul, ol) {
+    margin-top: 0.5rem;
+  }
+
+  article.content :is(ul, ol):not(.tag-list) > li > p {
+    margin: 0.4rem 0 0.15rem;
+  }
+
+  /* Add breathing room between the site header and single/page titles */
+  main > article.content:first-child,
+  main > .page-with-toc:first-child {
+    margin-top: clamp(1.2rem, 0.6rem + 1vw, 2rem);
   }
 
   /* Tighten space between title and date on content pages */
   article.content > h1 {
-    margin-bottom: 0.25rem;
+    font-family: var(--font-heading);
+    font-size: clamp(1.45rem, 1.1rem + 0.7vw, 2rem);
+    font-weight: 620;
+    letter-spacing: -0.02em;
+    line-height: 1.16;
+    margin-bottom: 0.2rem;
+    color: var(--fg);
+    text-wrap: balance;
+  }
+
+  article.content > .post-meta {
+    margin: 0.08rem 0 0.8rem;
+    font-size: 0.92em;
+    letter-spacing: 0.03em;
   }
 
   /* Normalize heading spacing inside cards */
@@ -690,12 +892,12 @@ html[data-theme="dark"] {
   }
 
   /* Media captions */
-  article.content figure > figcaption,
-  article.content .caption {
+  article.content figure > figcaption {
     margin-top: 0.4rem;
     text-align: center;
     font-weight: 700;
     font-style: italic;
+    font-synthesis: style;
   }
 
   /* Code blocks: CSS counter-based line numbers */
@@ -708,6 +910,7 @@ html[data-theme="dark"] {
     background: #272822; /* Ensure consistent background */
     margin: 0;
     padding: 0;
+    overflow-x: auto;
   }
 
   .codeblock-content .highlight pre {
@@ -754,11 +957,12 @@ html[data-theme="dark"] {
 
   /* Handle code wrapping */
   .highlight pre {
-    white-space: pre-wrap;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    overflow-x: visible;
-    line-height: 1.5;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+    overflow-x: auto;
+    overflow-y: hidden;
+    line-height: 1.6;
   }
 
   /* Ensure wrapped flex lines work properly */
@@ -771,38 +975,6 @@ html[data-theme="dark"] {
     /* Ensure nested spans can wrap */
     display: inline;
     white-space: inherit;
-  }
-
-  /*
-    Hugo/Chroma may emit inline styles without the legacy `.lntable` class.
-    Support that markup too, so long lines wrap only in the code column
-    while the line-number gutter never wraps.
-  */
-  .highlight table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-  }
-
-  .highlight table td:first-child {
-    width: 4.5ch;
-    padding-right: 0.75rem;
-    color: #666;
-    text-align: right;
-    user-select: none;
-    vertical-align: top;
-  }
-
-  .highlight table td:last-child pre {
-    white-space: pre-wrap;
-  }
-
-  .highlight table td:first-child,
-  .highlight table td:first-child pre,
-  .highlight table td:first-child code {
-    white-space: pre;
-    word-break: normal;
-    overflow-wrap: normal;
   }
 
   /* Codeblock header + copy button */
@@ -873,20 +1045,20 @@ html[data-theme="dark"] {
     margin: 1rem 0;
   }
 
-  .table-wrapper table:not(.lntable) {
+  .table-wrapper table {
     width: 100%;
     border-collapse: collapse;
     border: 1px solid var(--border);
   }
 
-  .table-wrapper table:not(.lntable) thead th,
-  .table-wrapper table:not(.lntable) tbody td {
+  .table-wrapper table thead th,
+  .table-wrapper table tbody td {
     border: 1px solid var(--border);
     padding: 0.5rem 0.6rem;
     vertical-align: top;
   }
 
-  .table-wrapper table:not(.lntable) thead th {
+  .table-wrapper table thead th {
     background: var(--surface);
     color: var(--fg);
   }

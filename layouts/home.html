@@ -30,7 +30,7 @@
     <section class="home-recent">
       <h2>Recent posts</h2>
       {{ range first $recentN (.ByDate.Reverse) }}
-        {{ partial "post/summary-no-tags.html" . }}
+        {{ partial "post/summary.html" (dict "page" . "showTags" false) }}
       {{ end }}
       {{ $moreText := (site.Params.home.recent.moreText | default "View all posts") }}
       {{ if site.Params.home.recent.moreURL }}

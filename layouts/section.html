@@ -2,6 +2,6 @@
   <h1>{{ .Title }}</h1>
   {{ .Content }}
   {{ range .Pages.ByDate.Reverse }}
-    {{ partial "post/summary.html" . }}
+    {{ partial "post/summary.html" (dict "page" . "showTags" true) }}
   {{ end }}
 {{ end }}

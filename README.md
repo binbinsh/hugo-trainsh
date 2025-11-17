@@ -32,7 +32,7 @@ hugo server
 - **Mermaid & KaTeX**: Diagram and math support out of the box.
 - **Image lightbox**: PhotoSwipe for images inside articles.
 - **Archive + search**: Archive page with Fuse.js fuzzy search powered by `/index.json`.
-- **Self‑hosted fonts**: Inter Variable (Latin) and Noto Sans SC (CJK), `font-display: swap`.
+- **Self‑hosted fonts**: Plus Jakarta Sans (Latin) + Noto Sans SC (CJK), `font-display: swap`.
 - **Optimized assets**: Hugo Pipes minify + fingerprint in production.
 
 
