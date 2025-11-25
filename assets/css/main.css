@@ -266,20 +266,30 @@ html[data-theme="dark"] {
     overflow: auto;
   }
 
-  .toc-nav ul {
-    list-style: none;
-    padding-left: 0;
+  .toc-nav #TableOfContents,
+  .toc-dropdown #TableOfContents {
+    margin: 0;
   }
 
-  .toc-nav li {
+  .toc-nav ul,
+  .toc-dropdown #TableOfContents ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .toc-nav li,
+  .toc-dropdown #TableOfContents li {
     margin: 0.25rem 0;
   }
 
-  .toc-nav ul ul {
+  .toc-nav ul ul,
+  .toc-dropdown #TableOfContents ul ul {
     padding-left: 1rem;
   }
 
-  .toc-nav a {
+  .toc-nav a,
+  .toc-dropdown a {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -293,13 +303,6 @@ html[data-theme="dark"] {
   .toc-dropdown {
     display: none;
     margin: 1rem 0 1rem;
-  }
-
-  .toc-dropdown a {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   @media (max-width: 1024px) {
