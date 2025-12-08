@@ -12,7 +12,39 @@
 </button>
 </div>
 <div class="site-header__right">
-<button class="nav-toggle" type="button" aria-controls="main-menu" aria-expanded="false" data-nav-toggle>Menu</button>
-{{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+  {{ with site.Params.social }}
+  <div class="social-links" aria-label="Social links">
+    {{ with .linkedin }}
+    <a class="social-link" href="{{ . }}" aria-label="LinkedIn" rel="me noopener" target="_blank">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" width="20" height="20">
+        <path d="M4.98 3.5C4.98 4.6 4.1 5.5 3 5.5c-1.09 0-1.98-.9-1.98-2S1.91 1.5 3 1.5c1.1 0 1.98.9 1.98 2zM.5 22.5h5V7.5h-5v15zM8.5 7.5h4.8v2.03h.07c.67-1.18 2.32-2.43 4.78-2.43 5.11 0 6.05 3.36 6.05 7.72v7.68h-5v-6.8c0-1.62-.03-3.7-2.25-3.7-2.25 0-2.59 1.76-2.59 3.58v6.92h-5v-15z" />
+      </svg>
+    </a>
+    {{ end }}
+    {{ with .x }}
+    <a class="social-link" href="{{ . }}" aria-label="X" rel="me noopener" target="_blank">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" width="20" height="20">
+        <path d="M4 3h4.5l3.1 4.5L15 3h5l-6 8 6 10h-4.5l-3.5-5.2L8 21H3l6.2-8.3L4 3z" />
+      </svg>
+    </a>
+    {{ end }}
+    {{ with .github }}
+    <a class="social-link" href="{{ . }}" aria-label="GitHub" rel="me noopener" target="_blank">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" width="20" height="20">
+        <path d="M12 2c-5.5 0-10 4.6-10 10.2 0 4.5 2.9 8.3 6.9 9.6.5.1.7-.2.7-.5v-2c-2.8.6-3.4-1.4-3.4-1.4-.4-1.1-1-1.4-1-1.4-.8-.6.1-.6.1-.6.9.1 1.3 1 1.3 1 .8 1.4 2.1 1 2.6.8.1-.6.3-1 .6-1.2-2.2-.3-4.5-1.1-4.5-5 0-1.1.4-2 1-2.7 0-.3-.4-1.2.1-2.5 0 0 .8-.3 2.8 1 .8-.2 1.6-.3 2.4-.3.8 0 1.6.1 2.4.3 2-1.3 2.8-1 2.8-1 .5 1.3.2 2.2.1 2.5.7.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.5 5 .3.3.6.8.6 1.6v2.4c0 .3.2.6.7.5 4-1.3 6.9-5.1 6.9-9.6C22 6.6 17.5 2 12 2z" />
+      </svg>
+    </a>
+    {{ end }}
+    {{ with .email }}
+    {{ $email := . }}
+    <a class="social-link" href="{{ if hasPrefix $email "mailto:" }}{{ $email }}{{ else }}mailto:{{ $email }}{{ end }}" aria-label="Email" rel="me noopener">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+        <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+        <path d="m3 7 9 6 9-6" />
+      </svg>
+    </a>
+    {{ end }}
+  </div>
+  {{ end }}
 </div>
 </div>

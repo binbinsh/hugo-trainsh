@@ -1,17 +1,20 @@
 {{- $page := .page | default . -}}
 {{- $showTags := .showTags | default true -}}
+{{- $showSummary := .showSummary | default false -}}
 
 <article class="post-card">
-  <h3><a href="{{ $page.RelPermalink }}">{{ $page.LinkTitle }}</a></h3>
   {{ partial "post/date.html" $page }}
+  <h3><a href="{{ $page.RelPermalink }}">{{ $page.LinkTitle }}</a></h3>
   {{ if $showTags }}
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" $page) }}
   {{ end }}
-  {{ $firstP := (findRE "<p>.*?</p>" $page.Content 1) }}
-  {{ with index $firstP 0 }}
-    {{ . | safeHTML }}
-  {{ else }}
-    <p>{{ $page.Summary | plainify }}</p>
+  {{ if $showSummary }}
+    {{ $firstP := (findRE "<p>.*?</p>" $page.Content 1) }}
+    {{ with index $firstP 0 }}
+      {{ . | safeHTML }}
+    {{ else }}
+      <p>{{ $page.Summary | plainify }}</p>
+    {{ end }}
   {{ end }}
 </article>
 

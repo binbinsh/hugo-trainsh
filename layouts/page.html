@@ -12,8 +12,8 @@
     {{ partial "toc/sidebar.html" (dict "page" . "toc" $toc) }}
 
     <article class="content">
-      <h1>{{ .Title }}</h1>
       {{ partial "post/date.html" . }}
+      <h1>{{ .Title }}</h1>
 
       {{ partial "toc/dropdown.html" (dict "page" . "toc" $toc) }}
 
@@ -23,8 +23,8 @@
   </div>
   {{ else }}
   <article class="content">
-    <h1>{{ .Title }}</h1>
     {{ partial "post/date.html" . }}
+    <h1>{{ .Title }}</h1>
     {{ .Content }}
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
   </article>

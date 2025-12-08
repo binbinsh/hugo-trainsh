@@ -13,11 +13,18 @@
       {{ $tags = first $limit $tags }}
     {{ end }}
     <section class="home-tags">
-      <h2>Popular tags</h2>
+      <div class="home-tags__header">
+        <h2>Popular tags</h2>
+      </div>
       <ul class="tag-list">
         {{ range $tags }}
           <li>
             <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
+          </li>
+        {{ end }}
+        {{ with site.GetPage "/tags" }}
+          <li class="tag-list__more">
+            <a class="tag-button" href="{{ .RelPermalink }}">View all tags</a>
           </li>
         {{ end }}
       </ul>
@@ -29,9 +36,17 @@
   {{ with $posts }}
     <section class="home-recent">
       <h2>Recent posts</h2>
-      {{ range first $recentN (.ByDate.Reverse) }}
-        {{ partial "post/summary.html" (dict "page" . "showTags" false) }}
-      {{ end }}
+      {{/* compact list, no card spacing */}}
+      <ul class="home-recent-list">
+        {{ range first $recentN (.ByDate.Reverse) }}
+          <li>
+            {{ $machine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
+            {{ $human := .Date | time.Format "2006-01-02" }}
+            <time class="date" datetime="{{ $machine }}">{{ $human }}</time>
+            <a class="archive-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+          </li>
+        {{ end }}
+      </ul>
       {{ $moreText := (site.Params.home.recent.moreText | default "View all posts") }}
       {{ if site.Params.home.recent.moreURL }}
         <p class="more"><a href="{{ site.Params.home.recent.moreURL }}">{{ $moreText }}</a></p>
@@ -46,4 +61,10 @@
       {{ end }}
     </section>
   {{ end }}
+
+  <section class="home-search">
+    <h2>Search posts</h2>
+    <input id="archive-search" type="search" placeholder="Type to search" autocomplete="off">
+    <section id="archive-results" hidden></section>
+  </section>
 {{ end }}

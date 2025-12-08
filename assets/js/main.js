@@ -21,11 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Archive search wiring
+  // Archive/Home search wiring
   const searchInput = document.getElementById('archive-search');
   const groupsEl = document.getElementById('archive-groups');
   const resultsEl = document.getElementById('archive-results');
-  if (searchInput && groupsEl && resultsEl) {
+  if (searchInput && resultsEl) {
     let fuseInstance = null;
     let indexData = null;
 
@@ -39,12 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = r.item || r; // support raw array or Fuse result
         const title = item.title || '';
         const date = item.date || '';
+        const author = item.author || '';
         const link = item.permalink || '#';
         const summary = item.summary || '';
         return `
           <article class="archive-result">
+            <div class="meta-line"><time class="date">${date}</time>${author ? ` by <span class="author">${author}</span>` : ''}</div>
             <h3><a href="${link}">${title}</a></h3>
-            <time class="date">${date}</time>
             <p class="summary">${summary}</p>
           </article>
         `;
@@ -53,13 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const showGroups = () => {
-      groupsEl.hidden = false;
+      if (groupsEl) groupsEl.hidden = false;
       resultsEl.hidden = true;
     };
     const showResults = () => {
-      groupsEl.hidden = true;
+      if (groupsEl) groupsEl.hidden = true;
       resultsEl.hidden = false;
     };
+
+    // Make search accessible
+    searchInput.setAttribute('aria-label', 'Search posts');
+    searchInput.setAttribute('role', 'search');
 
     const initFuse = async () => {
       if (fuseInstance) return fuseInstance;
@@ -105,6 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderResults(results);
       showResults();
     });
+
+    // If homepage hides groups, ensure initial state shows results hidden
+    if (!groupsEl) {
+      resultsEl.hidden = true;
+    }
   }
 
   // PhotoSwipe lightbox for all images in article content

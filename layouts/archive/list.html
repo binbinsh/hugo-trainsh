@@ -1,7 +1,6 @@
 {{ define "main" }}
   <header class="archive-header">
     <h1>{{ .Title }}</h1>
-    <input id="archive-search" type="search" placeholder="Search posts" autocomplete="off">
   </header>
 
   {{ $sections := default (slice "posts") site.Params.mainSections }}
@@ -24,6 +23,16 @@
   </section>
 
   <section id="archive-results" hidden></section>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const groups = document.getElementById('archive-groups');
+      const results = document.getElementById('archive-results');
+      if (groups && results) {
+        groups.hidden = false;
+        results.hidden = true;
+      }
+    });
+  </script>
 {{ end }}
 
 

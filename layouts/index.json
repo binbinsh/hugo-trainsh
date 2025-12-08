@@ -5,7 +5,8 @@
   {
     "title": {{ $p.Title | jsonify }},
     "summary": {{ $p.Summary | plainify | jsonify }},
-    "date": {{ $p.Date.Format "2006-01-02" | jsonify }},
+    "date": {{ $p.Date.Format "January 2, 2006" | jsonify }},
+    "author": {{ default site.Params.author $p.Params.author | jsonify }},
     "permalink": {{ $p.Permalink | jsonify }},
     "tags": {{ $p.Params.tags | default (slice) | jsonify }},
     "categories": {{ $p.Params.categories | default (slice) | jsonify }},

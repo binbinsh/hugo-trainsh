@@ -14,19 +14,19 @@
     <article class="content">
       <h1>{{ .Title }}</h1>
       {{ partial "post/date.html" . }}
+      {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
 
       {{ partial "toc/dropdown.html" (dict "page" . "toc" $toc) }}
 
       {{ .Content }}
-      {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
     </article>
   </div>
   {{ else }}
   <article class="content">
     <h1>{{ .Title }}</h1>
     {{ partial "post/date.html" . }}
-    {{ .Content }}
     {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
+    {{ .Content }}
   </article>
   {{ end }}
-{{ end }}
+}{{ end }}

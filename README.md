@@ -27,12 +27,13 @@ hugo server
 
 ### Features
 
-- **Unified layout**: Consistent typography, spacing and cards across home, term, archive, single and page.
-- **Table of contents**: Auto-generated from H2/H3 with a sticky sidebar on desktop and a dropdown on mobile.
+- **Unified layout**: Consistent typography, spacing, cards, and high-contrast light/dark themes across home, term, archive, single, and page.
+- **Table of contents**: Auto-generated from H2/H3 with a sticky sidebar on desktop, dropdown on mobile, and consistent styling/truncation for long headings.
 - **Mermaid & KaTeX**: Diagram and math support out of the box.
 - **Image lightbox**: PhotoSwipe for images inside articles.
-- **Archive + search**: Archive page with Fuse.js fuzzy search powered by `/index.json`.
-- **System fonts**: Pure system stacks for Latin/CJK and monospace.
+- **Archive**: Grouped listings with post metadata.
+- **Search**: Home-page Fuse.js fuzzy search powered by `/index.json`.
+- **System fonts**: System stacks for Latin/CJK plus JetBrains Mono for code blocks.
 - **Optimized assets**: Hugo Pipes minify + fingerprint in production.
 
 

@@ -35,19 +35,24 @@ home = ["HTML", "RSS", "JSON"]
 [params]
   mainSections = ["posts"]
 
+  [params.social]
+    linkedin = "https://www.linkedin.com/in/example"
+    x = "https://x.com/example"
+    github = "https://github.com/example"
+    email = "you@example.com"
+
 [markup.goldmark.parser.attribute]
 block = true
 
 [params.home]
-intro = "Hi, I write words, ride bikes, and make things."
+intro = "I write, ride, and build with equal parts curiosity and grit, shipping small prototypes on weekends and sharing the lessons so others can leap further. I believe hopeful futures are handcrafted: one transparent write-up, one open experiment, one generous collaboration at a time."
 
 [params.home.tags]
 # Set to 0 or negative to show all tags
-limit = 8
-showCount = true
+limit = 6
 
 [params.home.recent]
-limit = 5
+limit = 6
 moreText = "View all posts"
 
 [markup]

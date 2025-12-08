@@ -2,7 +2,7 @@
 title = 'Quick Start with trainsh'
 date = '2025-10-26'
 draft = false
-tags = ['getting-started','theme','mermaid','math']
+tags = ['getting started','theme','mermaid','math']
 +++
 
 ## Typography & Layout
