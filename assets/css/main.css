@@ -988,6 +988,7 @@ html[data-theme="dark"] {
     text-align: left;
     white-space: nowrap;
     font-family: var(--font-body);
+    min-width: 7rem;
   }
 
   .home-recent-list .archive-title,
