@@ -1107,7 +1107,6 @@ html[data-theme="dark"] {
 
   /* Code block font size and background */
   .codeblock-content .highlight {
-    background: var(--bg);
     margin: 0;
     padding: 0;
     overflow-x: auto;
@@ -1148,7 +1147,7 @@ html[data-theme="dark"] {
     left: -3.5rem;
     width: 2.5rem;
     text-align: right;
-    color: var(--muted);
+    color: #ffffff;
     user-select: none;
     pointer-events: none;
     /* Ensure line numbers stay at the top of wrapped lines */
