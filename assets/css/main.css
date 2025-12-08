@@ -1124,11 +1124,35 @@ html[data-theme="dark"] {
 
   /* Code blocks: CSS counter-based line numbers */
   .codeblock-content {
+    display: block;
     position: relative;
     max-width: 100%;
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Force scrollbar always visible (override macOS overlay scrollbar) */
+  .codeblock-content::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background-color: var(--code-bg);
+  }
+  .codeblock-content::-webkit-scrollbar-track {
+    background-color: var(--code-bg);
+    border-radius: 0 0 8px 8px;
+  }
+  .codeblock-content::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 6px;
+    border: 3px solid var(--code-bg);
+    min-height: 40px;
+  }
+  .codeblock-content::-webkit-scrollbar-thumb:hover {
+    background-color: var(--muted);
+  }
+  .codeblock-content::-webkit-scrollbar-corner {
+    background-color: var(--code-bg);
   }
 
   /* Code block font size and background */
@@ -1136,8 +1160,6 @@ html[data-theme="dark"] {
     margin: 0;
     padding: 0;
     display: block;
-    max-width: max-content;
-    min-width: 100%;
     background: var(--code-bg);
     color: var(--code-fg);
     border: none;
@@ -1151,24 +1173,21 @@ html[data-theme="dark"] {
     background: transparent;
     color: inherit;
     border: none;
-    width: max-content;
-    min-width: max-content;
     white-space: pre;
     overflow: visible;
+    width: max-content;
+    min-width: 100%;
   }
 
-  /* Ensure inner wrappers overflow horizontally instead of wrapping */
-  .codeblock-content .highlight .chroma,
-  .codeblock-content .highlight pre,
+  /* Ensure code text doesn't wrap */
   .codeblock-content .highlight code,
-  .codeblock-content .highlight pre code,
-  .codeblock-content .highlight pre code > span {
+  .codeblock-content .highlight pre code {
     display: block;
-    width: max-content;
-    min-width: max-content;
     white-space: pre;
     word-break: normal;
     overflow-wrap: normal;
+    width: max-content;
+    min-width: 100%;
   }
 
   /* Inline code background */
@@ -1291,7 +1310,6 @@ html[data-theme="dark"] {
     counter-reset: line-number;
     padding-left: 4rem; /* Fixed space for line numbers */
     position: relative;
-    min-width: 100%;
   }
 
   /* Set up code block */
@@ -1304,9 +1322,7 @@ html[data-theme="dark"] {
   .codeblock-content.with-line-numbers .highlight pre code > span {
     position: relative;
     counter-increment: line-number;
-    /* Ensure the span itself can wrap its content */
-    display: block !important;
-    width: 100%;
+    display: block;
   }
 
   /* Line number pseudo-element */
@@ -1319,7 +1335,6 @@ html[data-theme="dark"] {
     color: var(--code-linenum);
     user-select: none;
     pointer-events: none;
-    /* Ensure line numbers stay at the top of wrapped lines */
     top: 0;
   }
 
@@ -1328,30 +1343,18 @@ html[data-theme="dark"] {
     white-space: pre;
     word-break: normal;
     overflow-wrap: normal;
-    overflow-x: auto;
-    overflow-y: hidden;
     line-height: 1.6;
-  }
-
-  /* Ensure wrapped flex lines work properly */
-  .codeblock-content.with-line-numbers .highlight pre code > span[style*="display:flex"] {
-    flex-wrap: wrap !important;
-  }
-  
-  /* Fix for nested spans within lines */
-  .codeblock-content.with-line-numbers .highlight pre code span span {
-    /* Ensure nested spans can wrap */
-    display: inline;
-    white-space: inherit;
   }
 
   /* Codeblock header + copy button */
   .codeblock {
+    display: block;
     border: 1px solid var(--code-border);
     border-radius: 8px;
     overflow: hidden;
     margin: 1rem 0;
     background: var(--surface);
+    max-width: 100%;
   }
   .codeblock-header {
     display: flex;
