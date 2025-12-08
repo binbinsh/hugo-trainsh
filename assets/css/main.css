@@ -56,6 +56,8 @@ html[data-theme="dark"] {
     background: var(--bg);
     min-height: 100%;
     transition: background-color 0.25s ease;
+    -webkit-text-size-adjust: 100%; /* Prevent iOS from auto-scaling font sizes */
+    text-size-adjust: 100%;
   }
 
   *, *::before, *::after {
@@ -212,9 +214,6 @@ html[data-theme="dark"] {
     color: var(--link);
     text-decoration: none;
     border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.15em;
     padding: 0.08em 0.2em;
     margin: -0.08em -0.2em;
     transition: color 120ms ease, background-color 120ms ease;
