@@ -224,6 +224,20 @@ html[data-theme="dark"] {
     background: var(--hover-bg);
   }
 
+    /* Keep article body and footer links in blue with no underline, but leave tag chips unchanged */
+  article.content a:not(.tag-chip),
+  footer a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  article.content a:not(.tag-chip):hover,
+  footer a:hover {
+    color: #2563eb;
+    text-decoration: none;
+    background: var(--hover-bg);
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;
@@ -1111,13 +1125,19 @@ html[data-theme="dark"] {
   /* Code blocks: CSS counter-based line numbers */
   .codeblock-content {
     position: relative;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Code block font size and background */
   .codeblock-content .highlight {
     margin: 0;
     padding: 0;
-    overflow-x: auto;
+    display: block;
+    max-width: max-content;
+    min-width: 100%;
     background: var(--code-bg);
     color: var(--code-fg);
     border: none;
@@ -1131,6 +1151,24 @@ html[data-theme="dark"] {
     background: transparent;
     color: inherit;
     border: none;
+    width: max-content;
+    min-width: max-content;
+    white-space: pre;
+    overflow: visible;
+  }
+
+  /* Ensure inner wrappers overflow horizontally instead of wrapping */
+  .codeblock-content .highlight .chroma,
+  .codeblock-content .highlight pre,
+  .codeblock-content .highlight code,
+  .codeblock-content .highlight pre code,
+  .codeblock-content .highlight pre code > span {
+    display: block;
+    width: max-content;
+    min-width: max-content;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
   }
 
   /* Inline code background */
@@ -1253,6 +1291,7 @@ html[data-theme="dark"] {
     counter-reset: line-number;
     padding-left: 4rem; /* Fixed space for line numbers */
     position: relative;
+    min-width: 100%;
   }
 
   /* Set up code block */
