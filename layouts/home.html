@@ -14,7 +14,7 @@
     {{ end }}
     <section class="home-tags">
       <div class="home-tags__header">
-        <h2>Popular tags</h2>
+        <h2>{{ i18n "popular_tags" }}</h2>
       </div>
       <ul class="tag-list">
         {{ range $tags }}
@@ -24,7 +24,7 @@
         {{ end }}
         {{ with site.GetPage "/tags" }}
           <li class="tag-list__more">
-            <a class="tag-button" href="{{ .RelPermalink }}">View all tags</a>
+            <a class="tag-button" href="{{ .RelPermalink }}">{{ i18n "more_tags" }}</a>
           </li>
         {{ end }}
       </ul>
@@ -35,7 +35,7 @@
   {{ $posts := where site.RegularPages "Section" "posts" }}
   {{ with $posts }}
     <section class="home-recent">
-      <h2>Recent posts</h2>
+      <h2>{{ i18n "recent_posts" }}</h2>
       {{/* compact list, no card spacing */}}
       <ul class="home-recent-list">
         {{ range first $recentN (.ByDate.Reverse) }}
@@ -47,7 +47,7 @@
           </li>
         {{ end }}
       </ul>
-      {{ $moreText := (site.Params.home.recent.moreText | default "View all posts") }}
+      {{ $moreText := i18n "more_posts" }}
       {{ if site.Params.home.recent.moreURL }}
         <p class="more"><a href="{{ site.Params.home.recent.moreURL }}">{{ $moreText }}</a></p>
       {{ else }}
@@ -63,8 +63,8 @@
   {{ end }}
 
   <section class="home-search">
-    <h2>Search posts</h2>
-    <input id="archive-search" type="search" placeholder="Type to search" autocomplete="off">
+    <h2>{{ i18n "search_posts" }}</h2>
+    <input id="archive-search" type="search" placeholder="{{ i18n "type_to_search" }}" autocomplete="off">
     <section id="archive-results" hidden></section>
   </section>
 {{ end }}

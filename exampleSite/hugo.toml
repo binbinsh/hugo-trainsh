@@ -31,7 +31,6 @@ home = ["HTML", "RSS", "JSON"]
 
     [params.home.recent]
       limit = 6
-      moreText = "View all posts"
 
 [markup]
   [markup.goldmark.parser.attribute]

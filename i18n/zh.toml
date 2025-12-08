@@ -2,10 +2,31 @@
 other = "首页"
 
 [archive]
-other = "归档"
+other = "所有文章"
 
 [tags]
-other = "标签"
+other = "所有标签"
+
+[more_posts]
+other = "查看全部文章"
+
+[more_tags]
+other = "查看全部标签"
+
+[popular_tags]
+other = "热门标签"
+
+[recent_posts]
+other = "最新文章"
+
+[search_posts]
+other = "搜索文章"
+
+[type_to_search]
+other = "输入文本搜索"
+
+[powered_by]
+other = "由以下驱动"
 
 [toc]
 other = "目录"

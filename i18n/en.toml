@@ -7,5 +7,26 @@ other = "Archive"
 [tags]
 other = "Tags"
 
+[more_posts]
+other = "View all posts"
+
+[more_tags]
+other = "View all tags"
+
+[popular_tags]
+other = "Popular tags"
+
+[recent_posts]
+other = "Recent posts"
+
+[search_posts]
+other = "Search posts"
+
+[type_to_search]
+other = "Type to search"
+
+[powered_by]
+other = "Powered by"
+
 [toc]
 other = "Table of Contents"
