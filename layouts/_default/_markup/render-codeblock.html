@@ -10,8 +10,8 @@
 {{- end -}}
 {{- $label := cond (eq $lang "text") "plain text" $lang -}}
 
-{{- /* Disable table-based line numbers to use CSS counter instead */ -}}
-{{- $opts := dict "linenos" false -}}
+{{- /* Disable table-based line numbers; force CSS-class output for Chroma */ -}}
+{{- $opts := dict "linenos" false "lineNumbersInTable" false "anchorLineNos" false "noClasses" false "guessSyntax" true -}}
 
 <div class="codeblock" data-lang="{{ $lang }}">
   <div class="codeblock-header">

@@ -16,6 +16,18 @@ Then set the theme in your site config:
 ```toml
 # hugo.toml
 theme = 'hugo-trainsh'
+
+# Use Chroma CSS classes so theme styles apply
+[markup]
+  [markup.highlight]
+    noClasses = false
+    lineNos = false
+    lineNumbersInTable = false
+    anchorLineNos = false
+    codeFences = true
+    guessSyntax = true
+    style = "tokyonight-day"
+    styleDark = "tokyonight-night"
 ```
 
 Or try the included example site:

@@ -41,7 +41,7 @@
         {{ range first $recentN (.ByDate.Reverse) }}
           <li>
             {{ $machine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-            {{ $human := .Date | time.Format "2006-01-02" }}
+            {{ $human := .Date | time.Format "Jan 02, 2006" }}
             <time class="date" datetime="{{ $machine }}">{{ $human }}</time>
             <a class="archive-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
           </li>
