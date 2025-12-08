@@ -1,33 +1,14 @@
-baseURL = 'https://example.org/'
-languageCode = 'en-US'
-title = 'My New Hugo Site'
+baseURL = "https://example.org/"
+languageCode = "en-US"
+title = "My New Hugo Site"
 
 themesDir = "../.."
 theme = "hugo-trainsh"
 
 # URL normalization
-disablePathToLower = false   # ensure all paths are lowercased
-removePathAccents = true     # normalize diacritics in paths
+disablePathToLower = false # ensure all paths are lowercased
+removePathAccents = true   # normalize diacritics in paths
 preserveTaxonomyNames = false
-
-[menus]
-  [[menus.main]]
-    name = 'Home'
-    pageRef = '/'
-    identifier = 'home'
-    weight = 10
-
-  [[menus.main]]
-    name = 'Archive'
-    pageRef = '/archive'
-    identifier = 'archive'
-    weight = 20
-
-  [[menus.main]]
-    name = 'Tags'
-    pageRef = '/tags'
-    identifier = 'tags'
-    weight = 30
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]
@@ -41,21 +22,21 @@ home = ["HTML", "RSS", "JSON"]
     github = "https://github.com/example"
     email = "you@example.com"
 
-[markup.goldmark.parser.attribute]
-block = true
+  [params.home]
+    intro = "I write, ride, and build with equal parts curiosity and grit, shipping small prototypes on weekends and sharing the lessons so others can leap further. I believe hopeful futures are handcrafted: one transparent write-up, one open experiment, one generous collaboration at a time."
 
-[params.home]
-intro = "I write, ride, and build with equal parts curiosity and grit, shipping small prototypes on weekends and sharing the lessons so others can leap further. I believe hopeful futures are handcrafted: one transparent write-up, one open experiment, one generous collaboration at a time."
+    [params.home.tags]
+      # Set to 0 or negative to show all tags
+      limit = 6
 
-[params.home.tags]
-# Set to 0 or negative to show all tags
-limit = 6
-
-[params.home.recent]
-limit = 6
-moreText = "View all posts"
+    [params.home.recent]
+      limit = 6
+      moreText = "View all posts"
 
 [markup]
+  [markup.goldmark.parser.attribute]
+    block = true
+
   [markup.highlight]
     # Enable line numbers and render them in a table
     lineNos = true
