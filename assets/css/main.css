@@ -485,7 +485,7 @@ html[data-theme="dark"] {
 
   .toc-dropdown {
     display: none;
-    margin: 1rem 0 1rem;
+    margin: 2.5rem 0 0;
   }
 
   @media (max-width: 1024px) {
@@ -677,7 +677,7 @@ html[data-theme="dark"] {
   /* Home page additions */
   .home-intro {
     margin: 3rem 0 2rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   /* Ensure home intro blockquote uses the same style and spacing as article blockquotes */
   .home-intro blockquote {

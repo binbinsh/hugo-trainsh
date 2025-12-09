@@ -1,6 +1,6 @@
 [project]
 name = "hugo-trainsh"
-version = "2.4"
+version = "2.5"
 description = "Utility tools for the hugo-trainsh theme (preview image generator)."
 readme = "README.md"
 requires-python = ">=3.10"
