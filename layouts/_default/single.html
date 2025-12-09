@@ -1,4 +1,24 @@
 {{ define "main" }}
+<article class="prose max-w-none content">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{{ .Title }}</h1>
+    <div class="flex flex-wrap items-center gap-4 text-sm text-[var(--color-muted)]">
+      <time datetime="{{ .Date | time.Format "2006-01-02" }}">
+        {{ .Date | time.Format "January 2, 2006" }}
+      </time>
+      {{ with .Params.tags }}
+      <div class="flex flex-wrap gap-2">
+        {{ range . }}
+        {{ $tag := . | urlize }}
+        <a href="{{ "/tags/" | relURL }}{{ $tag }}/" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+          {{ . | lower }}
+        </a>
+        {{ end }}
+      </div>
+      {{ end }}
+    </div>
+  </header>
+
   {{ $toc := .Fragments.ToHTML 2 3 false }}
   {{ $hasToc := false }}
   {{ range .Fragments.Headings }}
@@ -7,26 +27,18 @@
       {{ if or (eq .Level 2) (eq .Level 3) }}{{ $hasToc = true }}{{ end }}
     {{ end }}
   {{ end }}
+
   {{ if $hasToc }}
-  <div class="page-with-toc">
-    {{ partial "toc/sidebar.html" (dict "page" . "toc" $toc) }}
-
-    <article class="content">
-      <h1>{{ .Title }}</h1>
-      {{ partial "post/date.html" . }}
-      {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
-
-      {{ partial "toc/dropdown.html" (dict "page" . "toc" $toc) }}
-
-      {{ .Content }}
-    </article>
-  </div>
-  {{ else }}
-  <article class="content">
-    <h1>{{ .Title }}</h1>
-    {{ partial "post/date.html" . }}
-    {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
-    {{ .Content }}
-  </article>
+  <details class="mb-8 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
+    <summary class="cursor-pointer font-semibold">Table of Contents</summary>
+    <nav class="mt-4 text-sm">
+      {{ $toc }}
+    </nav>
+  </details>
   {{ end }}
-}{{ end }}
+
+  <div class="[&>p]:mb-4 [&>p]:leading-relaxed [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:mt-8 [&>h2]:mb-4 [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:mt-6 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>li]:mb-1">
+    {{ .Content }}
+  </div>
+</article>
+{{ end }}

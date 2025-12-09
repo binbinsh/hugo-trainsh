@@ -143,28 +143,29 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const { default: PhotoSwipeLightbox } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
+
+      // Primary lightbox for images with data-pswp-width attributes
       const lightbox = new PhotoSwipeLightbox({
         gallery: 'article.content',
         children: 'a[data-pswp-width]',
         wheelToZoom: true,
-        // dynamic import of core
         pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js')
       });
       lightbox.init();
 
-      // Fallback for anchors that wrap images but have no data-pswp-* attributes
-      const anchorItems = Array.from(article.querySelectorAll('a[href]:not([data-pswp-width])'))
+      // Handle all lightbox-image anchors (including those without data-pswp-width)
+      const lightboxAnchors = Array.from(article.querySelectorAll('a.lightbox-image:not([data-pswp-width])'))
         .map(a => ({ a, img: a.querySelector('img') }))
         .filter(x => x.img);
 
-      if (anchorItems.length) {
+      if (lightboxAnchors.length) {
         const { default: LB } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
         const lbLinks = new LB({
           wheelToZoom: true,
           pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js')
         });
         lbLinks.init();
-        anchorItems.forEach(({ a, img }) => {
+        lightboxAnchors.forEach(({ a, img }) => {
           a.style.cursor = 'zoom-in';
           a.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -175,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // Fallback for images not wrapped by render hooks (no data-pswp-width)
+      // Fallback for images not wrapped by any anchor
       const orphanImgs = Array.from(article.querySelectorAll('img:not(a img)'));
       if (orphanImgs.length) {
         const { default: LB } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');

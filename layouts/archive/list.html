@@ -1,38 +1,30 @@
 {{ define "main" }}
-  <header class="archive-header">
-    <h1>{{ .Title }}</h1>
-  </header>
+<header class="mb-8">
+  <h1 class="text-3xl font-bold">{{ .Title }}</h1>
+</header>
 
-  {{ $sections := default (slice "posts") site.Params.mainSections }}
-  {{ $pages := where site.RegularPages "Section" "in" $sections }}
+{{ $sections := default (slice "posts") site.Params.mainSections }}
+{{ $pages := where site.RegularPages "Section" "in" $sections }}
 
-  <section id="archive-groups">
-    {{ range ($pages.GroupByDate "2006" "desc") }}
-      <h2>{{ .Key }}</h2>
-      <ul>
-        {{ range .Pages.ByDate.Reverse }}
-          <li>
-            {{ $machine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-            {{ $human := .Date | time.Format "Jan 02, 2006" }}
-            <time class="date" datetime="{{ $machine }}">{{ $human }}</time>
-            <a href="{{ .RelPermalink }}" class="archive-title">{{ .Title }}</a>
-          </li>
-        {{ end }}
-      </ul>
-    {{ end }}
-  </section>
+<section id="archive-groups">
+  {{ range ($pages.GroupByDate "2006" "desc") }}
+  <div class="mb-8">
+    <h2 class="text-xl font-semibold mb-4 text-[var(--color-muted)]">{{ .Key }}</h2>
+    <ul class="space-y-2">
+      {{ range .Pages.ByDate.Reverse }}
+      <li class="flex gap-4 items-baseline">
+        <time class="text-sm text-[var(--color-muted)] font-mono shrink-0" datetime="{{ .Date | time.Format "2006-01-02" }}">
+          {{ .Date | time.Format "Jan 02" }}
+        </time>
+        <a href="{{ .RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors truncate">
+          {{ .Title }}
+        </a>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+  {{ end }}
+</section>
 
-  <section id="archive-results" hidden></section>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const groups = document.getElementById('archive-groups');
-      const results = document.getElementById('archive-results');
-      if (groups && results) {
-        groups.hidden = false;
-        results.hidden = true;
-      }
-    });
-  </script>
+<section id="archive-results" hidden class="space-y-4"></section>
 {{ end }}
-
-

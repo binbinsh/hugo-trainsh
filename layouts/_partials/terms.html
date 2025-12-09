@@ -1,22 +1,11 @@
-{{- /*
-For a given taxonomy, render assigned terms as small tag chips.
-
-@context {page} page        The current page
-@context {string} taxonomy  The taxonomy key (e.g. "tags")
-
-@example: {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
-*/}}
-
 {{- $page := .page }}
 {{- $taxonomy := .taxonomy }}
 {{- with $page.GetTerms $taxonomy }}
-  <div class="post-tags">
-    <ul class="tag-list">
-      {{- range .ByLinkTitle }}
-        <li>
-          <a class="tag-chip tag-sm" href="{{ .RelPermalink }}">{{ .LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
-        </li>
-      {{- end }}
-    </ul>
-  </div>
+<div class="flex flex-wrap gap-2 mt-2">
+  {{- range .ByLinkTitle }}
+  <a href="{{ .RelPermalink }}" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+    {{ .LinkTitle | lower }}
+  </a>
+  {{- end }}
+</div>
 {{- end }}

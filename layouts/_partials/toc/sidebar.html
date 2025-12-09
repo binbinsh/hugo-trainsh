@@ -1,11 +1,10 @@
-{{- /* Sidebar TOC block. Usage: {{ partial "toc/sidebar.html" (dict "page" . "toc" $toc) }} */ -}}
 {{- $page := .page -}}
 {{- $toc := cond (isset . "toc") (index . "toc") ($page.Fragments.ToHTML 2 3 false) -}}
-<aside class="toc-sidebar" aria-label="{{ i18n "toc" }}">
-  <nav class="toc-nav">
-    <h2>{{ i18n "toc" }}</h2>
-    {{ $toc }}
+<aside class="hidden lg:block fixed left-8 top-24 w-56 text-sm" aria-label="{{ i18n "toc" }}">
+  <nav>
+    <h2 class="font-semibold mb-3 text-[var(--color-muted)]">{{ i18n "toc" }}</h2>
+    <div class="space-y-2 text-[var(--color-muted)] [&_a]:hover:text-[var(--color-accent)] [&_ul]:pl-4 [&_ul]:mt-1">
+      {{ $toc }}
+    </div>
   </nav>
 </aside>
-
-

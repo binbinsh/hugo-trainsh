@@ -1,10 +1,6 @@
 {{- $page := . -}}
 {{ with $page.Date }}
-  {{- $machine := . | time.Format "2006-01-02T15:04:05-07:00" -}}
-  {{- $human := . | time.Format "January 2, 2006" -}}
-  <p class="post-meta">
-    <span class="post-date"><time datetime="{{ $machine }}">{{ $human }}</time></span>
-  </p>
+<time class="text-sm text-[var(--color-muted)]" datetime="{{ . | time.Format "2006-01-02" }}">
+  {{ . | time.Format "January 2, 2006" }}
+</time>
 {{ end }}
-
-

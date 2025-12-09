@@ -3,16 +3,18 @@
 <head>
   {{ partial "head.html" . }}
 </head>
-<body>
-  <header>
-    {{ partial "header.html" . }}
-  </header>
-  <main>
-    {{ block "main" . }}{{ end }}
-  </main>
-  <footer>
-    {{ partial "footer.html" . }}
-  </footer>
+<body class="font-sans antialiased min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 py-6">
+    <header class="mb-8">
+      {{ partial "header.html" . }}
+    </header>
+    <main class="mb-12">
+      {{ block "main" . }}{{ end }}
+    </main>
+    <footer class="border-t border-[var(--color-border)] pt-6 text-center text-sm text-[var(--color-muted)]">
+      {{ partial "footer.html" . }}
+    </footer>
+  </div>
   {{ if .Store.Get "hasMermaid" }}
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';

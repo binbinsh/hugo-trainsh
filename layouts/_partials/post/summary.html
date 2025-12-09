@@ -2,19 +2,27 @@
 {{- $showTags := .showTags | default true -}}
 {{- $showSummary := .showSummary | default false -}}
 
-<article class="post-card">
-  {{ partial "post/date.html" $page }}
-  <h3><a href="{{ $page.RelPermalink }}">{{ $page.LinkTitle }}</a></h3>
+<article class="pb-6 border-b border-[var(--color-border)] last:border-b-0">
+  <time class="text-sm text-[var(--color-muted)] font-mono" datetime="{{ $page.Date | time.Format "2006-01-02" }}">
+    {{ $page.Date | time.Format "Jan 02, 2006" }}
+  </time>
+  <h3 class="text-xl font-semibold mt-1">
+    <a href="{{ $page.RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors">{{ $page.LinkTitle }}</a>
+  </h3>
   {{ if $showTags }}
-    {{ partial "terms.html" (dict "taxonomy" "tags" "page" $page) }}
+  {{ with $page.GetTerms "tags" }}
+  <div class="flex flex-wrap gap-2 mt-2">
+    {{ range .ByLinkTitle }}
+    <a href="{{ .RelPermalink }}" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+      {{ .LinkTitle | lower }}
+    </a>
+    {{ end }}
+  </div>
+  {{ end }}
   {{ end }}
   {{ if $showSummary }}
-    {{ $firstP := (findRE "<p>.*?</p>" $page.Content 1) }}
-    {{ with index $firstP 0 }}
-      {{ . | safeHTML }}
-    {{ else }}
-      <p>{{ $page.Summary | plainify }}</p>
-    {{ end }}
+  {{ with $page.Summary }}
+  <p class="mt-2 text-[var(--color-muted)]">{{ . | plainify }}</p>
+  {{ end }}
   {{ end }}
 </article>
-

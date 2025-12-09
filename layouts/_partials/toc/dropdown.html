@@ -1,9 +1,8 @@
-{{- /* Mobile dropdown TOC block. Usage: {{ partial "toc/dropdown.html" (dict "page" . "toc" $toc) }} */ -}}
 {{- $page := .page -}}
 {{- $toc := cond (isset . "toc") (index . "toc") ($page.Fragments.ToHTML 2 3 false) -}}
-<details class="toc-dropdown">
-  <summary>{{ i18n "toc" }}</summary>
-  {{ $toc }}
+<details class="mb-8 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg lg:hidden">
+  <summary class="cursor-pointer font-semibold">{{ i18n "toc" }}</summary>
+  <nav class="mt-4 text-sm space-y-2 [&_ul]:pl-4 [&_ul]:mt-1 [&_a]:hover:text-[var(--color-accent)]">
+    {{ $toc }}
+  </nav>
 </details>
-
-

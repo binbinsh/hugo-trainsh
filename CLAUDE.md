@@ -9,3 +9,8 @@
     1. Swap Args: `sg run -p 'fn($A, $B)' -r 'fn($B, $A)'`
     2. Wrap Error: `sg run -p 'return $E' -r 'return wrap($E)'`
     3. API Update: `sg run -p 'user.id' -r 'user.get_id()'`
+
+## Styling Instruction
+- Only use Tailwind CSS v4 for styling only
+- Use Tailwind CSS v4 in Hugo: https://gohugo.io/functions/css/tailwindcss/
+

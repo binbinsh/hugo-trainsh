@@ -1,70 +1,66 @@
 {{ define "main" }}
   {{ with site.Params.home.intro }}
-    <section class="home-intro">
-      <blockquote>{{ . | markdownify }}</blockquote>
-    </section>
+  <section class="mb-12">
+    <p class="text-[var(--color-muted)]">{{ . | markdownify }}</p>
+  </section>
   {{ end }}
 
   {{ with site.Taxonomies.tags }}
-    {{ $limit := (site.Params.home.tags.limit | default 10) }}
-    {{ $showCount := (site.Params.home.tags.showCount | default true) }}
-    {{ $tags := .ByCount }}
-    {{ if and (gt $limit 0) (lt $limit (len $tags)) }}
-      {{ $tags = first $limit $tags }}
+  {{ $limit := (site.Params.home.tags.limit | default 10) }}
+  {{ $tags := .ByCount }}
+  {{ if and (gt $limit 0) (lt $limit (len $tags)) }}
+    {{ $tags = first $limit $tags }}
+  {{ end }}
+  <section class="mb-12">
+    <h2 class="text-lg font-semibold mb-4">{{ i18n "popular_tags" }}</h2>
+    <div class="flex flex-wrap gap-2">
+      {{ range $tags }}
+      <a href="{{ .Page.RelPermalink }}" class="px-3 py-1 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+        {{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}
+      </a>
+      {{ end }}
+    </div>
+    {{ with site.GetPage "/tags" }}
+    <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ i18n "more_tags" }} →</a></p>
     {{ end }}
-    <section class="home-tags">
-      <div class="home-tags__header">
-        <h2>{{ i18n "popular_tags" }}</h2>
-      </div>
-      <ul class="tag-list">
-        {{ range $tags }}
-          <li>
-            <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
-          </li>
-        {{ end }}
-        {{ with site.GetPage "/tags" }}
-          <li class="tag-list__more">
-            <a class="tag-button" href="{{ .RelPermalink }}">{{ i18n "more_tags" }}</a>
-          </li>
-        {{ end }}
-      </ul>
-    </section>
+  </section>
   {{ end }}
 
   {{ $recentN := (site.Params.home.recent.limit | default 5) }}
   {{ $posts := where site.RegularPages "Section" "posts" }}
   {{ with $posts }}
-    <section class="home-recent">
-      <h2>{{ i18n "recent_posts" }}</h2>
-      {{/* compact list, no card spacing */}}
-      <ul class="home-recent-list">
-        {{ range first $recentN (.ByDate.Reverse) }}
-          <li>
-            {{ $machine := .Date | time.Format "2006-01-02T15:04:05-07:00" }}
-            {{ $human := .Date | time.Format "Jan 02, 2006" }}
-            <time class="date" datetime="{{ $machine }}">{{ $human }}</time>
-            <a class="archive-title" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-          </li>
-        {{ end }}
-      </ul>
-      {{ $moreText := i18n "more_posts" }}
-      {{ if site.Params.home.recent.moreURL }}
-        <p class="more"><a href="{{ site.Params.home.recent.moreURL }}">{{ $moreText }}</a></p>
-      {{ else }}
-        {{ with site.GetPage "/archive" }}
-          <p class="more"><a href="{{ .RelPermalink }}">{{ $moreText }}</a></p>
-        {{ else }}
-          {{ with site.GetPage "/posts" }}
-            <p class="more"><a href="{{ .RelPermalink }}">{{ $moreText }}</a></p>
-          {{ end }}
-        {{ end }}
+  <section class="mb-12">
+    <h2 class="text-lg font-semibold mb-4">{{ i18n "recent_posts" }}</h2>
+    <ul class="space-y-3">
+      {{ range first $recentN (.ByDate.Reverse) }}
+      <li class="flex gap-4 items-baseline">
+        <time class="text-sm text-[var(--color-muted)] font-mono shrink-0" datetime="{{ .Date | time.Format "2006-01-02" }}">
+          {{ .Date | time.Format "Jan 02, 2006" }}
+        </time>
+        <a href="{{ .RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors">
+          {{ .LinkTitle }}
+        </a>
+      </li>
       {{ end }}
-    </section>
+    </ul>
+    {{ $moreText := i18n "more_posts" }}
+    {{ if site.Params.home.recent.moreURL }}
+    <p class="mt-4"><a href="{{ site.Params.home.recent.moreURL }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
+    {{ else }}
+    {{ with site.GetPage "/archive" }}
+    <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
+    {{ else }}
+    {{ with site.GetPage "/posts" }}
+    <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
+    {{ end }}
+    {{ end }}
+    {{ end }}
+  </section>
   {{ end }}
 
-  <section class="home-search">
-    <h2>{{ i18n "search_posts" }}</h2>
-    <input id="archive-search" type="search" placeholder="{{ i18n "type_to_search" }}" autocomplete="off">
-    <section id="archive-results" hidden></section>
+  <section>
+    <h2 class="text-lg font-semibold mb-4">{{ i18n "search_posts" }}</h2>
+    <input id="archive-search" type="search" placeholder="{{ i18n "type_to_search" }}" autocomplete="off" class="w-full px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] transition-colors">
+    <section id="archive-results" hidden class="mt-4"></section>
   </section>
 {{ end }}

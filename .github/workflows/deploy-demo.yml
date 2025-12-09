@@ -13,7 +13,7 @@ on:
       hugoVersion:
         description: "Hugo Version"
         required: false
-        default: "0.146.0"
+        default: "0.148.0"
 
 concurrency:
   group: "pages"
@@ -31,7 +31,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.146.0' }}
+      HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.148.0' }}
     steps:
       - name: Install Hugo CLI
         run: |
@@ -41,6 +41,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - name: Install npm dependencies
+        run: npm ci
       - name: Build with Hugo (exampleSite)
         env:
           HUGO_ENVIRONMENT: production

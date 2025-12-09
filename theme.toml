@@ -9,7 +9,7 @@ homepage = "https://github.com/binbinsh/hugo-trainsh"
 # If you have a running demo of the theme.
 demosite = "https://hugo-trainsh.pages.dev"
 
-tags = ["blog", "minimal"]
+tags = ["blog", "minimal", "tailwind", "mermaid", "katex", "photoswipe"]
 features = ["fast", "responsive"]
 
 [author]

@@ -1,14 +1,18 @@
 {{ define "main" }}
-  <section class="taxonomy-terms">
-    <h1>{{ .Title }}</h1>
-    {{ .Content }}
+<section>
+  <h1 class="text-3xl font-bold mb-6">{{ .Title }}</h1>
 
-    <ul class="tag-list">
-      {{ range .Data.Terms.Alphabetical }}
-        <li>
-          <a class="tag-chip tag-sm" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}</a>
-        </li>
-      {{ end }}
-    </ul>
-  </section>
+  {{ with .Content }}
+  <div class="prose max-w-none mb-8">{{ . }}</div>
+  {{ end }}
+
+  <div class="flex flex-wrap gap-3">
+    {{ range .Data.Terms.Alphabetical }}
+    <a href="{{ .Page.RelPermalink }}" class="px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+      {{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}
+      <span class="text-[var(--color-muted)] ml-1">({{ .Count }})</span>
+    </a>
+    {{ end }}
+  </div>
+</section>
 {{ end }}

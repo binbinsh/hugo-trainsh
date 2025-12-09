@@ -1,10 +1,10 @@
 {{- $img := .Page.Resources.GetMatch (printf "**%s" .Destination) -}}
 {{- if $img -}}
-<a href="{{ $img.RelPermalink }}" data-pswp-width="{{ $img.Width }}" data-pswp-height="{{ $img.Height }}" target="_blank">
+<a href="{{ $img.RelPermalink }}" data-pswp-width="{{ $img.Width }}" data-pswp-height="{{ $img.Height }}" class="lightbox-image">
   <img src="{{ $img.RelPermalink }}" alt="{{ .Text }}"{{ with .Title }} title="{{ . }}"{{ end }} loading="lazy">
 </a>
 {{- else -}}
-<a href="{{ .Destination }}" target="_blank">
+<a href="{{ .Destination }}" class="lightbox-image">
   <img src="{{ .Destination }}" alt="{{ .Text }}"{{ with .Title }} title="{{ . }}"{{ end }} loading="lazy">
 </a>
 {{- end -}}

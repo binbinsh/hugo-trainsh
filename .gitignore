@@ -1,5 +1,6 @@
 .hugo_build.lock
 uv.lock
 .DS_Store
-exampleSite/public/
-exampleSite/resources/
+public/
+resources/
+node_modules/

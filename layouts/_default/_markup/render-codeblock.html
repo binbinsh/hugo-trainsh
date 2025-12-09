@@ -1,7 +1,5 @@
-{{- /* Mark page as containing code so we can conditionally preload mono font */ -}}
 {{- .Page.Store.Set "hasCode" true -}}
 
-{{- /* Determine language label; default to plain text. */ -}}
 {{- $file := or .Attributes.file "" -}}
 {{- $ext := strings.TrimPrefix "." (path.Ext $file) -}}
 {{- $lang := or .Type $ext "text" -}}
@@ -10,17 +8,16 @@
 {{- end -}}
 {{- $label := cond (eq $lang "text") "plain text" $lang -}}
 
-{{- /* Disable table-based line numbers; force CSS-class output for Chroma */ -}}
 {{- $opts := dict "linenos" false "lineNumbersInTable" false "anchorLineNos" false "noClasses" false "guessSyntax" true -}}
 
-<div class="codeblock" data-lang="{{ $lang }}">
-  <div class="codeblock-header">
-    <span class="code-lang">{{ $label }}</span>
-    <button class="copy-btn" type="button" data-copy-code aria-label="Copy code">Copy</button>
+<div class="my-4 rounded-lg overflow-hidden border border-[var(--color-border)]">
+  <div class="flex items-center justify-between px-4 py-2 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
+    <span class="text-sm text-[var(--color-muted)]">{{ $label }}</span>
+    <button type="button" data-copy-code aria-label="Copy code" class="text-sm px-2 py-1 rounded hover:bg-[var(--color-code-bg)] transition-colors cursor-pointer">
+      Copy
+    </button>
   </div>
-  <div class="codeblock-content with-line-numbers">
-    {{- /* Highlight without line numbers */ -}}
+  <div class="overflow-x-auto">
     {{- transform.Highlight (strings.TrimSpace .Inner) $lang $opts -}}
   </div>
 </div>
-

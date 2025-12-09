@@ -2,7 +2,6 @@ baseURL = "https://example.org/"
 languageCode = "en-US"
 title = "My New Hugo Site"
 
-themesDir = "../.."
 theme = "hugo-trainsh"
 
 # URL normalization
@@ -44,3 +43,35 @@ home = ["HTML", "RSS", "JSON"]
     codeFences = true
     lineNoStart = 1
     noClasses = true
+
+[build]
+  [build.buildStats]
+    enable = true
+
+[caches]
+  [caches.assets]
+    dir = ':resourceDir/_gen'
+    maxAge = -1
+  [caches.getcsv]
+    dir = ':cacheDir/:project'
+    maxAge = -1
+  [caches.getjson]
+    dir = ':cacheDir/:project'
+    maxAge = -1
+  [caches.getresource]
+    dir = ':cacheDir/:project'
+    maxAge = -1
+  [caches.images]
+    dir = ':resourceDir/_gen'
+    maxAge = -1
+  [caches.modules]
+    dir = ':cacheDir/modules'
+    maxAge = -1
+
+[[module.mounts]]
+  source = 'assets'
+  target = 'assets'
+
+[[module.mounts]]
+  source = 'hugo_stats.json'
+  target = 'assets/watching/hugo_stats.json'
