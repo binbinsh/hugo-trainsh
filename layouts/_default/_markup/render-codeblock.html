@@ -10,14 +10,17 @@
 
 {{- $opts := dict "linenos" false "lineNumbersInTable" false "anchorLineNos" false "noClasses" false "guessSyntax" true -}}
 
-<div class="my-4 rounded-lg overflow-hidden border border-[var(--color-border)]">
-  <div class="flex items-center justify-between px-4 py-2 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
-    <span class="text-sm text-[var(--color-muted)]">{{ $label }}</span>
-    <button type="button" data-copy-code aria-label="Copy code" class="text-sm px-2 py-1 rounded hover:bg-[var(--color-code-bg)] transition-colors cursor-pointer">
-      Copy
-    </button>
+<div class="codeblock my-4 rounded-lg overflow-hidden border border-[var(--color-border)]">
+  <div class="codeblock-header flex items-center justify-between px-3 py-1 bg-[var(--color-code-bg)] border-b border-[var(--color-border)]">
+    <span class="text-xs text-[var(--color-muted)] font-mono">{{ $label }}</span>
+    <div class="flex items-center gap-1">
+      <button type="button" data-wrap-toggle aria-label="Toggle word wrap" title="Toggle word wrap" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
+        Wrap
+      </button>
+      <button type="button" data-copy-code aria-label="Copy code" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
+        Copy
+      </button>
+    </div>
   </div>
-  <div class="overflow-x-auto">
-    {{- transform.Highlight (strings.TrimSpace .Inner) $lang $opts -}}
-  </div>
+  {{- transform.Highlight (strings.TrimSpace .Inner) $lang $opts -}}
 </div>

@@ -92,12 +92,73 @@ body {
 .highlight {
   background: var(--color-code-bg);
   border-radius: 0.5rem;
-  overflow-x: auto;
 }
 
 .highlight pre {
   margin: 0;
-  padding: 1rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+/* Always show scrollbar on code blocks (macOS hides by default) */
+/* Setting width/height forces overlay scrollbar to become classic scrollbar */
+.highlight pre::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 8px;
+  height: 8px;
+}
+
+.highlight pre::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.highlight pre::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="dark"] .highlight pre::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+html[data-theme="dark"] .highlight pre::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Firefox fallback */
+@supports not selector(::-webkit-scrollbar) {
+  .highlight pre {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+  }
+  html[data-theme="dark"] .highlight pre {
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+}
+
+/* Code block word wrap toggle */
+.codeblock.wrapped .highlight {
+  overflow-x: visible;
+}
+
+.codeblock.wrapped .highlight pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Figure and caption styles */
+figure {
+  margin: 0;
+}
+
+figure figcaption {
+  text-align: center;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin-top: 0.5rem;
 }
 
 /* Theme toggle icons */

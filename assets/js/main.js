@@ -205,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!btn) return;
     const wrapper = btn.closest('.codeblock');
     if (!wrapper) return;
-    // Find the code element
     const pre = wrapper.querySelector('.highlight pre');
     if (!pre) return;
     try {
@@ -217,6 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       // ignore
     }
+  });
+
+  // Word wrap toggle for code blocks
+  document.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('[data-wrap-toggle]');
+    if (!btn) return;
+    const wrapper = btn.closest('.codeblock');
+    if (!wrapper) return;
+    const isWrapped = wrapper.classList.toggle('wrapped');
+    btn.textContent = isWrapped ? 'Nowrap' : 'Wrap';
   });
   
   // Theme toggle
