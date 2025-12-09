@@ -16,7 +16,8 @@
     <h2 class="text-xl font-semibold mt-1">
       <a href="{{ .RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors">{{ .Title }}</a>
     </h2>
-    {{ with .Summary }}
+    {{- $summary := .Summary | plainify | truncate 150 -}}
+    {{ with $summary }}
     <p class="mt-2 text-[var(--color-muted)]">{{ . }}</p>
     {{ end }}
   </li>

@@ -17,17 +17,24 @@ Then set the theme in your site config:
 # hugo.toml
 theme = 'hugo-trainsh'
 
-# Use Chroma CSS classes so theme styles apply
-[markup]
-  [markup.highlight]
-    noClasses = false
-    lineNos = false
-    lineNumbersInTable = false
-    anchorLineNos = false
-    codeFences = true
-    guessSyntax = true
-    style = "tokyonight-day"
-    styleDark = "tokyonight-night"
+# for Tailwind CSS
+[build]
+  [build.buildStats]
+    enable = true
+  [[build.cachebusters]]
+    source = 'assets/notwatching/hugo_stats\.json'
+    target = 'css'
+  [[build.cachebusters]]
+    source = '(postcss|tailwind)\.config\.js'
+    target = 'css'
+[module]
+  [[module.mounts]]
+    source = 'assets'
+    target = 'assets'
+  [[module.mounts]]
+    disableWatch = true
+    source = 'hugo_stats.json'
+    target = 'assets/notwatching/hugo_stats.json'
 ```
 
 Or try the included example site:
