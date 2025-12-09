@@ -75,8 +75,54 @@ body {
   blockquote {
     border-left: 4px solid var(--color-accent);
     padding-left: 1rem;
+    margin-left: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     color: var(--color-muted);
     font-style: italic;
+  }
+
+  blockquote p {
+    margin: 0.5rem 0;
+  }
+
+  blockquote p:first-child {
+    margin-top: 0;
+  }
+
+  blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* List styles */
+  ul, ol {
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ul ul {
+    list-style-type: circle;
+    margin: 0.25rem 0;
+  }
+
+  ul ul ul {
+    list-style-type: square;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  li {
+    margin: 0.25rem 0;
+  }
+
+  li > p {
+    margin: 0.5rem 0;
   }
 
   hr {
@@ -85,6 +131,12 @@ body {
 
   img {
     border-radius: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  video {
+    border-radius: 0.5rem;
+    margin: 1rem 0;
   }
 }
 
@@ -150,7 +202,7 @@ html[data-theme="dark"] .highlight pre::-webkit-scrollbar-track {
 
 /* Figure and caption styles */
 figure {
-  margin: 0;
+  margin: 1rem 0;
 }
 
 figure figcaption {
