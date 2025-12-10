@@ -1,17 +1,19 @@
 # hugo-trainsh
 
-A Hugo theme focused on clean typography, Tailwind CSS v4 utilities, and optional Cloudflare-native upvotes.
+A Hugo theme focused on clean typography, Tailwind CSS v4 utilities, and optional Cloudflare KV-based upvotes.
 
 ## Quick start
 
-Use Hugo Modules to add this theme to your site. From your site root:
+Install the theme as a Git submodule into `themes/`.
 
 ```bash
-hugo mod init example.com/my-site
-hugo mod get github.com/binbinsh/hugo-trainsh
+git submodule add https://github.com/binbinsh/hugo-trainsh themes/hugo-trainsh
+git submodule update --init --recursive
+npm install --save-dev tailwindcss @tailwindcss/cli
+hugo serve --disableFastRender --ignoreCache
 ```
 
-Then set the theme in your site config:
+Then set the theme and enable Tailwind build stats in your site config ([reference](https://gohugo.io/functions/css/tailwindcss/)):
 
 ```toml
 # hugo.toml
@@ -27,33 +29,24 @@ theme = 'hugo-trainsh'
     source = '(postcss|tailwind)\.config\.js'
     target = 'css'
 
-[module]
-  [[module.mounts]]
-    source = 'assets'
-    target = 'assets'
-  [[module.mounts]]
-    disableWatch = true
-    source = 'hugo_stats.json'
-    target = 'assets/notwatching/hugo_stats.json'
-```
-
-To preview the theme locally:
-
-```bash
-npm ci            # installs Tailwind CLI used by Hugo Pipes
-cd exampleSite
-hugo server
+[[module.mounts]]
+  source = 'assets'
+  target = 'assets'
+[[module.mounts]]
+  disableWatch = true
+  source = 'hugo_stats.json'
+  target = 'assets/notwatching/hugo_stats.json'
 ```
 
 ## Features
 
 - **Unified layout**: Consistent spacing, cards, and high-contrast light/dark themes across home, section, term, archive, and single pages.
 - **Tailwind CSS v4**: Uses Hugo’s Tailwind integration with CSS custom properties for theming.
+- **Upvotes**: upvote widget backed by Cloudflare Workers + KV.
 - **Table of contents**: Auto-generated from H2/H3.
 - **Mermaid & KaTeX**: Diagram + math support with theme-aware rendering.
 - **Image lightbox**: PhotoSwipe gallery for any linked images.
 - **Archive + search**: Grouped archive pages and Fuse.js-powered home search (`/index.json`).
-- **Upvotes**: upvote widget backed by Cloudflare Workers + KV .
 - **Optimized assets**: Hugo Pipes minification, fingerprinting, and scroll-friendly code blocks.
 
 ## Upvote widget
