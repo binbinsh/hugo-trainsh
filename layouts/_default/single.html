@@ -6,16 +6,6 @@
       <time datetime="{{ .Date | time.Format "2006-01-02" }}">
         {{ .Date | time.Format "January 2, 2006" }}
       </time>
-      {{ with .Params.tags }}
-      <div class="flex flex-wrap gap-2">
-        {{ range . }}
-        {{ $tag := . | urlize }}
-        <a href="{{ "/tags/" | relURL }}{{ $tag }}/" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
-          {{ . | lower }}
-        </a>
-        {{ end }}
-      </div>
-      {{ end }}
     </div>
   </header>
 
@@ -40,5 +30,8 @@
   <div class="[&>p]:mb-4 [&>p]:leading-relaxed [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:mt-8 [&>h2]:mb-4 [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:mt-6 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>li]:mb-1">
     {{ .Content }}
   </div>
+
+  {{ partial "post/footer-meta.html" . }}
 </article>
 {{ end }}
+}

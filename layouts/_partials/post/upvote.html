@@ -1,0 +1,27 @@
+{{- $params := site.Params.upvote -}}
+{{- if not ($params.enabled | default false) -}}
+{{-   return -}}
+{{- end -}}
+{{- $slug := strings.TrimSuffix "/" .RelPermalink -}}
+{{- if not $slug -}}
+{{-   return -}}
+{{- end -}}
+{{- $endpoint := or $params.endpoint "/api/upvote" -}}
+{{- $info := or $params.infoEndpoint "/api/upvote-info" -}}
+{{- $title := .Title | default "" -}}
+{{- $idSafe := strings.Replace (strings.TrimPrefix "/" $slug) "/" "-" -1 -}}
+{{- $formId := printf "upvote-form-%s" $idSafe -}}
+<div class="upvote-widget inline-flex items-center gap-2" data-upvote data-slug="{{ $slug }}" data-endpoint="{{ $endpoint }}" data-info-endpoint="{{ $info }}" data-hint="Click to upvote">
+  <form id="{{ $formId }}" class="inline-flex" action="{{ $endpoint }}" method="post">
+    <input type="hidden" name="slug" value="{{ $slug }}">
+    <input type="hidden" name="title" value="{{ $title }}">
+    <button class="upvote-button inline-flex flex-col items-center gap-1 px-3 py-1 rounded-full transition-colors" type="submit" title="Toast this post">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="17 11 12 6 7 11"></polyline>
+        <polyline points="17 18 12 13 7 18"></polyline>
+      </svg>
+      <span class="upvote-count text-xs font-semibold" aria-live="polite" aria-atomic="true">--</span>
+      <span class="sr-only">Upvote count</span>
+    </button>
+  </form>
+</div>

@@ -1,8 +1,8 @@
 # hugo-trainsh
 
-A minimal Hugo theme.
+A Hugo theme focused on clean typography, Tailwind CSS v4 utilities, and optional Cloudflare-native upvotes.
 
-### Quick start
+## Quick start
 
 Use Hugo Modules to add this theme to your site. From your site root:
 
@@ -17,7 +17,6 @@ Then set the theme in your site config:
 # hugo.toml
 theme = 'hugo-trainsh'
 
-# for Tailwind CSS
 [build]
   [build.buildStats]
     enable = true
@@ -27,6 +26,7 @@ theme = 'hugo-trainsh'
   [[build.cachebusters]]
     source = '(postcss|tailwind)\.config\.js'
     target = 'css'
+
 [module]
   [[module.mounts]]
     source = 'assets'
@@ -37,27 +37,43 @@ theme = 'hugo-trainsh'
     target = 'assets/notwatching/hugo_stats.json'
 ```
 
-Or try the included example site:
+To preview the theme locally:
 
 ```bash
+npm ci            # installs Tailwind CLI used by Hugo Pipes
 cd exampleSite
 hugo server
 ```
 
-### Features
+## Features
 
-- **Unified layout**: Consistent typography, spacing, cards, and high-contrast light/dark themes across home, term, archive, single, and page.
-- **Table of contents**: Auto-generated from H2/H3 with a sticky sidebar on desktop, dropdown on mobile, and consistent styling/truncation for long headings.
-- **Mermaid & KaTeX**: Diagram and math support out of the box.
-- **Image lightbox**: PhotoSwipe for images inside articles.
-- **Archive**: Grouped listings with post metadata.
-- **Search**: Home-page Fuse.js fuzzy search powered by `/index.json`.
-- **System fonts**: System stacks for Latin/CJK plus JetBrains Mono for code blocks.
-- **Optimized assets**: Hugo Pipes minify + fingerprint in production.
+- **Unified layout**: Consistent spacing, cards, and high-contrast light/dark themes across home, section, term, archive, and single pages.
+- **Tailwind CSS v4**: Uses Hugo’s Tailwind integration with CSS custom properties for theming.
+- **Table of contents**: Auto-generated from H2/H3.
+- **Mermaid & KaTeX**: Diagram + math support with theme-aware rendering.
+- **Image lightbox**: PhotoSwipe gallery for any linked images.
+- **Archive + search**: Grouped archive pages and Fuse.js-powered home search (`/index.json`).
+- **Upvotes**: upvote widget backed by Cloudflare Workers + KV .
+- **Optimized assets**: Hugo Pipes minification, fingerprinting, and scroll-friendly code blocks.
 
+## Upvote widget
 
-### Author & Issues
+- Controlled via `params.upvote.enabled` or setting `UPVOTE_WIDGET=true` in GitHub Action.
+- Backend lives in `cloudflare/` (Python Worker + KV). The GitHub Action auto-creates the `hugo-trainsh-UPVOTES` namespace and deploys `/api/upvote*` endpoints.
+- Generate a stable `UPVOTE_COOKIE_SECRET` for user cookie (generate once with `openssl rand -hex 64` and set as the GitHub Actions secret).
 
-- **Demo**: https://hugo-trainsh.pages.dev
+```toml
+# Enable upvote widget
+[params]
+  [params.upvote]
+    enabled = true
+    endpoint = "/api/upvote"
+    infoEndpoint = "/api/upvote-info"
+    cookieDomain = ""
+```
+
+## Author & Issues
+
+- **Demo**: https://hugo-trainsh.binbinsh.workers.dev
 - **Author**: [Binbin Shen](https://github.com/binbinsh)
 - **Issues**: https://github.com/binbinsh/hugo-trainsh/issues

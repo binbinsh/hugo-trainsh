@@ -1,0 +1,9 @@
+[project]
+name = "hugo-trainsh-upvote-worker"
+version = "0.1.0"
+description = "Cloudflare Worker backend for hugo-trainsh upvote API."
+requires-python = ">=3.11,<3.12"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"

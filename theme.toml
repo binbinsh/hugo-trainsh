@@ -7,9 +7,9 @@ description = "A simple Hugo theme."
 homepage = "https://github.com/binbinsh/hugo-trainsh"
 
 # If you have a running demo of the theme.
-demosite = "https://hugo-trainsh.pages.dev"
+demosite = "https://hugo-trainsh.binbinsh.workers.dev"
 
-tags = ["blog", "minimal", "tailwind", "mermaid", "katex", "photoswipe"]
+tags = ["blog", "minimal", "tailwind", "mermaid", "katex", "photoswipe", "upvote"]
 features = ["fast", "responsive"]
 
 [author]
@@ -21,5 +21,4 @@ homepage = "https://github.com/binbinsh"
 author = ""
 homepage = ""
 repo = ""
-
 

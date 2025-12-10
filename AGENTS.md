@@ -1,7 +1,7 @@
 # hugo-trainsh
 
 ## General Instructions
-- Always `use context7` for the most recent docs and best practices.
+- Always query context7 for the most recent docs and best practices.
 - All comments and documentations in English.
 - Include only brief end-user instructions in the root README.md file.
 - Place concise README.md alongside related source code (include TOC if detailed).

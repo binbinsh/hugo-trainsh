@@ -32,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.148.0' }}
+      UPVOTE_WIDGET: true
+      UPVOTE_COOKIE_SECRET: ${{ secrets.UPVOTE_COOKIE_SECRET }}
     steps:
       - name: Install Hugo CLI
         run: |
@@ -46,26 +48,76 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
       - name: Install npm dependencies
         run: npm ci
       - name: Build with Hugo (exampleSite)
         env:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
+          UPVOTE_WIDGET: ${{ env.UPVOTE_WIDGET }}
         run: |
-          hugo -s exampleSite --gc --minify --baseURL https://hugo-trainsh.pages.dev
-      - name: Deploy to Cloudflare Pages
-        id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: '3'
-          command: pages deploy ./exampleSite/public --project-name=hugo-trainsh --branch=main
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-      - name: Print deployment URLs
+          hugo -s exampleSite --gc --minify --baseURL https://hugo-trainsh.binbinsh.workers.dev
+      - name: Check upvote cookie secret
         run: |
-          echo "deployment-url: ${{ steps.deploy.outputs.deployment-url }}"
-          echo "pages-deployment-alias-url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}"
+          if [ -z "${UPVOTE_COOKIE_SECRET}" ]; then
+            echo "UPVOTE_COOKIE_SECRET is required." >&2
+            exit 1
+          fi
+      - name: Ensure KV namespace exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
 
+          existing=$(curl -sS "${auth[@]}" "$api?per_page=1000" | jq -r '.result[] | select(.title == "hugo-trainsh-UPVOTES") | .id' | head -n1 || true)
 
+          if [ -z "$existing" ]; then
+            create_resp=$(curl -sS -X POST "${auth[@]}" "$api" --data '{"title":"hugo-trainsh-UPVOTES"}')
+            success=$(echo "$create_resp" | jq -r '.success // false')
+            if [ "$success" = "true" ]; then
+              existing=$(echo "$create_resp" | jq -r '.result.id')
+            else
+              # If the API says it already exists, fall back to listing again.
+              existing=$(curl -sS "${auth[@]}" "$api?per_page=1000" | jq -r '.result[] | select(.title == "hugo-trainsh-UPVOTES") | .id' | head -n1 || true)
+            fi
+          fi
+
+          if [ -z "$existing" ]; then
+            echo "Failed to resolve KV namespace id for hugo-trainsh-UPVOTES" >&2
+            exit 1
+          fi
+
+          echo "UPVOTE_KV_NAMESPACE=$existing" >> "$GITHUB_ENV"
+      - name: Prepare Wrangler config
+        if: env.UPVOTE_KV_NAMESPACE != ''
+        env:
+          UPVOTE_KV_NAMESPACE: ${{ env.UPVOTE_KV_NAMESPACE }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: |
+          envsubst < cloudflare/wrangler.toml > cloudflare/wrangler.generated.toml
+      - name: Install workers-py (pywrangler)
+        if: env.UPVOTE_KV_NAMESPACE != ''
+        run: |
+          python -m pip install --no-cache-dir "workers-py==1.6.1"
+      - name: Deploy upvote worker
+        if: env.UPVOTE_KV_NAMESPACE != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          UPVOTE_COOKIE_SECRET: ${{ env.UPVOTE_COOKIE_SECRET }}
+        working-directory: cloudflare
+        run: |
+          set -euo pipefail
+          printf "%s" "$UPVOTE_COOKIE_SECRET" | pywrangler secret put UPVOTE_COOKIE_SECRET --config wrangler.generated.toml >/dev/null 2>&1 || true
+          pywrangler deploy --config wrangler.generated.toml

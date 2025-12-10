@@ -15,6 +15,12 @@ home = ["HTML", "RSS", "JSON"]
 [params]
   mainSections = ["posts"]
 
+  [params.upvote]
+    enabled = true
+    endpoint = "/api/upvote"
+    infoEndpoint = "/api/upvote-info"
+    cookieDomain = ""
+
   [params.social]
     linkedin = "https://www.linkedin.com/in/example"
     x = "https://x.com/example"
