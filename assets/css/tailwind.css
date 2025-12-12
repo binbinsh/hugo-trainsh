@@ -151,12 +151,12 @@
   html[data-theme="dark"] .chroma .mi { @apply text-[#22d3ee]; }
 
   .mermaid {
-    @apply bg-[color:var(--color-surface)] rounded-lg p-4 overflow-x-auto flex justify-center;
+    @apply bg-[color:var(--color-surface)] rounded-lg p-4 overflow-x-auto flex justify-center my-4;
   }
 
   .mermaid svg { @apply max-w-full h-auto; }
 
-  .table-wrapper { @apply w-full overflow-x-auto my-6; }
+  .table-wrapper { @apply w-full overflow-x-auto my-4; }
   .table-wrapper table { @apply w-full border-collapse border border-[color:var(--color-border)]; }
   .table-wrapper th,
   .table-wrapper td { @apply border border-[color:var(--color-border)] px-3 py-2; }
