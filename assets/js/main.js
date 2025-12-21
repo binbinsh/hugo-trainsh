@@ -100,6 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput && resultsEl) {
     let fuseInstance = null;
     let indexData = null;
+    const indexUrl = searchInput.getAttribute('data-index-url') || '/index.json';
+    const fuseSrc = 'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0';
 
     const escapeHtml = (value) => String(value)
       .replace(/&/g, '&amp;')
@@ -129,22 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return out;
       };
 
-      const raw = typeof item.raw === 'string' ? item.raw.replace(/\r\n/g, '\n') : '';
       const content = typeof item.content === 'string' ? item.content.replace(/\r\n/g, '\n') : '';
       const summary = typeof item.summary === 'string' ? item.summary.replace(/\r\n/g, '\n') : '';
-
-      if (raw && queryTerms.length) {
-        raw.split('\n').forEach((line) => {
-          const cleaned = normalizeSnippetLine(line);
-          if (!cleaned) return;
-          const lower = cleaned.toLowerCase();
-          const matchesPhrase = safeQuery.length ? lower.includes(safeQuery) : false;
-          const matchesTerms = queryTerms.length ? queryTerms.every((term) => lower.includes(term)) : false;
-          if (matchesPhrase || matchesTerms) {
-            lines.add(cleaned);
-          }
-        });
-      }
 
       const matchArr = Array.isArray(matches) ? matches : [];
       const contentMatches = matchArr.filter((m) => m && m.key === 'content' && Array.isArray(m.indices));
@@ -277,11 +265,40 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.setAttribute('aria-label', 'Search posts');
     searchInput.setAttribute('role', 'search');
 
+    const loadScriptOnce = (src) => {
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing) {
+        if (window.Fuse) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true });
+        });
+      }
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.defer = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error(`Failed to load ${src}`));
+        document.head.appendChild(s);
+      });
+    };
+
+    const loadFuseCtor = async () => {
+      if (window.Fuse) return window.Fuse;
+      try {
+        await loadScriptOnce(fuseSrc);
+      } catch (e) {
+        return null;
+      }
+      return window.Fuse || null;
+    };
+
     const initFuse = async () => {
       if (fuseInstance) return fuseInstance;
       if (!indexData) {
         try {
-          const res = await fetch('/index.json', { cache: 'no-store' });
+          const res = await fetch(indexUrl);
           if (!res.ok) return null;
           indexData = await res.json();
         } catch (e) {
@@ -290,6 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       if (!Array.isArray(indexData)) return null;
+      const Fuse = await loadFuseCtor();
+      if (!Fuse) return null;
       const options = {
         includeScore: true,
         includeMatches: true,
@@ -305,11 +324,13 @@ document.addEventListener('DOMContentLoaded', () => {
           { name: 'content', weight: 0.25 }
         ]
       };
-      if (window.Fuse) {
-        fuseInstance = new window.Fuse(indexData, options);
-      }
+      fuseInstance = new Fuse(indexData, options);
       return fuseInstance;
     };
+
+    searchInput.addEventListener('focus', () => {
+      void initFuse();
+    }, { once: true });
 
     searchInput.addEventListener('input', async (ev) => {
       const q = (ev.target.value || '').trim();
@@ -330,85 +351,100 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // PhotoSwipe lightbox for all images in article content
-  (async () => {
+  // PhotoSwipe lightbox for images in article content (lazy-loaded)
+  (() => {
     const article = document.querySelector('article.content');
     if (!article) return;
+    if (!article.querySelector('a[data-pswp-width], a.lightbox-image, img')) return;
 
-    try {
-      // Helper to reliably get intrinsic dimensions; falls back to probing the src
-      const getImageDimensions = (src, imgEl) => new Promise((resolve) => {
-        const w = (imgEl && imgEl.naturalWidth) || 0;
-        const h = (imgEl && imgEl.naturalHeight) || 0;
-        if (w > 0 && h > 0) {
-          resolve({ width: w, height: h });
-          return;
+    const photoswipeCss = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
+    const photoswipeLightboxSrc = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
+    const photoswipeModuleSrc = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js';
+
+    const ensureStylesheet = (href) => {
+      if (document.querySelector(`link[rel="stylesheet"][href="${href}"]`)) return;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      document.head.appendChild(link);
+    };
+
+    // Helper to reliably get intrinsic dimensions; falls back to probing the src
+    const getImageDimensions = (src, imgEl) => new Promise((resolve) => {
+      const w = (imgEl && imgEl.naturalWidth) || 0;
+      const h = (imgEl && imgEl.naturalHeight) || 0;
+      if (w > 0 && h > 0) {
+        resolve({ width: w, height: h });
+        return;
+      }
+      const probe = new Image();
+      probe.onload = () => {
+        resolve({
+          width: probe.naturalWidth || 1600,
+          height: probe.naturalHeight || 900
+        });
+      };
+      probe.onerror = () => resolve({ width: 1600, height: 900 });
+      probe.src = src;
+    });
+
+    let initPromise = null;
+    const init = async () => {
+      if (initPromise) return initPromise;
+      initPromise = (async () => {
+        try {
+          ensureStylesheet(photoswipeCss);
+          const { default: PhotoSwipeLightbox } = await import(photoswipeLightboxSrc);
+          const pswpModule = () => import(photoswipeModuleSrc);
+
+          // Primary lightbox for images with data-pswp-width attributes
+          const lightbox = new PhotoSwipeLightbox({
+            gallery: 'article.content',
+            children: 'a[data-pswp-width]',
+            wheelToZoom: true,
+            pswpModule
+          });
+          lightbox.init();
+
+          const manualLb = new PhotoSwipeLightbox({ wheelToZoom: true, pswpModule });
+          manualLb.init();
+
+          // Handle lightbox-image anchors missing intrinsic dimensions
+          const lightboxAnchors = Array.from(article.querySelectorAll('a.lightbox-image:not([data-pswp-width])'))
+            .map(a => ({ a, img: a.querySelector('img') }))
+            .filter(x => x.img);
+
+          lightboxAnchors.forEach(({ a, img }) => {
+            a.style.cursor = 'zoom-in';
+            a.addEventListener('click', async (e) => {
+              e.preventDefault();
+              const src = a.getAttribute('href');
+              const dims = await getImageDimensions(src, img);
+              manualLb.loadAndOpen(0, [{ src, width: dims.width, height: dims.height, alt: img.alt || '' }]);
+            });
+          });
+
+          // Fallback for images not wrapped by any anchor
+          const orphanImgs = Array.from(article.querySelectorAll('img:not(a img)'));
+          orphanImgs.forEach((img) => {
+            img.style.cursor = 'zoom-in';
+            img.addEventListener('click', async () => {
+              const src = img.currentSrc || img.src;
+              const dims = await getImageDimensions(src, img);
+              manualLb.loadAndOpen(0, [{ src, width: dims.width, height: dims.height, alt: img.alt || '' }]);
+            });
+          });
+        } catch (e) {
+          // no-op if CDN blocked
         }
-        const probe = new Image();
-        probe.onload = () => {
-          resolve({
-            width: probe.naturalWidth || 1600,
-            height: probe.naturalHeight || 900
-          });
-        };
-        probe.onerror = () => resolve({ width: 1600, height: 900 });
-        probe.src = src;
-      });
+      })();
+      return initPromise;
+    };
 
-      const { default: PhotoSwipeLightbox } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
-
-      // Primary lightbox for images with data-pswp-width attributes
-      const lightbox = new PhotoSwipeLightbox({
-        gallery: 'article.content',
-        children: 'a[data-pswp-width]',
-        wheelToZoom: true,
-        pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js')
-      });
-      lightbox.init();
-
-      // Handle all lightbox-image anchors (including those without data-pswp-width)
-      const lightboxAnchors = Array.from(article.querySelectorAll('a.lightbox-image:not([data-pswp-width])'))
-        .map(a => ({ a, img: a.querySelector('img') }))
-        .filter(x => x.img);
-
-      if (lightboxAnchors.length) {
-        const { default: LB } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
-        const lbLinks = new LB({
-          wheelToZoom: true,
-          pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js')
-        });
-        lbLinks.init();
-        lightboxAnchors.forEach(({ a, img }) => {
-          a.style.cursor = 'zoom-in';
-          a.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const src = a.getAttribute('href');
-            const dims = await getImageDimensions(src, img);
-            lbLinks.loadAndOpen(0, [{ src, width: dims.width, height: dims.height, alt: img.alt || '' }]);
-          });
-        });
-      }
-
-      // Fallback for images not wrapped by any anchor
-      const orphanImgs = Array.from(article.querySelectorAll('img:not(a img)'));
-      if (orphanImgs.length) {
-        const { default: LB } = await import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js');
-        const lb = new LB({
-          wheelToZoom: true,
-          pswpModule: () => import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.min.js')
-        });
-        lb.init();
-        orphanImgs.forEach((img) => {
-          img.style.cursor = 'zoom-in';
-          img.addEventListener('click', async () => {
-            const src = img.currentSrc || img.src;
-            const dims = await getImageDimensions(src, img);
-            lb.loadAndOpen(0, [{ src, width: dims.width, height: dims.height, alt: img.alt || '' }]);
-          });
-        });
-      }
-    } catch (e) {
-      // no-op if CDN blocked
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(() => { void init(); }, { timeout: 2000 });
+    } else {
+      setTimeout(() => { void init(); }, 300);
     }
   })();
 

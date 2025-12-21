@@ -13,7 +13,6 @@
     "permalink": {{ $p.Permalink | jsonify }},
     "tags": {{ $p.Params.tags | default (slice) | jsonify }},
     "categories": {{ $p.Params.categories | default (slice) | jsonify }},
-    "raw": {{ $p.RawContent | jsonify }},
     "content": {{ $p.Plain | jsonify }}
   }
   {{- end -}}

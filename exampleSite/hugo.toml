@@ -28,7 +28,7 @@ home = ["HTML", "RSS", "JSON"]
     email = "you@example.com"
 
   [params.home]
-    intro = "Welcome! This is a quick demo of the **hugo-trainsh** theme — have a look around and try the search."
+    intro = "Welcome! This is a quick demo of the hugo-trainsh theme — feel free to look around."
 
     [params.home.tags]
       # Set to 0 or negative to show all tags

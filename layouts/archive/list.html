@@ -4,7 +4,7 @@
 </header>
 
 <section class="mb-8">
-  <input id="archive-search" type="search" placeholder="{{ i18n "type_to_search" }}" aria-label="{{ i18n "search_posts" }}" autocomplete="off" class="w-full px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] transition-colors">
+  <input id="archive-search" type="search" placeholder="{{ i18n "type_to_search" }}" aria-label="{{ i18n "search_posts" }}" autocomplete="off" data-index-url="{{ "index.json" | relURL }}" class="w-full px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg focus:outline-none focus:border-[var(--color-accent)] transition-colors">
 </section>
 
 {{ $sections := default (slice "posts") site.Params.mainSections }}
