@@ -1,11 +1,7 @@
 {{ with resources.Get "css/tailwind.css" }}
   {{ with . | css.TailwindCSS (dict "minify" hugo.IsProduction) }}
-    {{ if hugo.IsProduction }}
-      {{ with . | fingerprint }}
-        <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
-      {{ end }}
-    {{ else }}
-      <link rel="stylesheet" href="{{ .RelPermalink }}">
+    {{ with . | fingerprint }}
+      <link rel="stylesheet" href="{{ .RelPermalink }}"{{ if hugo.IsProduction }} integrity="{{ .Data.Integrity }}" crossorigin="anonymous"{{ end }}>
     {{ end }}
   {{ end }}
 {{ end }}

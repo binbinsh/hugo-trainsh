@@ -120,36 +120,6 @@
   html[data-theme="dark"] .icon-sun { @apply block; }
   html[data-theme="dark"] .icon-moon { @apply hidden; }
 
-  /* Chroma syntax - light */
-  .chroma .k,
-  .chroma .kd,
-  .chroma .kn { @apply text-[#7c3aed]; }
-  .chroma .s,
-  .chroma .s2 { @apply text-[#059669]; }
-  .chroma .c,
-  .chroma .c1,
-  .chroma .cm { @apply text-[#64748b] italic; }
-  .chroma .nf { @apply text-[#2563eb]; }
-  .chroma .na { @apply text-[#d97706]; }
-  .chroma .nc { @apply text-[#dc2626]; }
-  .chroma .m,
-  .chroma .mi { @apply text-[#0891b2]; }
-
-  /* Chroma syntax - dark */
-  html[data-theme="dark"] .chroma .k,
-  html[data-theme="dark"] .chroma .kd,
-  html[data-theme="dark"] .chroma .kn { @apply text-[#a78bfa]; }
-  html[data-theme="dark"] .chroma .s,
-  html[data-theme="dark"] .chroma .s2 { @apply text-[#34d399]; }
-  html[data-theme="dark"] .chroma .c,
-  html[data-theme="dark"] .chroma .c1,
-  html[data-theme="dark"] .chroma .cm { @apply text-[#94a3b8] italic; }
-  html[data-theme="dark"] .chroma .nf { @apply text-[#60a5fa]; }
-  html[data-theme="dark"] .chroma .na { @apply text-[#fbbf24]; }
-  html[data-theme="dark"] .chroma .nc { @apply text-[#f87171]; }
-  html[data-theme="dark"] .chroma .m,
-  html[data-theme="dark"] .chroma .mi { @apply text-[#22d3ee]; }
-
   .mermaid {
     @apply bg-[color:var(--color-surface)] rounded-lg p-4 overflow-x-auto flex justify-center my-4;
   }
@@ -191,6 +161,45 @@
   }
 }
 
+/* Compatibility: Prism-style tokens injected by extensions/scripts. */
+.highlight .token.keyword { color:#cf222e !important; }
+.highlight .token.string,
+.highlight .token.template-string,
+.highlight .token.char,
+.highlight .token.regex,
+.highlight .token.url { color:#0a3069 !important; }
+.highlight .token.comment,
+.highlight .token.prolog,
+.highlight .token.doctype,
+.highlight .token.cdata { color:#6e7781 !important; font-style: italic; }
+.highlight .token.number,
+.highlight .token.boolean,
+.highlight .token.constant { color:#0550ae !important; }
+.highlight .token.function,
+.highlight .token.class-name { color:#0550ae !important; font-weight: 700; }
+.highlight .token.operator,
+.highlight .token.punctuation,
+.highlight .token.template-punctuation { color:inherit !important; }
+
+html[data-theme="dark"] .highlight .token.keyword { color:#ff7b72 !important; }
+html[data-theme="dark"] .highlight .token.string,
+html[data-theme="dark"] .highlight .token.template-string,
+html[data-theme="dark"] .highlight .token.char,
+html[data-theme="dark"] .highlight .token.regex,
+html[data-theme="dark"] .highlight .token.url { color:#a5d6ff !important; }
+html[data-theme="dark"] .highlight .token.comment,
+html[data-theme="dark"] .highlight .token.prolog,
+html[data-theme="dark"] .highlight .token.doctype,
+html[data-theme="dark"] .highlight .token.cdata { color:#8b949e !important; font-style: italic; }
+html[data-theme="dark"] .highlight .token.number,
+html[data-theme="dark"] .highlight .token.boolean,
+html[data-theme="dark"] .highlight .token.constant { color:#79c0ff !important; }
+html[data-theme="dark"] .highlight .token.function,
+html[data-theme="dark"] .highlight .token.class-name { color:#d2a8ff !important; font-weight: 700; }
+html[data-theme="dark"] .highlight .token.operator,
+html[data-theme="dark"] .highlight .token.punctuation,
+html[data-theme="dark"] .highlight .token.template-punctuation { color:inherit !important; }
+
 /* Scrollbar styling (raw rules for browser support) */
 .highlight pre::-webkit-scrollbar {
   -webkit-appearance: none;
@@ -223,6 +232,12 @@ html[data-theme="dark"] .highlight pre::-webkit-scrollbar-track {
   html[data-theme="dark"] .highlight pre {
     scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
   }
+}
+
+/* Override Chroma inline background in `noClasses=true` mode. */
+.codeblock .highlight pre {
+  background-color: var(--color-code-bg) !important;
+  color: var(--color-fg) !important;
 }
 
 @layer components {

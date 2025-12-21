@@ -42,9 +42,9 @@ home = ["HTML", "RSS", "JSON"]
     block = true
 
   [markup.highlight]
-    # Enable line numbers and render them in a table
-    lineNos = true
-    lineNumbersInTable = true
+    # Keep settings aligned with the theme's `render-codeblock.html` hook.
+    lineNos = false
+    lineNumbersInTable = false
     anchorLineNos = false
     codeFences = true
     lineNoStart = 1

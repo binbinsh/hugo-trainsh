@@ -5,12 +5,8 @@
     "targetPath" "js/main.js"
   }}
   {{- with . | js.Build $opts }}
-    {{- if hugo.IsDevelopment }}
-      <script src="{{ .RelPermalink }}"></script>
-    {{- else }}
-      {{- with . | fingerprint }}
-        <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-      {{- end }}
+    {{- with . | fingerprint }}
+      <script defer src="{{ .RelPermalink }}"{{ if not hugo.IsDevelopment }} integrity="{{ .Data.Integrity }}" crossorigin="anonymous"{{ end }}></script>
     {{- end }}
   {{- end }}
 {{- end }}

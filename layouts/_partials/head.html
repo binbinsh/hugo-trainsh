@@ -10,7 +10,7 @@
 })();
 </script>
 {{ partialCached "head/fonts.html" . .RelPermalink }}
-{{ partialCached "head/css.html" . (printf "%t:%s" hugo.IsProduction site.Language.Lang) }}
+{{ partial "head/css.html" . }}
 {{ $noop := .WordCount }}
 {{ $hasDisplayMath := gt (len (findRE `\$\$[^\$]+\$\$` .RawContent)) 0 }}
 {{ $hasInlineMath := gt (len (findRE `\$[^\$]+\$` .RawContent)) 0 }}
@@ -33,4 +33,4 @@
   });
   </script>
 {{ end }}
-{{ partialCached "head/js.html" . }}
+{{ partial "head/js.html" . }}

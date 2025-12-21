@@ -89,7 +89,6 @@
       "border-[var(--color-border)]",
       "border-b",
       "border-t",
-      "chroma",
       "codeblock",
       "codeblock-header",
       "content",

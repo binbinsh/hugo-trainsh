@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const text = pre.textContent || '';
       await navigator.clipboard.writeText(text);
       const original = btn.textContent;
-      btn.textContent = 'Copied';
+      btn.textContent = 'COPIED';
       setTimeout(() => { btn.textContent = original; }, 1200);
     } catch (e) {
       // ignore
@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wrapper = btn.closest('.codeblock');
     if (!wrapper) return;
     const isWrapped = wrapper.classList.toggle('wrapped');
-    btn.textContent = isWrapped ? 'Nowrap' : 'Wrap';
+    btn.textContent = isWrapped ? 'NOWRAP' : 'WRAP';
   });
   
   // Theme toggle
