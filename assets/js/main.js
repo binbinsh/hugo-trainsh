@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Archive/Home search wiring
+  // Archive search wiring
   const searchInput = document.getElementById('archive-search');
   const groupsEl = document.getElementById('archive-groups');
   const resultsEl = document.getElementById('archive-results');
@@ -101,28 +101,167 @@ document.addEventListener('DOMContentLoaded', () => {
     let fuseInstance = null;
     let indexData = null;
 
-    const renderResults = (items) => {
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+    const collectMatchedLines = ({ item, matches }, query) => {
+      const lines = new Set();
+
+      const safeQuery = String(query || '').trim().toLowerCase();
+      const queryTerms = safeQuery.length ? safeQuery.split(/\s+/).filter(Boolean) : [];
+
+      const normalizeSnippetLine = (line) => {
+        let out = String(line || '').trim();
+        if (!out) return '';
+        if (out === '```') return '';
+        out = out
+          .replace(/^#{1,6}\s+/, '')
+          .replace(/^\s*([-*+]|\d+\.)\s+/, '')
+          .replace(/^>\s+/, '')
+          .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+          .replace(/`([^`]+)`/g, '$1')
+          .trim();
+        return out;
+      };
+
+      const raw = typeof item.raw === 'string' ? item.raw.replace(/\r\n/g, '\n') : '';
+      const content = typeof item.content === 'string' ? item.content.replace(/\r\n/g, '\n') : '';
+      const summary = typeof item.summary === 'string' ? item.summary.replace(/\r\n/g, '\n') : '';
+
+      if (raw && queryTerms.length) {
+        raw.split('\n').forEach((line) => {
+          const cleaned = normalizeSnippetLine(line);
+          if (!cleaned) return;
+          const lower = cleaned.toLowerCase();
+          const matchesPhrase = safeQuery.length ? lower.includes(safeQuery) : false;
+          const matchesTerms = queryTerms.length ? queryTerms.every((term) => lower.includes(term)) : false;
+          if (matchesPhrase || matchesTerms) {
+            lines.add(cleaned);
+          }
+        });
+      }
+
+      const matchArr = Array.isArray(matches) ? matches : [];
+      const contentMatches = matchArr.filter((m) => m && m.key === 'content' && Array.isArray(m.indices));
+
+      contentMatches.forEach((m) => {
+        const value = typeof m.value === 'string' ? m.value.replace(/\r\n/g, '\n') : content;
+        if (!value) return;
+        m.indices.forEach((pair) => {
+          if (!Array.isArray(pair) || pair.length < 2) return;
+          const startIndex = pair[0];
+          const endIndex = pair[1];
+          if (typeof startIndex !== 'number' || typeof endIndex !== 'number') return;
+          const lineStartIdx = value.lastIndexOf('\n', startIndex);
+          const lineStart = lineStartIdx === -1 ? 0 : lineStartIdx + 1;
+          const lineEndIdx = value.indexOf('\n', endIndex + 1);
+          const lineEnd = lineEndIdx === -1 ? value.length : lineEndIdx;
+          const line = normalizeSnippetLine(value.slice(lineStart, lineEnd));
+          if (line) lines.add(line);
+        });
+      });
+
+      if (lines.size === 0 && content && queryTerms.length) {
+        content.split(/\n+/).forEach((line) => {
+          const trimmed = normalizeSnippetLine(line);
+          if (!trimmed) return;
+          const lower = trimmed.toLowerCase();
+          if (queryTerms.every((term) => lower.includes(term))) {
+            lines.add(trimmed);
+          }
+        });
+      }
+
+      if (lines.size === 0 && summary && queryTerms.length) {
+        summary.split(/\n+/).forEach((line) => {
+          const trimmed = normalizeSnippetLine(line);
+          if (!trimmed) return;
+          const lower = trimmed.toLowerCase();
+          if (queryTerms.every((term) => lower.includes(term))) {
+            lines.add(trimmed);
+          }
+        });
+      }
+
+      return Array.from(lines);
+    };
+
+    const renderResults = (items, query) => {
       if (!Array.isArray(items)) return;
       if (items.length === 0) {
-        resultsEl.innerHTML = '<p>No results</p>';
+        resultsEl.innerHTML = '<p class="text-[var(--color-muted)]">No results</p>';
         return;
       }
-      const html = items.map((r) => {
-        const item = r.item || r; // support raw array or Fuse result
-        const title = item.title || '';
-        const date = item.date || '';
-        const author = item.author || '';
-        const link = item.permalink || '#';
-        const summary = item.summary || '';
+
+      const normalized = items.map((r) => ({
+        item: r && r.item ? r.item : r,
+        matches: r && Array.isArray(r.matches) ? r.matches : []
+      })).filter((x) => x.item);
+
+      const grouped = new Map();
+      normalized.forEach((r) => {
+        const year = r.item.year || (typeof r.item.dateISO === 'string' ? r.item.dateISO.slice(0, 4) : '');
+        if (!grouped.has(year)) grouped.set(year, []);
+        grouped.get(year).push(r);
+      });
+
+      const years = Array.from(grouped.keys())
+        .filter(Boolean)
+        .sort((a, b) => (Number(b) || 0) - (Number(a) || 0));
+
+      const groupHtml = years.map((year) => {
+        const groupItems = grouped.get(year) || [];
+        groupItems.sort((a, b) => String(b.item.dateISO || '').localeCompare(String(a.item.dateISO || '')));
+
+        const itemsHtml = groupItems.map((r) => {
+          const title = r.item.title || '';
+          const dateShort = r.item.dateShort || r.item.date || '';
+          const dateISO = r.item.dateISO || '';
+          const link = r.item.permalink || '#';
+          const matchedLines = collectMatchedLines(r, query);
+
+          const snippetHtml = matchedLines.length
+            ? `
+              <div class="flex gap-4 mt-1">
+                <span aria-hidden="true" class="text-sm text-[var(--color-muted)] font-mono shrink-0 opacity-0">${escapeHtml(dateShort)}</span>
+                <div>
+                  ${matchedLines.map((line) => `<p class="text-sm text-[var(--color-muted)] font-mono break-all">${escapeHtml(line)}</p>`).join('')}
+                </div>
+              </div>
+            `
+            : '';
+
+          return `
+            <li>
+              <div class="flex gap-4 items-baseline">
+                <time class="text-sm text-[var(--color-muted)] font-mono shrink-0" datetime="${escapeHtml(dateISO)}">
+                  ${escapeHtml(dateShort)}
+                </time>
+                <a href="${escapeHtml(link)}" class="hover:text-[var(--color-accent)] transition-colors truncate">
+                  ${escapeHtml(title)}
+                </a>
+              </div>
+              ${snippetHtml}
+            </li>
+          `;
+        }).join('');
+
         return `
-          <article class="archive-result">
-            <div class="meta-line"><time class="date">${date}</time>${author ? ` by <span class="author">${author}</span>` : ''}</div>
-            <h3><a href="${link}">${title}</a></h3>
-            <p class="summary">${summary}</p>
-          </article>
+          <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-[var(--color-muted)]">${escapeHtml(year)}</h2>
+            <ul class="space-y-2">
+              ${itemsHtml}
+            </ul>
+          </div>
         `;
       }).join('');
-      resultsEl.innerHTML = html;
+
+      resultsEl.innerHTML = groupHtml;
     };
 
     const showGroups = () => {
@@ -153,6 +292,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!Array.isArray(indexData)) return null;
       const options = {
         includeScore: true,
+        includeMatches: true,
+        findAllMatches: true,
         ignoreLocation: true,
         minMatchCharLength: 2,
         threshold: 0.3,
@@ -179,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const fuse = await initFuse();
       if (!fuse) return;
       const results = fuse.search(q).slice(0, 50);
-      renderResults(results);
+      renderResults(results, q);
       showResults();
     });
 
