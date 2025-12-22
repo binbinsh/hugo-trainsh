@@ -49,6 +49,11 @@ theme = 'hugo-trainsh'
 - **Archive + search**: Grouped archive pages and Fuse.js-powered home search (`/index.json`).
 - **Optimized assets**: Hugo Pipes minification, fingerprinting, and scroll-friendly code blocks.
 
+## Table of contents
+
+- Disable globally via `params.toc = false` in your site config.
+- Override per post via front matter (`toc` takes precedence over `params.toc`): use `toc = false` to disable, or `toc = true` to enable when disabled globally.
+
 ## Upvote widget
 
 - Controlled via `params.upvote.enabled` or setting `UPVOTE_WIDGET=true` in GitHub Action.

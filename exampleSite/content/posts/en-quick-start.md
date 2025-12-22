@@ -2,6 +2,7 @@
 title = 'Quick Start with trainsh'
 date = '2025-10-26'
 draft = false
+toc = true
 tags = ['getting started','theme','mermaid','math']
 +++
 
@@ -10,7 +11,7 @@ tags = ['getting started','theme','mermaid','math']
 This is an English example post to preview the trainsh theme.
 
 ### Features in this post
-- Headings (H2/H3)
+- Table of contents (TOC)
 - Mermaid diagram
 - Math (KaTeX, if enabled)
 - Image lightbox

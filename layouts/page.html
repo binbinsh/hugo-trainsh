@@ -12,6 +12,10 @@
     {{ end }}
   </header>
 
+  {{ $tocEnabled := true }}
+  {{ if isset site.Params "toc" }}{{ $tocEnabled = site.Params.toc }}{{ end }}
+  {{ if isset .Params "toc" }}{{ $tocEnabled = .Params.toc }}{{ end }}
+
   {{ $toc := .Fragments.ToHTML 2 3 false }}
   {{ $hasToc := false }}
   {{ range .Fragments.Headings }}
@@ -21,7 +25,7 @@
     {{ end }}
   {{ end }}
 
-  {{ if $hasToc }}
+  {{ if and $tocEnabled $hasToc }}
   <details class="mb-8 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
     <summary class="cursor-pointer font-semibold">Table of Contents</summary>
     <nav class="mt-4 text-sm">
