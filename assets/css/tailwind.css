@@ -121,7 +121,7 @@
   html[data-theme="dark"] .icon-moon { @apply hidden; }
 
   .mermaid {
-    @apply bg-[color:var(--color-surface)] rounded-lg p-4 overflow-x-auto flex justify-center my-4;
+    @apply bg-[color:var(--color-bg)] border border-[color:var(--color-border)] rounded-lg p-4 overflow-x-auto flex justify-center my-4;
   }
 
   .mermaid svg { @apply max-w-full h-auto; }
