@@ -21,7 +21,7 @@
     <div class="flex flex-wrap gap-2 mt-3">
       {{ range . }}
       {{ $tag := . | urlize }}
-      <a href="{{ "/tags/" | relURL }}{{ $tag }}/" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
+      <a href="{{ "/tags/" | relLangURL }}{{ $tag }}/" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
         {{ . | lower }}
       </a>
       {{ end }}
