@@ -27,7 +27,8 @@
   {{ end }}
 
   {{ $recentN := (site.Params.home.recent.limit | default 5) }}
-  {{ $posts := where site.RegularPages "Section" "posts" }}
+  {{ $sections := default (slice "posts") site.Params.mainSections }}
+  {{ $posts := where site.RegularPages "Section" "in" $sections }}
   {{ with $posts }}
   <section class="mb-12">
     <h2 class="text-lg font-semibold mb-4">{{ i18n "recent_posts" }}</h2>
@@ -50,7 +51,7 @@
     {{ with site.GetPage "/archive" }}
     <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
     {{ else }}
-    {{ with site.GetPage "/posts" }}
+    {{ with site.GetPage (printf "/%s" (index $sections 0)) }}
     <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
     {{ end }}
     {{ end }}
