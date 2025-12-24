@@ -3,7 +3,7 @@
     <a href="{{ "/" | relURL }}" class="text-xl font-bold text-[var(--color-fg)] hover:text-[var(--color-accent)] transition-colors">
       {{ .Site.Title }}
     </a>
-    <button type="button" aria-label="Toggle theme" data-theme-toggle class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors cursor-pointer">
+    <button type="button" aria-label="{{ i18n "toggle_theme" }}" data-theme-toggle class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors cursor-pointer">
       <svg class="icon-moon w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
       </svg>
@@ -17,28 +17,28 @@
   {{ with site.Params.social }}
   <div class="flex items-center gap-2">
     {{ with .linkedin }}
-    <a href="{{ . }}" aria-label="LinkedIn" rel="me noopener" target="_blank" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
+    <a href="{{ . }}" aria-label="{{ i18n "social_linkedin" }}" rel="me noopener" target="_blank" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
       <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M4.98 3.5C4.98 4.6 4.1 5.5 3 5.5c-1.09 0-1.98-.9-1.98-2S1.91 1.5 3 1.5c1.1 0 1.98.9 1.98 2zM.5 22.5h5V7.5h-5v15zM8.5 7.5h4.8v2.03h.07c.67-1.18 2.32-2.43 4.78-2.43 5.11 0 6.05 3.36 6.05 7.72v7.68h-5v-6.8c0-1.62-.03-3.7-2.25-3.7-2.25 0-2.59 1.76-2.59 3.58v6.92h-5v-15z" />
       </svg>
     </a>
     {{ end }}
     {{ with .github }}
-    <a href="{{ . }}" aria-label="GitHub" rel="me noopener" target="_blank" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
+    <a href="{{ . }}" aria-label="{{ i18n "social_github" }}" rel="me noopener" target="_blank" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
       <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2c-5.5 0-10 4.6-10 10.2 0 4.5 2.9 8.3 6.9 9.6.5.1.7-.2.7-.5v-2c-2.8.6-3.4-1.4-3.4-1.4-.4-1.1-1-1.4-1-1.4-.8-.6.1-.6.1-.6.9.1 1.3 1 1.3 1 .8 1.4 2.1 1 2.6.8.1-.6.3-1 .6-1.2-2.2-.3-4.5-1.1-4.5-5 0-1.1.4-2 1-2.7 0-.3-.4-1.2.1-2.5 0 0 .8-.3 2.8 1 .8-.2 1.6-.3 2.4-.3.8 0 1.6.1 2.4.3 2-1.3 2.8-1 2.8-1 .5 1.3.2 2.2.1 2.5.7.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.5 5 .3.3.6.8.6 1.6v2.4c0 .3.2.6.7.5 4-1.3 6.9-5.1 6.9-9.6C22 6.6 17.5 2 12 2z" />
       </svg>
     </a>
     {{ end }}
     {{ with .x }}
-    <a href="{{ . }}" aria-label="X" rel="me noopener" target="_blank" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
+    <a href="{{ . }}" aria-label="{{ i18n "social_x" }}" rel="me noopener" target="_blank" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
       <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
         <path d="M4 3h4.5l3.1 4.5L15 3h5l-6 8 6 10h-4.5l-3.5-5.2L8 21H3l6.2-8.3L4 3z" />
       </svg>
     </a>
     {{ end }}
     {{ with .email }}
-    <a href="{{ if hasPrefix . "mailto:" }}{{ . }}{{ else }}mailto:{{ . }}{{ end }}" aria-label="Email" rel="me noopener" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
+    <a href="{{ if hasPrefix . "mailto:" }}{{ . }}{{ else }}mailto:{{ . }}{{ end }}" aria-label="{{ i18n "email" }}" rel="me noopener" class="p-2 rounded-lg hover:bg-[var(--color-surface)] transition-colors">
       <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
         <path d="m3 7 9 6 9-6" />

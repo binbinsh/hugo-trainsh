@@ -6,7 +6,7 @@
 {{- if in (slice "html" "gotmpl") $lang -}}
   {{- $lang = "go-html-template" -}}
 {{- end -}}
-{{- $label := cond (eq $lang "text") "plain text" $lang -}}
+{{- $label := cond (eq $lang "text") (i18n "code_plain_text") $lang -}}
 
 {{- $opts := dict "linenos" false "lineNumbersInTable" false "anchorLineNos" false "noClasses" true "guessSyntax" true -}}
 
@@ -14,11 +14,11 @@
   <div class="codeblock-header flex items-center justify-between px-3 py-1 bg-[var(--color-code-bg)] border-b border-[var(--color-border)]">
     <span class="text-xs text-[var(--color-muted)] font-mono">{{ strings.ToUpper $label }}</span>
     <div class="flex items-center gap-1">
-      <button type="button" data-wrap-toggle aria-label="Toggle word wrap" title="Toggle word wrap" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
-        WRAP
+      <button type="button" data-wrap-toggle data-wrap-text="{{ i18n "wrap" }}" data-nowrap-text="{{ i18n "nowrap" }}" aria-label="{{ i18n "toggle_word_wrap" }}" title="{{ i18n "toggle_word_wrap" }}" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
+        {{ i18n "wrap" }}
       </button>
-      <button type="button" data-copy-code aria-label="Copy code" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
-        COPY
+      <button type="button" data-copy-code data-copied-text="{{ i18n "copied" }}" aria-label="{{ i18n "copy_code" }}" title="{{ i18n "copy_code" }}" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
+        {{ i18n "copy" }}
       </button>
     </div>
   </div>

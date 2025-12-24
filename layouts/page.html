@@ -4,7 +4,7 @@
     <h1 class="text-3xl font-bold mb-2">{{ .Title }}</h1>
     {{ with .Date }}
     <p class="text-sm text-[var(--color-muted)] mb-3">
-      Published on
+      {{ i18n "published_on" }}
       <time class="font-medium text-[var(--color-foreground)]" datetime="{{ . | time.Format "2006-01-02" }}">
         {{ partial "date/format.html" (dict "page" $ "date" . "style" "long_full") }}
       </time>
@@ -27,7 +27,7 @@
 
   {{ if and $tocEnabled $hasToc }}
   <details class="mb-8 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg">
-    <summary class="cursor-pointer font-semibold">Table of Contents</summary>
+    <summary class="cursor-pointer font-semibold">{{ i18n "toc" }}</summary>
     <nav class="mt-4 text-sm">
       {{ $toc }}
     </nav>

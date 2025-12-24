@@ -5,8 +5,8 @@
   {
     "title": {{ $p.Title | jsonify }},
     "summary": {{ $p.Summary | plainify | jsonify }},
-    "date": {{ $p.Date.Format "January 2, 2006" | jsonify }},
-    "dateShort": {{ $p.Date.Format "Jan 02" | jsonify }},
+    "date": {{ $p.Date.Format "2006-01-02" | jsonify }},
+    "dateShort": {{ $p.Date.Format "2006-01-02" | jsonify }},
     "dateISO": {{ $p.Date.Format "2006-01-02" | jsonify }},
     "year": {{ $p.Date.Format "2006" | jsonify }},
     "author": {{ default site.Params.author $p.Params.author | jsonify }},

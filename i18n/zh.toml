@@ -31,3 +31,62 @@ other = "由 {{ .Hugo }} 和 {{ .Theme }} 驱动"
 [toc]
 other = "目录"
 
+[published_on]
+other = "发表于"
+
+[upvote_hint]
+other = "点击点赞"
+
+[upvote_title]
+other = "点赞这篇文章"
+
+[upvote_count]
+other = "点赞数"
+
+[link_to_section]
+other = "链接到本节"
+
+[code_plain_text]
+other = "纯文本"
+
+[toggle_word_wrap]
+other = "切换自动换行"
+
+[wrap]
+other = "换行"
+
+[copy_code]
+other = "复制代码"
+
+[copy]
+other = "复制"
+
+[nav_primary]
+other = "主导航"
+
+[toggle_theme]
+other = "切换主题"
+
+[social_linkedin]
+other = "LinkedIn"
+
+[social_github]
+other = "GitHub"
+
+[social_x]
+other = "X"
+
+[email]
+other = "邮箱"
+
+[no_results]
+other = "没有结果"
+
+[upvoted_title]
+other = "已点赞"
+
+[copied]
+other = "已复制"
+
+[nowrap]
+other = "不换行"

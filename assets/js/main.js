@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const slug = container.getAttribute('data-slug');
       const endpoint = container.getAttribute('data-endpoint');
       const infoEndpoint = container.getAttribute('data-info-endpoint');
+      const upvotedTitle = container.getAttribute('data-upvoted-title') || '';
       const form = container.querySelector('form');
       const button = container.querySelector('.upvote-button');
       const countEl = container.querySelector('.upvote-count');
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (upvoted) {
           button.disabled = true;
           button.classList.add('upvote-button--active');
-          button.title = 'Toasted';
+          if (upvotedTitle) button.title = upvotedTitle;
         }
       };
 
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let fuseInstance = null;
     let indexData = null;
     const indexUrl = searchInput.getAttribute('data-index-url') || '/index.json';
+    const noResultsText = searchInput.getAttribute('data-no-results') || 'No results';
     const fuseSrc = 'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0';
 
     const escapeHtml = (value) => String(value)
@@ -182,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderResults = (items, query) => {
       if (!Array.isArray(items)) return;
       if (items.length === 0) {
-        resultsEl.innerHTML = '<p class="text-[var(--color-muted)]">No results</p>';
+        resultsEl.innerHTML = `<p class="text-[var(--color-muted)]">${escapeHtml(noResultsText)}</p>`;
         return;
       }
 
@@ -262,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Make search accessible
-    searchInput.setAttribute('aria-label', 'Search posts');
     searchInput.setAttribute('role', 'search');
 
     const loadScriptOnce = (src) => {
@@ -460,7 +461,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const text = pre.textContent || '';
       await navigator.clipboard.writeText(text);
       const original = btn.textContent;
-      btn.textContent = 'COPIED';
+      const copiedText = btn.getAttribute('data-copied-text') || 'COPIED';
+      btn.textContent = copiedText;
       setTimeout(() => { btn.textContent = original; }, 1200);
     } catch (e) {
       // ignore
@@ -474,7 +476,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const wrapper = btn.closest('.codeblock');
     if (!wrapper) return;
     const isWrapped = wrapper.classList.toggle('wrapped');
-    btn.textContent = isWrapped ? 'NOWRAP' : 'WRAP';
+    const wrapText = btn.getAttribute('data-wrap-text') || 'WRAP';
+    const nowrapText = btn.getAttribute('data-nowrap-text') || 'NOWRAP';
+    btn.textContent = isWrapped ? nowrapText : wrapText;
   });
   
   // Theme toggle
@@ -484,7 +488,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyTheme = (theme) => {
       root.setAttribute('data-theme', theme);
       localStorage.setItem('theme', theme);
-      themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
     };
     const current = root.getAttribute('data-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     applyTheme(current);
