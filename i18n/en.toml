@@ -26,7 +26,7 @@ other = "Search posts"
 other = "Type to search"
 
 [powered_by]
-other = "Powered by"
+other = "Powered by {{ .Hugo }} &amp; {{ .Theme }}"
 
 [toc]
 other = "Table of Contents"

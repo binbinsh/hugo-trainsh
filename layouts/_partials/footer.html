@@ -1,1 +1,3 @@
-<p>&copy; {{ now.Year }} {{ site.Title }} — {{ i18n "powered_by" }} <a href="https://gohugo.io/" target="_blank" class="text-[var(--color-accent)] hover:underline">Hugo</a> &amp; <a href="https://github.com/binbinsh/hugo-trainsh" target="_blank" class="text-[var(--color-accent)] hover:underline">trainsh</a></p>
+{{- $hugo := `<a href="https://gohugo.io/" target="_blank" class="text-[var(--color-accent)] hover:underline">Hugo</a>` -}}
+{{- $theme := `<a href="https://github.com/binbinsh/hugo-trainsh" target="_blank" class="text-[var(--color-accent)] hover:underline">hugo-trainsh</a>` -}}
+<p>&copy; {{ now.Year }} {{ site.Title }} — {{ i18n "powered_by" (dict "Hugo" $hugo "Theme" $theme) | safeHTML }}</p>

@@ -26,7 +26,7 @@ other = "搜索文章"
 other = "输入文本搜索"
 
 [powered_by]
-other = "由以下驱动"
+other = "由 {{ .Hugo }} 和 {{ .Theme }} 驱动"
 
 [toc]
 other = "目录"
