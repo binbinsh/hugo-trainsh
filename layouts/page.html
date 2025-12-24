@@ -6,7 +6,7 @@
     <p class="text-sm text-[var(--color-muted)] mb-3">
       Published on
       <time class="font-medium text-[var(--color-foreground)]" datetime="{{ . | time.Format "2006-01-02" }}">
-        {{ . | time.Format "January 2, 2006" }}
+        {{ partial "date/format.html" (dict "page" $ "date" . "style" "long_full") }}
       </time>
     </p>
     {{ end }}

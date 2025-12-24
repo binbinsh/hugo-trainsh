@@ -1,0 +1,8 @@
+{{- $date := .date -}}
+
+{{- if $date -}}
+  {{- /* Use the same numeric format for all languages and views. */ -}}
+  {{- $date | time.Format "2006-01-02" -}}
+{{- end -}}
+
+

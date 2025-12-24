@@ -4,7 +4,7 @@
 
 <article class="pb-6 border-b border-[var(--color-border)] last:border-b-0">
   <time class="text-sm text-[var(--color-muted)] font-mono" datetime="{{ $page.Date | time.Format "2006-01-02" }}">
-    {{ $page.Date | time.Format "Jan 02, 2006" }}
+    {{ partial "date/format.html" (dict "page" $page "date" $page.Date "style" "long") }}
   </time>
   <h3 class="text-xl font-semibold mt-1">
     <a href="{{ $page.RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors">{{ $page.LinkTitle }}</a>

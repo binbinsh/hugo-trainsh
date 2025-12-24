@@ -18,7 +18,7 @@
       {{ range .Pages.ByDate.Reverse }}
       <li class="flex gap-4 items-baseline">
         <time class="text-sm text-[var(--color-muted)] font-mono shrink-0" datetime="{{ .Date | time.Format "2006-01-02" }}">
-          {{ .Date | time.Format "Jan 02" }}
+          {{ partial "date/format.html" (dict "page" . "date" .Date "style" "short") }}
         </time>
         <a href="{{ .RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors truncate">
           {{ .Title }}

@@ -4,7 +4,7 @@
     <h1 class="text-3xl font-bold mb-2">{{ .Title }}</h1>
     <div class="flex flex-wrap items-center gap-4 text-sm text-[var(--color-muted)]">
       <time datetime="{{ .Date | time.Format "2006-01-02" }}">
-        {{ .Date | time.Format "January 2, 2006" }}
+        {{ partial "date/format.html" (dict "page" . "date" .Date "style" "long_full") }}
       </time>
     </div>
   </header>

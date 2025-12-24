@@ -1,6 +1,0 @@
-{{- $page := . -}}
-{{ with $page.Date }}
-<time class="text-sm text-[var(--color-muted)]" datetime="{{ . | time.Format "2006-01-02" }}">
-  {{ . | time.Format "January 2, 2006" }}
-</time>
-{{ end }}
