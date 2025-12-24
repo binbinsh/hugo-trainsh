@@ -3,6 +3,11 @@
 {{-   return -}}
 {{- end -}}
 {{- $slug := strings.TrimSuffix "/" .RelPermalink -}}
+{{- /* Share upvote across translations by using a canonical slug without the language prefix. */ -}}
+{{- $langPrefix := printf "/%s" .Lang -}}
+{{- if and (ne .Lang site.DefaultContentLanguage) (strings.HasPrefix $slug $langPrefix) -}}
+  {{- $slug = strings.TrimPrefix $langPrefix $slug -}}
+{{- end -}}
 {{- if not $slug -}}
 {{-   return -}}
 {{- end -}}
