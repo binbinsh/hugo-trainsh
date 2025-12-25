@@ -17,6 +17,11 @@ POPULAR_CACHE_KEY = "popular_cache:v1"
 POPULAR_CACHE_MAX_ENV = "POPULAR_CACHE_MAX"
 POPULAR_CACHE_MAX_DEFAULT = 50
 POPULAR_REFRESH_SECONDS = 21600  # 6 hours
+POPULAR_SITE_ORIGIN_KEY = "popular_site_origin:v1"
+POPULAR_SLUG_INDEX_KEY = "popular_slug_index:v1"
+POPULAR_SITEMAP_PATH = "/sitemap.xml"
+POPULAR_SITEMAP_MAX_URLS = 5000
+POPULAR_SLUG_INDEX_MAX = 5000
 
 
 def _hash_slug(slug: str) -> str:
@@ -312,6 +317,172 @@ async def _kv_put(kv, key: str, value: str):
     return await _maybe_await(kv.put(key, value))
 
 
+def _site_origin_from_url(url: str) -> str:
+    parsed = urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return ""
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def _normalize_slug(path: str) -> str:
+    path = (path or "").strip()
+    if not path:
+        return ""
+    if not path.startswith("/"):
+        path = "/" + path
+    if path != "/":
+        path = path.rstrip("/")
+    return path
+
+
+def _extract_sitemap_locs(xml: str) -> list[str]:
+    """
+    Extract <loc>...</loc> values from a sitemap XML string.
+    This is a lightweight parser by design (no external deps).
+    """
+    out: list[str] = []
+    xml = xml or ""
+    start = 0
+    while True:
+        i = xml.find("<loc>", start)
+        if i == -1:
+            break
+        j = xml.find("</loc>", i + 5)
+        if j == -1:
+            break
+        loc = xml[i + 5:j].strip()
+        if loc:
+            out.append(loc)
+        start = j + 6
+    return out
+
+
+def _slugs_from_sitemap(xml: str) -> list[str]:
+    locs = _extract_sitemap_locs(xml)
+    slugs: list[str] = []
+    seen: set[str] = set()
+    for loc in locs:
+        try:
+            path = urlparse(loc).path
+        except Exception:
+            continue
+        slug = _normalize_slug(path)
+        if not slug or not slug.startswith("/"):
+            continue
+        if slug in seen:
+            continue
+        seen.add(slug)
+        slugs.append(slug)
+        if len(slugs) >= POPULAR_SITEMAP_MAX_URLS:
+            break
+    return slugs
+
+
+async def _fetch_text(url: str) -> str | None:
+    """
+    Fetch a URL and return the response body as text.
+    Relies on Cloudflare Workers' fetch being available at runtime.
+    """
+    fetch_fn = globals().get("fetch")
+    if not callable(fetch_fn):
+        try:
+            # Python Workers may also expose fetch via the workers runtime module.
+            from workers import fetch as fetch_fn  # type: ignore
+        except Exception:
+            return None
+
+    try:
+        resp = await _maybe_await(fetch_fn(url))
+    except Exception:
+        return None
+
+    ok = getattr(resp, "ok", None)
+    if ok is False:
+        return None
+
+    text_fn = getattr(resp, "text", None)
+    if not callable(text_fn):
+        return None
+
+    try:
+        body = await _maybe_await(text_fn())
+    except Exception:
+        return None
+
+    return body if isinstance(body, str) else None
+
+
+async def _load_slug_index(kv) -> list[str]:
+    raw = None
+    try:
+        raw = await _kv_get(kv, POPULAR_SLUG_INDEX_KEY)
+    except Exception:
+        raw = None
+
+    if not raw:
+        return []
+
+    try:
+        data = json.loads(raw)
+    except Exception:
+        return []
+
+    if not isinstance(data, list):
+        return []
+
+    out: list[str] = []
+    for item in data:
+        if isinstance(item, str):
+            slug = _normalize_slug(item)
+            if _validate_slug(slug):
+                out.append(slug)
+    # De-dupe while preserving order.
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for s in out:
+        if s in seen:
+            continue
+        seen.add(s)
+        deduped.append(s)
+    return deduped
+
+
+async def _store_slug_index(kv, slugs: list[str]):
+    cleaned: list[str] = []
+    seen: set[str] = set()
+    for s in (slugs or []):
+        if not isinstance(s, str):
+            continue
+        slug = _normalize_slug(s)
+        if not _validate_slug(slug):
+            continue
+        if slug in seen:
+            continue
+        seen.add(slug)
+        cleaned.append(slug)
+
+    try:
+        await _kv_put(kv, POPULAR_SLUG_INDEX_KEY, json.dumps(cleaned))
+    except Exception:
+        return
+
+
+async def _add_slug_to_index(kv, slug: str):
+    slug = _normalize_slug(slug)
+    if not _validate_slug(slug):
+        return
+
+    current = await _load_slug_index(kv)
+    if slug in current:
+        return
+
+    current.append(slug)
+    if len(current) > POPULAR_SLUG_INDEX_MAX:
+        current = current[-POPULAR_SLUG_INDEX_MAX:]
+
+    await _store_slug_index(kv, current)
+
+
 async def _resolve_cookie_secret(env, kv):
     """
     Resolve cookie secret from environment variables; fallback to KV if needed.
@@ -454,33 +625,72 @@ async def _kv_list_keys(kv, prefix: str, limit: int = 1000) -> list[str]:
     return out
 
 
-async def _rebuild_popular_cache(env, kv) -> dict:
+async def _rebuild_popular_cache(env, kv, site_origin: str | None = None) -> dict:
     """
-    Build and store a cached popular list from KV counters.
+    Build and store a cached popular list.
+
+    Prefer enumerating KV keys via list(); if that is unavailable or returns nothing,
+    fall back to a maintained slug index, and finally to reading slugs from sitemap.xml.
     """
     max_items = _parse_int(_get_env_binding(env, POPULAR_CACHE_MAX_ENV), POPULAR_CACHE_MAX_DEFAULT)
     max_items = _clamp_int(max_items, 1, 200)
 
-    key_names = await _kv_list_keys(kv, KV_KEY_PREFIX)
-    items: list[dict] = []
+    source = "kv_list"
+    slugs: list[str] = []
 
-    for name in key_names:
-        if not isinstance(name, str) or not name.startswith(KV_KEY_PREFIX):
+    key_names = await _kv_list_keys(kv, KV_KEY_PREFIX)
+    if key_names:
+        for name in key_names:
+            if not isinstance(name, str) or not name.startswith(KV_KEY_PREFIX):
+                continue
+            slug = _normalize_slug(name[len(KV_KEY_PREFIX):])
+            if _validate_slug(slug):
+                slugs.append(slug)
+    else:
+        source = "slug_index"
+        slugs = await _load_slug_index(kv)
+
+    if not slugs:
+        origin = (site_origin or "").strip()
+        if not origin:
+            try:
+                stored = await _kv_get(kv, POPULAR_SITE_ORIGIN_KEY)
+                origin = stored.strip() if isinstance(stored, str) else ""
+            except Exception:
+                origin = ""
+
+        if origin:
+            source = "sitemap"
+            sitemap_text = await _fetch_text(f"{origin}{POPULAR_SITEMAP_PATH}")
+            slugs = _slugs_from_sitemap(sitemap_text or "")
+        else:
+            source = "none"
+
+    # De-dupe while preserving order.
+    seen_slugs: set[str] = set()
+    candidates: list[str] = []
+    for s in slugs:
+        if s in seen_slugs:
             continue
-        slug = name[len(KV_KEY_PREFIX):]
-        if not _validate_slug(slug):
-            continue
+        seen_slugs.add(s)
+        candidates.append(s)
+
+    items: list[dict] = []
+    upvoted_slugs: list[str] = []
+
+    for slug in candidates:
         record = await _fetch_post_record(kv, slug)
         count = int(record.get("count", 0) or 0)
         if count <= 0:
             continue
+
+        upvoted_slugs.append(slug)
 
         title = str(record.get("title", "") or "")
         permalink = str(record.get("permalink", "") or "")
         date_iso = str(record.get("dateISO", "") or "")
 
         if not permalink:
-            # Best-effort fallback; many Hugo sites use trailing slash.
             permalink = f"{slug}/" if slug != "/" else "/"
         if not title:
             title = slug
@@ -500,12 +710,16 @@ async def _rebuild_popular_cache(env, kv) -> dict:
         ),
         reverse=True,
     )
-    items = items[:max_items]
+
+    if upvoted_slugs:
+        await _store_slug_index(kv, upvoted_slugs)
 
     payload = {
         "generated_at": int(time.time()),
-        "scanned_keys": len(key_names),
-        "items": items,
+        "source": source,
+        "scanned_keys": len(candidates),
+        "indexed_slugs": len(upvoted_slugs),
+        "items": items[:max_items],
     }
     await _kv_put(kv, POPULAR_CACHE_KEY, json.dumps(payload))
     return payload
@@ -575,6 +789,10 @@ async def _handle_post(request, kv, origin: str | None, secret: str):
     except Exception:
         pass
     count = int(record.get("count", 0) or 0)
+    try:
+        await _add_slug_to_index(kv, slug)
+    except Exception:
+        pass
     cookie_header = _build_cookie(slug, secret)
     return _json_response({
         "slug": slug,
@@ -587,6 +805,13 @@ async def _handle_popular(request, env, kv, origin: str | None):
     raw_limit = _extract_query_first(request.url, "limit")
     limit = _parse_int(raw_limit, default=5)
     limit = _clamp_int(limit, 1, 50)
+
+    site_origin = _site_origin_from_url(request.url)
+    if site_origin:
+        try:
+            await _kv_put(kv, POPULAR_SITE_ORIGIN_KEY, site_origin)
+        except Exception:
+            pass
 
     cached_raw = await _kv_get(kv, POPULAR_CACHE_KEY)
     payload = None
@@ -603,19 +828,24 @@ async def _handle_popular(request, env, kv, origin: str | None):
         should_rebuild = True
     else:
         generated_at = payload.get("generated_at")
+        source = payload.get("source")
         items = payload.get("items")
         if isinstance(items, list) and len(items) == 0:
             # Empty cache: retry at most every 10 minutes.
-            if not isinstance(generated_at, int) or (now - generated_at) >= 600:
+            if site_origin and (not isinstance(source, str) or source == "none"):
+                should_rebuild = True
+            elif not isinstance(generated_at, int) or (now - generated_at) >= 600:
                 should_rebuild = True
 
     if should_rebuild:
-        payload = await _rebuild_popular_cache(env, kv)
+        payload = await _rebuild_popular_cache(env, kv, site_origin=site_origin or None)
 
     items = payload.get("items") if isinstance(payload.get("items"), list) else []
     return _json_response({
         "generated_at": payload.get("generated_at", 0),
+        "source": payload.get("source", ""),
         "scanned_keys": payload.get("scanned_keys", 0),
+        "indexed_slugs": payload.get("indexed_slugs", 0),
         "items": items[:limit],
     }, origin=origin, headers={"cache-control": "public, max-age=600"})
 
@@ -699,7 +929,14 @@ class Default(WorkerEntrypoint):
             return
 
         try:
-            await _rebuild_popular_cache(env, kv_binding)
+            site_origin = None
+            try:
+                stored = await _kv_get(kv_binding, POPULAR_SITE_ORIGIN_KEY)
+                site_origin = stored if isinstance(stored, str) and stored else None
+            except Exception:
+                site_origin = None
+
+            await _rebuild_popular_cache(env, kv_binding, site_origin=site_origin)
         except Exception:
             # Avoid failing the scheduled event.
             return
