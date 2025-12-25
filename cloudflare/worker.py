@@ -378,38 +378,118 @@ def _slugs_from_sitemap(xml: str) -> list[str]:
     return slugs
 
 
+async def _response_to_text(resp) -> str | None:
+    if resp is None:
+        return None
+
+    if isinstance(resp, str):
+        return resp
+
+    if isinstance(resp, (bytes, bytearray)):
+        try:
+            return bytes(resp).decode("utf-8", errors="replace")
+        except Exception:
+            return None
+
+    status = getattr(resp, "status", None)
+    if callable(status):
+        try:
+            status = status()
+        except Exception:
+            status = None
+    if isinstance(status, int) and status >= 400:
+        return None
+
+    ok = getattr(resp, "ok", None)
+    if callable(ok):
+        try:
+            ok = ok()
+        except Exception:
+            ok = None
+    if ok is False:
+        return None
+
+    text_attr = getattr(resp, "text", None)
+    if callable(text_attr):
+        try:
+            body = await _maybe_await(text_attr())
+        except Exception:
+            body = None
+    else:
+        body = text_attr
+
+    if isinstance(body, str):
+        return body
+    if isinstance(body, (bytes, bytearray)):
+        try:
+            return bytes(body).decode("utf-8", errors="replace")
+        except Exception:
+            return None
+
+    body_attr = getattr(resp, "body", None)
+    if isinstance(body_attr, str):
+        return body_attr
+    if isinstance(body_attr, (bytes, bytearray)):
+        try:
+            return bytes(body_attr).decode("utf-8", errors="replace")
+        except Exception:
+            return None
+
+    return None
+
+
 async def _fetch_text(url: str) -> str | None:
     """
     Fetch a URL and return the response body as text.
     Relies on Cloudflare Workers' fetch being available at runtime.
     """
-    fetch_fn = globals().get("fetch")
+    fetch_fn = None
+    try:
+        # Prefer runtime-provided fetch if available.
+        from workers import fetch as fetch_fn  # type: ignore
+    except Exception:
+        fetch_fn = None
+
+    if not callable(fetch_fn):
+        fetch_fn = globals().get("fetch")
+
     if not callable(fetch_fn):
         try:
-            # Python Workers may also expose fetch via the workers runtime module.
-            from workers import fetch as fetch_fn  # type: ignore
+            # In Python Workers, fetch may be injected as a global (not in module globals()).
+            fetch_fn = fetch  # type: ignore[name-defined]
         except Exception:
             return None
 
     try:
-        resp = await _maybe_await(fetch_fn(url))
+        try:
+            maybe = fetch_fn(url)
+        except TypeError:
+            # Some runtimes may require a Request object.
+            from workers import Request  # type: ignore
+            maybe = fetch_fn(Request(url))
+        resp = await _maybe_await(maybe)
     except Exception:
         return None
 
-    ok = getattr(resp, "ok", None)
-    if ok is False:
-        return None
+    return await _response_to_text(resp)
 
-    text_fn = getattr(resp, "text", None)
-    if not callable(text_fn):
+
+async def _fetch_asset_text(env, url: str) -> str | None:
+    assets = _get_env_binding(env, "ASSETS")
+    if not assets:
         return None
 
     try:
-        body = await _maybe_await(text_fn())
+        try:
+            maybe = assets.fetch(url)
+        except TypeError:
+            from workers import Request  # type: ignore
+            maybe = assets.fetch(Request(url))
+        resp = await _maybe_await(maybe)
     except Exception:
         return None
 
-    return body if isinstance(body, str) else None
+    return await _response_to_text(resp)
 
 
 async def _load_slug_index(kv) -> list[str]:
@@ -661,7 +741,10 @@ async def _rebuild_popular_cache(env, kv, site_origin: str | None = None) -> dic
 
         if origin:
             source = "sitemap"
-            sitemap_text = await _fetch_text(f"{origin}{POPULAR_SITEMAP_PATH}")
+            sitemap_url = f"{origin}{POPULAR_SITEMAP_PATH}"
+            sitemap_text = await _fetch_asset_text(env, sitemap_url)
+            if sitemap_text is None:
+                sitemap_text = await _fetch_text(sitemap_url)
             slugs = _slugs_from_sitemap(sitemap_text or "")
         else:
             source = "none"
