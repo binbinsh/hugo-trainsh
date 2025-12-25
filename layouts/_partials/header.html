@@ -19,10 +19,6 @@
       <a href="{{ "/" | relLangURL }}">{{ i18n "home" }}</a>
       {{ with site.GetPage "/blog" }}
         <a href="{{ .RelPermalink }}">{{ i18n "blog" }}</a>
-      {{ else }}
-        {{ with site.GetPage "/archive" }}
-          <a href="{{ .RelPermalink }}">{{ i18n "archive" }}</a>
-        {{ end }}
       {{ end }}
     {{ end }}
   {{- end -}}

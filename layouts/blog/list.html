@@ -12,7 +12,7 @@
          placeholder="{{ i18n "type_to_search" }}"
          aria-label="{{ i18n "search_posts" }}"
          autocomplete="off"
-         data-index-url="{{ "index.json" | relURL }}"
+         data-index-url="{{ "index.json" | relLangURL }}"
          data-no-results="{{ i18n "no_results" }}">
 </p>
 
@@ -21,11 +21,14 @@
 {{ partial "post/blog-posts.html" (dict "pages" $pages.ByDate.Reverse "filterable" true) }}
 
 {{- $allTags := slice -}}
-{{- with site.Taxonomies.tags -}}
-  {{- range .Alphabetical -}}
-    {{- $allTags = $allTags | append (.Page.LinkTitle | lower | replaceRE "\\s+" "-") -}}
+{{- range $pages -}}
+  {{- with .Params.tags -}}
+    {{- range . -}}
+      {{- $allTags = $allTags | append ((printf "%v" .) | lower | replaceRE "\\s+" "-") -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- $allTags = $allTags | uniq | sort -}}
 {{- $tagsJson := $allTags | jsonify -}}
 {{- $tagsB64 := $tagsJson | base64Encode -}}
 

@@ -1,11 +1,20 @@
-{{- $page := .page }}
-{{- $taxonomy := .taxonomy }}
-{{- with $page.GetTerms $taxonomy }}
+{{- $page := .page -}}
+{{- $blogPage := $page.Site.GetPage "/blog" -}}
+{{- $blogBase := "/blog/" -}}
+{{- with $blogPage -}}
+  {{- $blogBase = .RelPermalink -}}
+{{- end -}}
+
+{{- with $page.Params.tags -}}
+  {{- if gt (len .) 0 -}}
 <small>
   <div class="tags">
-    {{ range .ByLinkTitle }}
-      <a rel="nofollow" href="{{ .RelPermalink }}">#{{ .LinkTitle | lower }}</a>
-    {{ end }}
+    <a rel="nofollow" href="{{ $blogBase }}?q=pot-of-honey" style="display:none;">#potofhoney</a>
+    {{- range . -}}
+      {{- $tag := (printf "%v" .) | lower | replaceRE "\\s+" "-" -}}
+      <a rel="nofollow" href="{{ $blogBase }}?q={{ $tag | urlquery }}">#{{ $tag }}</a>
+    {{- end -}}
   </div>
 </small>
-{{- end }}
+  {{- end -}}
+{{- end -}}
