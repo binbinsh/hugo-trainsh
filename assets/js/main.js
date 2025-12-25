@@ -776,6 +776,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const candidateLimit = parseInt(list.getAttribute('data-candidate-limit') || '50', 10) || 50;
 
+    const setState = (state) => {
+      list.setAttribute('data-popular-state', state);
+      list.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
+    };
+
+    // Ensure we don't flash the server-rendered fallback list before scoring finishes.
+    setState('loading');
+
     const normalizePath = (href) => {
       try {
         const u = new URL(href, window.location.origin);
@@ -798,73 +806,85 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const run = async () => {
-      const items = await loadIndex();
-      if (!items.length) return;
-
-      const dateKey = (iso) => {
-        const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
-        if (!m) return 0;
-        return (Number(m[1]) * 10000) + (Number(m[2]) * 100) + Number(m[3]);
-      };
-
-      const sortedByDate = items
-        .filter((it) => it && it.permalink && it.title)
-        .slice()
-        .sort((a, b) => dateKey(b.dateISO) - dateKey(a.dateISO));
-
-      const candidates = sortedByDate.slice(0, Math.max(1, candidateLimit));
-
-      const fetchCount = async (slug) => {
-        try {
-          const res = await fetch(`${infoEndpoint}?slug=${encodeURIComponent(slug)}`, { credentials: 'include' });
-          if (!res.ok) return 0;
-          const data = await res.json();
-          return (data && typeof data.upvote_count === 'number') ? data.upvote_count : 0;
-        } catch (_) {
-          return 0;
+      try {
+        const items = await loadIndex();
+        if (!items.length) {
+          setState('fallback');
+          return;
         }
-      };
 
-      // Concurrency-limited fetch to avoid hammering the endpoint.
-      const concurrency = 8;
-      const scored = [];
-      const pool = [];
-      let idx = 0;
+        const dateKey = (iso) => {
+          const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+          if (!m) return 0;
+          return (Number(m[1]) * 10000) + (Number(m[2]) * 100) + Number(m[3]);
+        };
 
-      const worker = async () => {
-        while (idx < candidates.length) {
-          const item = candidates[idx++];
-          if (!item) continue;
-          const permalink = String(item.permalink || '');
-          const title = String(item.title || '');
-          if (!permalink || !title) continue;
-          const slug = toSlug(permalink);
-          if (!slug || !slug.startsWith('/')) continue;
-          const upvotes = await fetchCount(slug);
-          scored.push({ title, permalink, upvotes, dateISO: item.dateISO || '' });
+        const sortedByDate = items
+          .filter((it) => it && it.permalink && it.title)
+          .slice()
+          .sort((a, b) => dateKey(b.dateISO) - dateKey(a.dateISO));
+
+        const candidates = sortedByDate.slice(0, Math.max(1, candidateLimit));
+
+        const fetchCount = async (slug) => {
+          try {
+            const res = await fetch(`${infoEndpoint}?slug=${encodeURIComponent(slug)}`, { credentials: 'include' });
+            if (!res.ok) return 0;
+            const data = await res.json();
+            return (data && typeof data.upvote_count === 'number') ? data.upvote_count : 0;
+          } catch (_) {
+            return 0;
+          }
+        };
+
+        // Concurrency-limited fetch to avoid hammering the endpoint.
+        const concurrency = 8;
+        const scored = [];
+        const pool = [];
+        let idx = 0;
+
+        const worker = async () => {
+          while (idx < candidates.length) {
+            const item = candidates[idx++];
+            if (!item) continue;
+            const permalink = String(item.permalink || '');
+            const title = String(item.title || '');
+            if (!permalink || !title) continue;
+            const slug = toSlug(permalink);
+            if (!slug || !slug.startsWith('/')) continue;
+            const upvotes = await fetchCount(slug);
+            scored.push({ title, permalink, upvotes, dateISO: item.dateISO || '' });
+          }
+        };
+
+        for (let i = 0; i < concurrency; i++) pool.push(worker());
+        await Promise.all(pool);
+
+        scored.sort((a, b) => {
+          if ((b.upvotes || 0) !== (a.upvotes || 0)) return (b.upvotes || 0) - (a.upvotes || 0);
+          return dateKey(b.dateISO) - dateKey(a.dateISO);
+        });
+
+        const out = scored.slice(0, limit);
+        if (!out.length) {
+          setState('fallback');
+          return;
         }
-      };
 
-      for (let i = 0; i < concurrency; i++) pool.push(worker());
-      await Promise.all(pool);
+        list.innerHTML = '';
+        out.forEach((p) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = p.permalink;
+          a.textContent = p.title;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
 
-      scored.sort((a, b) => {
-        if ((b.upvotes || 0) !== (a.upvotes || 0)) return (b.upvotes || 0) - (a.upvotes || 0);
-        return dateKey(b.dateISO) - dateKey(a.dateISO);
-      });
-
-      const out = scored.slice(0, limit);
-      if (!out.length) return;
-
-      list.innerHTML = '';
-      out.forEach((p) => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = p.permalink;
-        a.textContent = p.title;
-        li.appendChild(a);
-        list.appendChild(li);
-      });
+        setState('ready');
+      } catch (_) {
+        setState('fallback');
+      }
     };
 
     // Run after load so it doesn't block first paint.

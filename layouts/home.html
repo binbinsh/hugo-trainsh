@@ -30,8 +30,9 @@
       data-limit="{{ $popularLimit }}"
       data-index-url="{{ "index.json" | relURL }}"
       data-candidate-limit="{{ $candidateLimit }}"
-      data-info-endpoint="{{ $infoEndpoint }}">
-    {{- range first $popularLimit ($posts.ByDate.Reverse) -}}
+      data-info-endpoint="{{ $infoEndpoint }}"
+      {{- if $infoEndpoint -}}data-popular-state="loading" aria-busy="true"{{- end -}}>
+    {{- range first $popularLimit (shuffle $posts) -}}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     {{- end -}}
   </ul>
