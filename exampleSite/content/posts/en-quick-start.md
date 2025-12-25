@@ -2,13 +2,14 @@
 title = 'Quick Start with trainsh'
 date = '2025-10-26'
 draft = false
-toc = true
 tags = ['getting started','theme','mermaid','math']
 +++
 
 ## Typography & Layout
 
 This is an English example post to preview the trainsh theme.
+
+{{< toc >}}
 
 ### Features in this post
 - Table of contents (TOC)

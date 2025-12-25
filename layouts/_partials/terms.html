@@ -1,11 +1,11 @@
 {{- $page := .page }}
 {{- $taxonomy := .taxonomy }}
 {{- with $page.GetTerms $taxonomy }}
-<div class="flex flex-wrap gap-2 mt-2">
-  {{- range .ByLinkTitle }}
-  <a href="{{ .RelPermalink }}" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
-    {{ .LinkTitle | lower }}
-  </a>
-  {{- end }}
-</div>
+<small>
+  <div class="tags">
+    {{ range .ByLinkTitle }}
+      <a rel="nofollow" href="{{ .RelPermalink }}">#{{ .LinkTitle | lower }}</a>
+    {{ end }}
+  </div>
+</small>
 {{- end }}

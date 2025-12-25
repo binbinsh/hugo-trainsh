@@ -1,0 +1,44 @@
+{{ define "main" }}
+{{- with .Content -}}
+  {{ . }}
+{{- end -}}
+
+{{- $sections := default (slice "posts") site.Params.mainSections -}}
+{{- $pages := where site.RegularPages "Section" "in" $sections -}}
+
+<p>
+  <input id="blog-search"
+         type="search"
+         placeholder="{{ i18n "type_to_search" }}"
+         aria-label="{{ i18n "search_posts" }}"
+         autocomplete="off"
+         data-index-url="{{ "index.json" | relURL }}"
+         data-no-results="{{ i18n "no_results" }}">
+</p>
+
+<div id="tag-filters"></div>
+
+{{ partial "post/blog-posts.html" (dict "pages" $pages.ByDate.Reverse "filterable" true) }}
+
+{{- $allTags := slice -}}
+{{- with site.Taxonomies.tags -}}
+  {{- range .Alphabetical -}}
+    {{- $allTags = $allTags | append (.Page.LinkTitle | lower | replaceRE "\\s+" "-") -}}
+  {{- end -}}
+{{- end -}}
+{{- $tagsJson := $allTags | jsonify -}}
+{{- $tagsB64 := $tagsJson | base64Encode -}}
+
+<small>
+  <div class="tags" id="tags"
+       data-tags="{{ $tagsB64 }}"
+       data-base="{{ .RelPermalink }}"
+       data-filtering-for="{{ i18n "filtering_for" }}"
+       data-remove-all="{{ i18n "remove_all_filters" }}"
+       data-remove-tag="{{ i18n "remove_tag" }}">
+    <a rel="nofollow" href="{{ .RelPermalink }}?q=pot-of-honey" style="display:none;">#potofhoney</a>
+  </div>
+</small>
+{{ end }}
+
+

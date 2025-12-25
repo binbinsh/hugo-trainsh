@@ -1,8 +1,8 @@
 {{- $date := .date -}}
 
 {{- if $date -}}
-  {{- /* Use the same numeric format for all languages and views. */ -}}
-  {{- $date | time.Format "2006-01-02" -}}
+  {{- /* Bear Blog default: "d M, Y" (e.g. "03 Dec, 2025"). */ -}}
+  {{- $date | time.Format "02 Jan, 2006" -}}
 {{- end -}}
 
 

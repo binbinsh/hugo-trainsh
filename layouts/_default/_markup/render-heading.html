@@ -1,7 +1,3 @@
 <h{{ .Level }} id="{{ .Anchor }}"{{ with .Attributes.class }} class="{{ . }}"{{ end }}>
   {{ .Text }}
-  <a class="heading-anchor" href="#{{ .Anchor }}" aria-label="{{ i18n "link_to_section" }}">
-    <span class="sr-only">{{ i18n "link_to_section" }}</span>
-    <span aria-hidden="true">#</span>
-  </a>
 </h{{ .Level }}>

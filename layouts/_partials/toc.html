@@ -1,0 +1,38 @@
+{{- /*
+Renders a Bear Blog-style TOC: a plain nested list of H2/H3 links.
+
+Bear Blog uses Mistune's TableOfContents directive (no special styling in default.css),
+so keep this output minimal and unopinionated.
+*/ -}}
+
+{{- $headings := .Fragments.Headings -}}
+{{- if not $headings -}}
+  {{- return -}}
+{{- end -}}
+
+<div class="toc">
+  <ul>
+    {{- template "toc-items" (dict "headings" $headings) -}}
+  </ul>
+</div>
+
+{{- define "toc-items" -}}
+  {{- range .headings -}}
+    {{- if or (eq .Level 2) (eq .Level 3) -}}
+      <li>
+        <a href="#{{ .ID }}">{{ .Title | safeHTML }}</a>
+        {{- with .Headings -}}
+          <ul>
+            {{- template "toc-items" (dict "headings" .) -}}
+          </ul>
+        {{- end -}}
+      </li>
+    {{- else -}}
+      {{- with .Headings -}}
+        {{- template "toc-items" (dict "headings" .) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+

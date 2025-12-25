@@ -1,62 +1,36 @@
 {{ define "main" }}
-  {{ with site.Params.home.intro }}
-  <section class="mb-12">
-    <p class="text-[var(--color-muted)]">{{ . | markdownify }}</p>
-  </section>
-  {{ end }}
+  {{- if .Content -}}
+    {{ .Content }}
+  {{- else -}}
+    {{- with site.Params.home.intro -}}
+      {{ . | markdownify }}
+    {{- end -}}
+  {{- end -}}
 
-  {{ with site.Taxonomies.tags }}
-  {{ $limit := (site.Params.home.tags.limit | default 10) }}
-  {{ $tags := .ByCount }}
-  {{ if and (gt $limit 0) (lt $limit (len $tags)) }}
-    {{ $tags = first $limit $tags }}
-  {{ end }}
-  <section class="mb-12">
-    <h2 class="text-lg font-semibold mb-4">{{ i18n "popular_tags" }}</h2>
-    <div class="flex flex-wrap gap-2">
-      {{ range $tags }}
-      <a href="{{ .Page.RelPermalink }}" class="px-3 py-1 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
-        {{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}
-      </a>
-      {{ end }}
-    </div>
-    {{ with site.GetPage "/tags" }}
-    <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ i18n "more_tags" }} →</a></p>
-    {{ end }}
-  </section>
-  {{ end }}
+  {{- $sections := default (slice "posts") site.Params.mainSections -}}
+  {{- $posts := where site.RegularPages "Section" "in" $sections -}}
 
-  {{ $recentN := (site.Params.home.recent.limit | default 5) }}
-  {{ $sections := default (slice "posts") site.Params.mainSections }}
-  {{ $posts := where site.RegularPages "Section" "in" $sections }}
-  {{ with $posts }}
-  <section class="mb-12">
-    <h2 class="text-lg font-semibold mb-4">{{ i18n "recent_posts" }}</h2>
-    <ul class="space-y-3">
-      {{ range first $recentN (.ByDate.Reverse) }}
-      <li class="flex gap-4 items-baseline">
-        <time class="text-sm text-[var(--color-muted)] font-mono shrink-0" datetime="{{ .Date | time.Format "2006-01-02" }}">
-          {{ partial "date/format.html" (dict "page" . "date" .Date "style" "long") }}
-        </time>
-        <a href="{{ .RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors">
-          {{ .LinkTitle }}
-        </a>
-      </li>
-      {{ end }}
-    </ul>
-    {{ $moreText := i18n "more_posts" }}
-    {{ if site.Params.home.recent.moreURL }}
-    <p class="mt-4"><a href="{{ site.Params.home.recent.moreURL }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
-    {{ else }}
-    {{ with site.GetPage "/archive" }}
-    <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
-    {{ else }}
-    {{ with site.GetPage (printf "/%s" (index $sections 0)) }}
-    <p class="mt-4"><a href="{{ .RelPermalink }}" class="text-[var(--color-accent)] hover:underline">{{ $moreText }} →</a></p>
-    {{ end }}
-    {{ end }}
-    {{ end }}
-  </section>
-  {{ end }}
+  {{- $recentLimit := (site.Params.home.recent.limit | default 5) -}}
+  {{- $popularLimit := (site.Params.home.popular.limit | default 5) -}}
 
+  <h3>{{ i18n "home_most_recent_posts" }}</h3>
+  <ul>
+    {{- range first $recentLimit ($posts.ByDate.Reverse) -}}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{- end -}}
+  </ul>
+
+  <h3>{{ i18n "home_most_popular_posts" }}</h3>
+  {{- $infoEndpoint := "" -}}
+  {{- with site.Params.upvote -}}
+    {{- $infoEndpoint = .infoEndpoint | default "/api/upvote-info" -}}
+  {{- end -}}
+  <ul id="home-popular-posts"
+      data-limit="{{ $popularLimit }}"
+      data-index-url="{{ "index.json" | relURL }}"
+      data-info-endpoint="{{ $infoEndpoint }}">
+    {{- range first $popularLimit ($posts.ByDate.Reverse) -}}
+      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{- end -}}
+  </ul>
 {{ end }}

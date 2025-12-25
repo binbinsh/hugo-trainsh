@@ -1,20 +1,13 @@
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ printf "%s | %s" .Title .Site.Title }}{{ end }}</title>
-<script>
-(function() {
-  var s = localStorage.getItem('theme');
-  var m = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  var t = s || (m ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', t);
-})();
-</script>
-{{ partialCached "head/fonts.html" . .RelPermalink }}
+
 {{ partial "head/css.html" . }}
-{{ $noop := .WordCount }}
-{{ $hasDisplayMath := gt (len (findRE `\$\$[^\$]+\$\$` .RawContent)) 0 }}
-{{ $hasInlineMath := gt (len (findRE `\$[^\$]+\$` .RawContent)) 0 }}
-{{ if or (.Page.Store.Get "hasMath") $hasDisplayMath $hasInlineMath }}
+
+{{- /* Optional: KaTeX auto-render (kept for compatibility; does not affect Bear Blog styling). */ -}}
+{{- $hasDisplayMath := gt (len (findRE `\$\$[^\$]+\$\$` .RawContent)) 0 -}}
+{{- $hasInlineMath := gt (len (findRE `\$[^\$]+\$` .RawContent)) 0 -}}
+{{- if or (.Page.Store.Get "hasMath") $hasDisplayMath $hasInlineMath -}}
   <link href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" rel="stylesheet">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
@@ -32,5 +25,6 @@
     }
   });
   </script>
-{{ end }}
+{{- end -}}
+
 {{ partial "head/js.html" . }}

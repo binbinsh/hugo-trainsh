@@ -1,0 +1,309 @@
+/* This theme intentionally mirrors the look & feel of Bear Blog.
+ * Notes:
+ * - Keep the selectors minimal (Bear Blog relies on element styles).
+ * - Prefer `prefers-color-scheme` for dark mode (no JS toggle).
+ */
+
+:root {
+    --width: 720px;
+    --font-main: Verdana, sans-serif;
+    --font-secondary: Verdana, sans-serif;
+    --font-scale: 1em;
+    --background-color: #fff;
+    --heading-color: #222;
+    --text-color: #444;
+    --link-color: #3273dc;
+    --visited-color:  #8b6fcb;
+    --code-background-color: #f2f2f2;
+    --code-color: #222;
+    --blockquote-color: #222;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #01242e;
+        --heading-color: #eee;
+        --text-color: #ddd;
+        --link-color: #8cc2dd;
+        --visited-color:  #8b6fcb;
+        --code-background-color: #000;
+        --code-color: #ddd;
+        --blockquote-color: #ccc;
+    }
+}
+
+body {
+    font-family: var(--font-secondary);
+    font-size: var(--font-scale);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width);
+    text-align: left;
+    background-color: var(--background-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    color: var(--heading-color);
+}
+
+a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; 
+}
+
+nav a {
+    margin-right: 8px;
+}
+
+/* Blog search (Fuse): keep minimal, but make it usable on all viewports. */
+#blog-search {
+    width: 420px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+strong, b {
+    color: var(--heading-color);
+}
+
+button {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Bear Blog: dates are shown in a small monospace font. */
+time {
+    font-family: monospace;
+    font-size: 15px;
+    font-style: normal;
+}
+
+main {
+    line-height: 1.6;
+}
+
+table {
+    width: 100%;
+}
+
+hr {
+    border: 0;
+    border-top: 1px dashed;
+}
+
+img {
+    max-width: 100%;
+}
+
+code {
+    font-family: monospace;
+    padding: 2px;
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+    border-radius: 3px;
+}
+
+pre code {
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+blockquote {
+    border-left: 1px solid #999;
+    color: var(--code-color);
+    padding-left: 20px;
+    font-style: italic;
+}
+
+footer {
+    padding: 25px 0;
+    text-align: center;
+}
+
+.title:hover {
+    text-decoration: none;
+}
+
+.title h1 {
+    font-size: 1.5em;
+}
+
+.inline {
+    width: auto !important;
+}
+
+.highlight, .code {
+    padding: 1px 15px;
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+    border-radius: 3px;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    overflow-x: auto;
+}
+
+/* Code block actions (wrap/copy) */
+.codeblock {
+    position: relative;
+}
+
+.codeblock-actions {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+    opacity: 0.75;
+}
+
+.codeblock:hover .codeblock-actions {
+    opacity: 1;
+}
+
+.codeblock-action {
+    margin: 0;
+    padding: 2px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    line-height: 0;
+    cursor: pointer;
+}
+
+.codeblock-action:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .codeblock-action:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+}
+
+.codeblock-action:focus-visible {
+    outline: 2px solid var(--link-color);
+    border-radius: 4px;
+}
+
+.codeblock-action svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.codeblock-action--wrap.is-active {
+    color: salmon;
+}
+
+.codeblock-action--copy .icon-check {
+    display: none;
+}
+
+.codeblock-action--copy.is-copied .icon-copy {
+    display: none;
+}
+
+.codeblock-action--copy.is-copied .icon-check {
+    display: block;
+    color: salmon;
+}
+
+.codeblock.wrapped pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Chroma: keep background controlled by `.highlight` to match Bear Blog. */
+.chroma {
+    background-color: transparent !important;
+    color: inherit;
+}
+
+/* blog post list (Bear Blog style) */
+ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+}
+
+ul.blog-posts li {
+    display: flex;
+}
+
+ul.blog-posts li span {
+    flex: 0 0 130px;
+}
+
+ul.blog-posts li a:visited {
+    color: var(--visited-color);
+}
+
+/* Upvote widget (mirrors Bear Blog’s minimal button) */
+.upvote-button {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background-color: inherit;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upvote-button:disabled {
+    opacity: 0.9;
+    cursor: default;
+}
+
+.upvote-button--active {
+    color: salmon;
+}
+
+.upvote-count {
+    margin-top: -3px;
+}
+
+/* Figures (kept minimal; compatible with Hugo render hooks). */
+figure {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+}
+
+figure figcaption {
+    text-align: center;
+    font-style: italic;
+    font-size: 0.9em;
+    margin-top: 0.5em;
+}
+
+/* Mermaid blocks (optional). */
+.mermaid {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    overflow-x: auto;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.mermaid svg {
+    max-width: 100%;
+    height: auto;
+    background: transparent !important;
+}
+
+

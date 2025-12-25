@@ -2,6 +2,12 @@
   {{- $sections := default (slice "posts") site.Params.mainSections -}}
   {{- $pages := where site.RegularPages "Section" "in" $sections -}}
   {{- range $i, $p := $pages.ByDate.Reverse -}}{{ if $i }},{{ end }}
+  {{- $tags := slice -}}
+  {{- with $p.Params.tags -}}
+    {{- range . -}}
+      {{- $tags = $tags | append ((printf "%v" .) | lower | replaceRE "\\s+" "-") -}}
+    {{- end -}}
+  {{- end -}}
   {
     "title": {{ $p.Title | jsonify }},
     "summary": {{ $p.Summary | plainify | jsonify }},
@@ -10,8 +16,8 @@
     "dateISO": {{ $p.Date.Format "2006-01-02" | jsonify }},
     "year": {{ $p.Date.Format "2006" | jsonify }},
     "author": {{ default site.Params.author $p.Params.author | jsonify }},
-    "permalink": {{ $p.Permalink | jsonify }},
-    "tags": {{ $p.Params.tags | default (slice) | jsonify }},
+    "permalink": {{ $p.RelPermalink | jsonify }},
+    "tags": {{ $tags | jsonify }},
     "categories": {{ $p.Params.categories | default (slice) | jsonify }},
     "content": {{ $p.Plain | jsonify }}
   }

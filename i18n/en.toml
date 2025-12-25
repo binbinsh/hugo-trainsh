@@ -4,6 +4,9 @@ other = "Home"
 [archive]
 other = "Archive"
 
+[blog]
+other = "Blog"
+
 [tags]
 other = "Tags"
 
@@ -23,7 +26,7 @@ other = "Recent posts"
 other = "Search posts"
 
 [type_to_search]
-other = "Type to search"
+other = "Type to search..."
 
 [powered_by]
 other = "Powered by {{ .Hugo }} &amp; {{ .Theme }}"
@@ -90,3 +93,42 @@ other = "COPIED"
 
 [nowrap]
 other = "NOWRAP"
+
+[no_posts_yet]
+other = "No posts yet"
+
+[filtering_for]
+other = "Filtering for:"
+
+[remove_all_filters]
+other = "Remove all filters"
+
+[remove_tag]
+other = "Remove tag"
+
+[home_most_recent_posts]
+other = "My most recent posts"
+
+[home_most_popular_posts]
+other = "My most popular posts"
+
+[subscribe_via]
+other = "Subscribe via"
+
+[or_just_say_hello]
+other = "or just say hello."
+
+[or_just_say_hello_on]
+other = "or just say hello on"
+
+[follow_on]
+other = "follow on"
+
+[or_just_say_hello_via]
+other = "or just say hello by"
+
+[enable_soft_wrap]
+other = "Enable soft wrap"
+
+[disable_soft_wrap]
+other = "Disable soft wrap"

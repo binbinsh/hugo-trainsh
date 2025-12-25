@@ -1,26 +1,17 @@
 {{ define "main" }}
-<header class="mb-8">
-  <h1 class="text-3xl font-bold">{{ .Title }}</h1>
-</header>
+<h3 style="margin-bottom:0">
+  {{ i18n "filtering_for" }}
+  <span class="tag">#{{ .Title | lower }}</span>
+</h3>
+<small>
+  {{- with site.GetPage "/tags" -}}
+    <a rel="nofollow" href="{{ .RelPermalink }}">{{ i18n "remove_all_filters" }}</a>
+  {{- end -}}
+</small>
 
 {{ with .Content }}
-<div class="prose max-w-none mb-8">{{ . }}</div>
+  {{ . }}
 {{ end }}
 
-<ul class="space-y-6">
-  {{ range .Pages.ByDate.Reverse }}
-  <li class="pb-6 border-b border-[var(--color-border)] last:border-b-0">
-      <time class="text-sm text-[var(--color-muted)] font-mono" datetime="{{ .Date | time.Format "2006-01-02" }}">
-      {{ partial "date/format.html" (dict "page" . "date" .Date "style" "long") }}
-    </time>
-    <h2 class="text-xl font-semibold mt-1">
-      <a href="{{ .RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors">{{ .Title }}</a>
-    </h2>
-    {{- $summary := .Summary | plainify | truncate 150 -}}
-    {{ with $summary }}
-    <p class="mt-2 text-[var(--color-muted)]">{{ . }}</p>
-    {{ end }}
-  </li>
-  {{ end }}
-</ul>
+{{ partial "post/blog-posts.html" (dict "pages" .Pages.ByDate.Reverse) }}
 {{ end }}

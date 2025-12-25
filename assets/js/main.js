@@ -24,14 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const updateState = ({ upvote_count, upvoted }) => {
         if (typeof upvote_count === 'number') {
           countEl.textContent = upvote_count.toString();
-          button.classList.remove('upvote-button--cool', 'upvote-button--warm', 'upvote-button--hot');
-          if (upvote_count >= 100) {
-            button.classList.add('upvote-button--hot');
-          } else if (upvote_count >= 10) {
-            button.classList.add('upvote-button--warm');
-          } else {
-            button.classList.add('upvote-button--cool');
-          }
         }
         if (upvoted) {
           button.disabled = true;
@@ -53,21 +45,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (button.disabled) return;
         if (!hasMoved.value || Date.now() - started < 2000) return;
 
+        // Match Bear Blog behavior: if the user moved (not a bot), omit the title.
+        const titleInput = form.querySelector('input[name="title"]');
+        if (titleInput && hasMoved.value) {
+          titleInput.value = '';
+        }
+
         fetch(endpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug }),
-          credentials: 'include'
+          body: new FormData(form),
+          credentials: 'include',
         })
           .then((resp) => resp.ok ? resp.json() : null)
           .then((data) => {
-            if (!data) return;
-            updateState(data);
-            if (typeof data.upvote_count === 'number') {
+            // Optimistic UI: mimic Bear Blog (disable + salmon + increment).
+            button.disabled = true;
+            button.classList.add('upvote-button--active');
+            if (upvotedTitle) button.title = upvotedTitle;
+
+            const current = parseInt((countEl.textContent || '').trim(), 10);
+            const baseline = Number.isFinite(current) ? current : 0;
+            countEl.textContent = String(baseline + 1);
+
+            // If backend returns an updated count, sync to it.
+            if (data && typeof data.upvote_count === 'number') {
               countEl.textContent = data.upvote_count.toString();
-            } else {
-              const current = parseInt(countEl.textContent || '0', 10) || 0;
-              countEl.textContent = String(current + 1);
             }
           })
           .catch(() => {});
@@ -354,9 +356,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // PhotoSwipe lightbox for images in article content (lazy-loaded)
   (() => {
-    const article = document.querySelector('article.content');
-    if (!article) return;
-    if (!article.querySelector('a[data-pswp-width], a.lightbox-image, img')) return;
+    // Bear Blog pages render content directly inside <main>; keep lightbox wiring
+    // scoped to that container (no special article wrapper).
+    const container = document.querySelector('main');
+    if (!container) return;
+    if (!container.querySelector('a[data-pswp-width], a.lightbox-image, img')) return;
 
     const photoswipeCss = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css';
     const photoswipeLightboxSrc = 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.min.js';
@@ -400,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           // Primary lightbox for images with data-pswp-width attributes
           const lightbox = new PhotoSwipeLightbox({
-            gallery: 'article.content',
+            gallery: 'main',
             children: 'a[data-pswp-width]',
             wheelToZoom: true,
             pswpModule
@@ -411,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
           manualLb.init();
 
           // Handle lightbox-image anchors missing intrinsic dimensions
-          const lightboxAnchors = Array.from(article.querySelectorAll('a.lightbox-image:not([data-pswp-width])'))
+          const lightboxAnchors = Array.from(container.querySelectorAll('a.lightbox-image:not([data-pswp-width])'))
             .map(a => ({ a, img: a.querySelector('img') }))
             .filter(x => x.img);
 
@@ -426,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           // Fallback for images not wrapped by any anchor
-          const orphanImgs = Array.from(article.querySelectorAll('img:not(a img)'));
+          const orphanImgs = Array.from(container.querySelectorAll('img:not(a img)'));
           orphanImgs.forEach((img) => {
             img.style.cursor = 'zoom-in';
             img.addEventListener('click', async () => {
@@ -460,10 +464,24 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const text = pre.textContent || '';
       await navigator.clipboard.writeText(text);
-      const original = btn.textContent;
       const copiedText = btn.getAttribute('data-copied-text') || 'COPIED';
-      btn.textContent = copiedText;
-      setTimeout(() => { btn.textContent = original; }, 1200);
+      const copiedTitle = btn.getAttribute('data-copied-title') || copiedText;
+
+      // Icon-only buttons should not have their DOM replaced with text.
+      if (btn.hasAttribute('data-icon-button')) {
+        const originalTitle = btn.getAttribute('data-original-title') || btn.title || '';
+        if (!btn.hasAttribute('data-original-title')) btn.setAttribute('data-original-title', originalTitle);
+        btn.classList.add('is-copied');
+        btn.title = copiedTitle;
+        setTimeout(() => {
+          btn.classList.remove('is-copied');
+          btn.title = btn.getAttribute('data-original-title') || originalTitle;
+        }, 1200);
+      } else {
+        const original = btn.textContent;
+        btn.textContent = copiedText;
+        setTimeout(() => { btn.textContent = original; }, 1200);
+      }
     } catch (e) {
       // ignore
     }
@@ -476,9 +494,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const wrapper = btn.closest('.codeblock');
     if (!wrapper) return;
     const isWrapped = wrapper.classList.toggle('wrapped');
+    btn.setAttribute('aria-pressed', isWrapped ? 'true' : 'false');
+
     const wrapText = btn.getAttribute('data-wrap-text') || 'WRAP';
     const nowrapText = btn.getAttribute('data-nowrap-text') || 'NOWRAP';
-    btn.textContent = isWrapped ? nowrapText : wrapText;
+    const wrapTitle = btn.getAttribute('data-wrap-title') || wrapText;
+    const nowrapTitle = btn.getAttribute('data-nowrap-title') || nowrapText;
+
+    if (btn.hasAttribute('data-icon-button')) {
+      btn.classList.toggle('is-active', isWrapped);
+      btn.title = isWrapped ? nowrapTitle : wrapTitle;
+    } else {
+      btn.textContent = isWrapped ? nowrapText : wrapText;
+    }
   });
   
   // Theme toggle
@@ -498,4 +526,339 @@ document.addEventListener('DOMContentLoaded', () => {
       try { window.dispatchEvent(new Event('themechange')); } catch (_) {}
     });
   }
+
+  // Bear Blog-style tag filtering on post list pages (`?q=tag1,tag2`)
+  (() => {
+    const tagCloud = document.getElementById('tags');
+    const postList = document.querySelector('ul.blog-posts[data-tag-filter]');
+    const filtersContainer = document.getElementById('tag-filters');
+    if (!tagCloud || !postList) return;
+
+    // Optional: Fuse-powered search (the theme used to have this; keep it minimal & Bear-like).
+    const searchInput = document.getElementById('blog-search');
+    const indexUrl = (searchInput && searchInput.getAttribute('data-index-url')) || '/index.json';
+    const noResultsText = (searchInput && searchInput.getAttribute('data-no-results')) || 'No results';
+    const fuseSrc = 'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0';
+    let fuseInstance = null;
+    let indexData = null;
+
+    const base = tagCloud.getAttribute('data-base') || window.location.pathname;
+    const filteringFor = tagCloud.getAttribute('data-filtering-for') || 'Filtering for:';
+    const removeAllLabel = tagCloud.getAttribute('data-remove-all') || 'Remove all filters';
+    const removeTagTitle = tagCloud.getAttribute('data-remove-tag') || 'Remove tag';
+
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+    const decodeTags = () => {
+      const b64 = tagCloud.getAttribute('data-tags') || '';
+      if (!b64) return [];
+      try {
+        const json = atob(b64);
+        const arr = JSON.parse(json);
+        return Array.isArray(arr) ? arr : [];
+      } catch (_) {
+        return [];
+      }
+    };
+
+    const normalizeTag = (t) => String(t || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+
+    const allTags = decodeTags()
+      .map(normalizeTag)
+      .filter(Boolean);
+
+    const params = new URLSearchParams(window.location.search);
+    const q = (params.get('q') || '').trim();
+    const activeTags = q
+      .split(',')
+      .map(normalizeTag)
+      .filter(Boolean);
+
+    const items = Array.from(postList.querySelectorAll('li'));
+
+    const parseItemTags = (li) => {
+      const el = li.querySelector('[data-tags]');
+      const raw = el ? (el.textContent || '') : '';
+      return raw.split('|').map(normalizeTag).filter(Boolean);
+    };
+
+    const hasAll = (tags, required) => required.every((t) => tags.includes(t));
+
+    const ensureFuse = async () => {
+      if (fuseInstance) return fuseInstance;
+      if (!searchInput) return null;
+      if (!indexData) {
+        try {
+          const res = await fetch(indexUrl);
+          if (!res.ok) return null;
+          indexData = await res.json();
+        } catch (_) {
+          return null;
+        }
+      }
+      if (!Array.isArray(indexData)) return null;
+      if (!window.Fuse) {
+        await new Promise((resolve, reject) => {
+          const existing = document.querySelector(`script[src="${fuseSrc}"]`);
+          if (existing) return resolve();
+          const s = document.createElement('script');
+          s.src = fuseSrc;
+          s.defer = true;
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error('Failed to load Fuse'));
+          document.head.appendChild(s);
+        }).catch(() => null);
+      }
+      if (!window.Fuse) return null;
+      const options = {
+        includeScore: true,
+        threshold: 0.3,
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+        keys: [
+          { name: 'title', weight: 2 },
+          { name: 'summary', weight: 1 },
+          { name: 'tags', weight: 0.75 },
+          { name: 'content', weight: 0.25 }
+        ]
+      };
+      fuseInstance = new window.Fuse(indexData, options);
+      return fuseInstance;
+    };
+
+    const normalizeHref = (href) => {
+      try {
+        // Make absolute → pathname, keep relative untouched.
+        const u = new URL(href, window.location.origin);
+        return u.pathname;
+      } catch (_) {
+        return href;
+      }
+    };
+
+    const applyVisibility = async () => {
+      const searchQuery = searchInput ? String(searchInput.value || '').trim() : '';
+      let searchMatches = null;
+
+      if (searchQuery) {
+        const fuse = await ensureFuse();
+        if (fuse) {
+          const results = fuse.search(searchQuery).slice(0, 100);
+          searchMatches = new Set(results.map((r) => normalizeHref((r.item && r.item.permalink) || '')));
+        } else {
+          // If Fuse can't load, degrade to simple title substring match.
+          searchMatches = new Set();
+          if (indexData && Array.isArray(indexData)) {
+            indexData.forEach((item) => {
+              const title = String(item && item.title ? item.title : '').toLowerCase();
+              if (title.includes(searchQuery.toLowerCase())) {
+                searchMatches.add(normalizeHref(item.permalink || ''));
+              }
+            });
+          }
+        }
+      }
+
+      const visibleTags = [];
+      let visibleCount = 0;
+
+      items.forEach((li) => {
+        const tags = parseItemTags(li);
+        const passesTags = activeTags.length ? hasAll(tags, activeTags) : true;
+        const a = li.querySelector('a[href]');
+        const href = a ? normalizeHref(a.getAttribute('href') || '') : '';
+        const passesSearch = !searchMatches || (href && searchMatches.has(href));
+        const show = passesTags && passesSearch;
+        li.style.display = show ? '' : 'none';
+        if (show) {
+          visibleCount += 1;
+          visibleTags.push(tags);
+        }
+      });
+
+      // Minimal empty-state (Bear-ish).
+      if (searchInput) {
+        let emptyP = document.getElementById('blog-search-empty');
+        if (!emptyP) {
+          emptyP = document.createElement('p');
+          emptyP.id = 'blog-search-empty';
+          emptyP.innerHTML = `<small>${escapeHtml(noResultsText)}</small>`;
+          postList.parentElement && postList.parentElement.insertBefore(emptyP, postList);
+        }
+        emptyP.style.display = (searchQuery && visibleCount === 0) ? '' : 'none';
+      }
+
+      return visibleTags;
+    };
+
+    const renderFilters = () => {
+      if (!filtersContainer) return;
+      if (activeTags.length) {
+        const spans = activeTags.map((tag) => {
+          const remaining = activeTags.filter((t) => t !== tag);
+          const href = remaining.length ? `${base}?q=${encodeURIComponent(remaining.join(','))}` : base;
+          return `<span class="tag">#${escapeHtml(tag)} <a rel="nofollow" href="${href}" title="${escapeHtml(removeTagTitle)}" style="text-decoration:none;">✕</a></span>`;
+        }).join(' ');
+        filtersContainer.innerHTML = `<h3 style="margin-bottom:0">${escapeHtml(filteringFor)} ${spans}</h3><small><a rel="nofollow" href="${base}">${escapeHtml(removeAllLabel)}</a></small>`;
+      } else {
+        filtersContainer.innerHTML = '';
+      }
+    };
+
+    // Match Bear's server-side `available_tags` logic, but computed client-side from the rendered post list:
+    // available tags = union(tags for posts that match activeTags).
+    const computeAvailableTagsForCloud = () => {
+      const available = new Set();
+      items.forEach((li) => {
+        const tags = parseItemTags(li);
+        const passesTags = activeTags.length ? hasAll(tags, activeTags) : true;
+        if (passesTags) tags.forEach((t) => available.add(t));
+      });
+      return available;
+    };
+
+    const renderTagCloud = () => {
+      const availableTags = computeAvailableTagsForCloud();
+      const tagsToShow = allTags.filter((t) => !activeTags.includes(t) && availableTags.has(t));
+
+      // Render tag cloud links (like Bear Blog: append links + spaces)
+      tagCloud.innerHTML = '';
+
+      // Keep hidden #potofhoney link for Bear compatibility.
+      const honey = document.createElement('a');
+      honey.rel = 'nofollow';
+      honey.href = `${base}?q=pot-of-honey`;
+      honey.textContent = '#potofhoney';
+      honey.style.display = 'none';
+      tagCloud.appendChild(honey);
+      tagCloud.appendChild(document.createTextNode(' '));
+
+      tagsToShow.forEach((tag) => {
+        const a = document.createElement('a');
+        const next = activeTags.length ? `${activeTags.join(',')},${tag}` : tag;
+        a.href = `${base}?q=${encodeURIComponent(next)}`;
+        a.textContent = `#${tag}`;
+        a.rel = 'nofollow';
+        tagCloud.appendChild(a);
+        tagCloud.appendChild(document.createTextNode(' '));
+      });
+    };
+
+    // Initial render.
+    renderFilters();
+    renderTagCloud();
+    // eslint-disable-next-line no-void
+    void applyVisibility();
+
+    if (searchInput) {
+      searchInput.addEventListener('focus', () => { void ensureFuse(); }, { once: true });
+      searchInput.addEventListener('input', () => { void applyVisibility(); });
+    }
+  })();
+
+  // Home: populate "most popular posts" using upvote counts.
+  // This mirrors the spirit of Herman's homepage sections while keeping the markup minimal:
+  // https://herman.bearblog.dev/
+  (() => {
+    const list = document.getElementById('home-popular-posts');
+    if (!list) return;
+
+    const limit = parseInt(list.getAttribute('data-limit') || '5', 10) || 5;
+    const indexUrl = list.getAttribute('data-index-url') || '/index.json';
+    const infoEndpoint = list.getAttribute('data-info-endpoint') || '';
+    if (!infoEndpoint) return;
+
+    const normalizePath = (href) => {
+      try {
+        const u = new URL(href, window.location.origin);
+        return u.pathname;
+      } catch (_) {
+        return String(href || '');
+      }
+    };
+
+    const toSlug = (permalink) => {
+      const path = normalizePath(permalink);
+      return path.replace(/\/$/, '') || path;
+    };
+
+    const loadIndex = async () => {
+      const res = await fetch(indexUrl);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    };
+
+    const fetchCount = async (slug) => {
+      try {
+        const res = await fetch(`${infoEndpoint}?slug=${encodeURIComponent(slug)}`, { credentials: 'include' });
+        if (!res.ok) return 0;
+        const data = await res.json();
+        return (data && typeof data.upvote_count === 'number') ? data.upvote_count : 0;
+      } catch (_) {
+        return 0;
+      }
+    };
+
+    const run = async () => {
+      const items = await loadIndex();
+      if (!items.length) return;
+
+      // Concurrency-limited fetch to avoid hammering the endpoint.
+      const concurrency = 8;
+      const scored = [];
+      const pool = [];
+
+      let idx = 0;
+      const worker = async () => {
+        while (idx < items.length) {
+          const item = items[idx++];
+          if (!item) continue;
+          const permalink = item.permalink || '';
+          const title = item.title || '';
+          if (!permalink || !title) continue;
+          const slug = toSlug(permalink);
+          if (!slug || !slug.startsWith('/')) continue;
+          const upvotes = await fetchCount(slug);
+          scored.push({ title, permalink, upvotes, dateISO: item.dateISO || '' });
+        }
+      };
+
+      for (let i = 0; i < concurrency; i++) pool.push(worker());
+      await Promise.all(pool);
+
+      scored.sort((a, b) => {
+        if ((b.upvotes || 0) !== (a.upvotes || 0)) return (b.upvotes || 0) - (a.upvotes || 0);
+        return String(b.dateISO || '').localeCompare(String(a.dateISO || ''));
+      });
+
+      const top = scored.slice(0, limit);
+      if (!top.length) return;
+
+      list.innerHTML = '';
+      top.forEach((p) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = p.permalink;
+        a.textContent = p.title;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    };
+
+    // Run after load so it doesn't block first paint.
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(() => { void run(); }, { timeout: 1500 });
+    } else {
+      setTimeout(() => { void run(); }, 300);
+    }
+  })();
 });

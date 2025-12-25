@@ -1,0 +1,12 @@
+{{- /*
+Bear Blog renders TOC only when the author inserts a TOC directive into the content.
+
+Hugo equivalent: use this shortcode where you want the TOC to appear.
+
+Usage:
+  {{< toc >}}
+*/ -}}
+
+{{ partial "toc.html" .Page }}
+
+

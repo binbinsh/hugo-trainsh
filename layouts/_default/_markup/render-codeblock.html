@@ -6,21 +6,53 @@
 {{- if in (slice "html" "gotmpl") $lang -}}
   {{- $lang = "go-html-template" -}}
 {{- end -}}
-{{- $label := cond (eq $lang "text") (i18n "code_plain_text") $lang -}}
 
-{{- $opts := dict "linenos" false "lineNumbersInTable" false "anchorLineNos" false "noClasses" true "guessSyntax" true -}}
+{{- $opts := dict
+  "linenos" false
+  "lineNumbersInTable" false
+  "anchorLineNos" false
+  "noClasses" false
+  "guessSyntax" true
+  "style" "friendly"
+-}}
 
-<div class="codeblock my-4 rounded-lg overflow-hidden border border-[var(--color-border)]">
-  <div class="codeblock-header flex items-center justify-between px-3 py-1 bg-[var(--color-code-bg)] border-b border-[var(--color-border)]">
-    <span class="text-xs text-[var(--color-muted)] font-mono">{{ strings.ToUpper $label }}</span>
-    <div class="flex items-center gap-1">
-      <button type="button" data-wrap-toggle data-wrap-text="{{ i18n "wrap" }}" data-nowrap-text="{{ i18n "nowrap" }}" aria-label="{{ i18n "toggle_word_wrap" }}" title="{{ i18n "toggle_word_wrap" }}" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
-        {{ i18n "wrap" }}
-      </button>
-      <button type="button" data-copy-code data-copied-text="{{ i18n "copied" }}" aria-label="{{ i18n "copy_code" }}" title="{{ i18n "copy_code" }}" class="text-xs px-1.5 py-0.5 rounded text-[var(--color-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)] transition-colors cursor-pointer">
-        {{ i18n "copy" }}
-      </button>
-    </div>
+{{- $html := transform.Highlight (strings.TrimSpace .Inner) $lang $opts -}}
+{{- $out := printf "%s" $html -}}
+{{- /* Prevent Prism/highlighter extensions from re-highlighting (Bear Blog doesn't add language-* classes). */ -}}
+{{- $out = replaceRE `\sclass="language-[^"]+"` "" $out -}}
+{{- $out = replaceRE `\sdata-lang="[^"]+"` "" $out -}}
+
+<div class="codeblock">
+  <div class="codeblock-actions">
+    <button type="button"
+            class="codeblock-action codeblock-action--wrap"
+            data-wrap-toggle
+            data-icon-button
+            aria-pressed="false"
+            title="{{ i18n "enable_soft_wrap" }}"
+            data-wrap-title="{{ i18n "enable_soft_wrap" }}"
+            data-nowrap-title="{{ i18n "disable_soft_wrap" }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 6h16M4 10h12a4 4 0 0 1 0 8h-2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M14 18l-2-2m2 2l-2 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button type="button"
+            class="codeblock-action codeblock-action--copy"
+            data-copy-code
+            data-icon-button
+            title="{{ i18n "copy_code" }}"
+            data-copied-title="{{ i18n "copied" }}">
+      <svg class="icon-copy" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2" fill="none"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path>
+      </svg>
+      <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
   </div>
-  {{- transform.Highlight (strings.TrimSpace .Inner) $lang $opts -}}
+
+  {{- $out | safeHTML -}}
 </div>

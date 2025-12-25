@@ -1,7 +1,25 @@
-{{ with resources.Get "css/tailwind.css" }}
-  {{ with . | css.TailwindCSS (dict "minify" hugo.IsProduction) }}
-    {{ with . | fingerprint }}
+{{- with resources.Get "css/style.css" -}}
+  {{- $css := . -}}
+  {{- if hugo.IsProduction -}}
+    {{- $css = $css | minify -}}
+  {{- end -}}
+  {{- with $css | fingerprint -}}
+    <link rel="stylesheet" href="{{ .RelPermalink }}"{{ if hugo.IsProduction }} integrity="{{ .Data.Integrity }}" crossorigin="anonymous"{{ end }}>
+  {{- end -}}
+{{- end -}}
+
+{{- /* Load Pygments styles only when the current page contains code blocks (Bear Blog behavior). */ -}}
+{{- $raw := .RawContent | default "" -}}
+{{- $hasCode := in $raw "```" -}}
+
+{{- if $hasCode -}}
+  {{- with resources.Get "css/pygments-friendly.css" -}}
+    {{- $css := . -}}
+    {{- if hugo.IsProduction -}}
+      {{- $css = $css | minify -}}
+    {{- end -}}
+    {{- with $css | fingerprint -}}
       <link rel="stylesheet" href="{{ .RelPermalink }}"{{ if hugo.IsProduction }} integrity="{{ .Data.Integrity }}" crossorigin="anonymous"{{ end }}>
-    {{ end }}
-  {{ end }}
-{{ end }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

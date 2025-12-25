@@ -14,29 +14,26 @@ home = ["HTML", "RSS", "JSON"]
 
 [params]
   mainSections = ["posts"]
-  toc = false
 
   [params.upvote]
     enabled = true
     endpoint = "/api/upvote"
     infoEndpoint = "/api/upvote-info"
-    cookieDomain = ""
 
   [params.social]
-    linkedin = "https://www.linkedin.com/in/example"
-    x = "https://x.com/example"
-    github = "https://github.com/example"
+    # Demo links: replace with your own profiles.
+    github = "https://github.com/username"
+    x = "https://x.com/username"
+    linkedin = "https://www.linkedin.com/in/username"
+    # `email` is used as a contact mailto (say hello).
     email = "you@example.com"
 
   [params.home]
-    intro = "Welcome! This is a quick demo of the hugo-trainsh theme — feel free to look around."
-
-    [params.home.tags]
-      # Set to 0 or negative to show all tags
-      limit = 6
-
     [params.home.recent]
-      limit = 6
+      limit = 5
+
+    [params.home.popular]
+      limit = 5
 
 [markup]
   [markup.goldmark.parser.attribute]
@@ -50,35 +47,3 @@ home = ["HTML", "RSS", "JSON"]
     codeFences = true
     lineNoStart = 1
     noClasses = true
-
-[build]
-  [build.buildStats]
-    enable = true
-
-[caches]
-  [caches.assets]
-    dir = ':resourceDir/_gen'
-    maxAge = -1
-  [caches.getcsv]
-    dir = ':cacheDir/:project'
-    maxAge = -1
-  [caches.getjson]
-    dir = ':cacheDir/:project'
-    maxAge = -1
-  [caches.getresource]
-    dir = ':cacheDir/:project'
-    maxAge = -1
-  [caches.images]
-    dir = ':resourceDir/_gen'
-    maxAge = -1
-  [caches.modules]
-    dir = ':cacheDir/modules'
-    maxAge = -1
-
-[[module.mounts]]
-  source = 'assets'
-  target = 'assets'
-
-[[module.mounts]]
-  source = 'hugo_stats.json'
-  target = 'assets/watching/hugo_stats.json'

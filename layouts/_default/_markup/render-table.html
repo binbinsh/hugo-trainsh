@@ -1,34 +1,32 @@
-<div class="table-wrapper">
-  <table
-    {{- range $k, $v := .Attributes }}
-      {{- if $v }}
-        {{- printf " %s=%q" $k $v | safeHTMLAttr }}
-      {{- end }}
-    {{- end }}>
-    {{- with .THead }}
-    <thead>
-      {{- range . }}
-        <tr>
-          {{- range . }}
-            <th{{ with .Alignment }} style="{{ printf "text-align: %s" . }}"{{ end }}>
-              {{- .Text -}}
-            </th>
-          {{- end }}
-        </tr>
-      {{- end }}
-    </thead>
+<table
+  {{- range $k, $v := .Attributes }}
+    {{- if $v }}
+      {{- printf " %s=%q" $k $v | safeHTMLAttr }}
     {{- end }}
-    <tbody>
-      {{- range .TBody }}
-        <tr>
-          {{- range . }}
-            <td{{ with .Alignment }} style="{{ printf "text-align: %s" . }}"{{ end }}>
-              {{- .Text -}}
-            </td>
-          {{- end }}
-        </tr>
-      {{- end }}
-    </tbody>
-  </table>
-</div>
+  {{- end }}>
+  {{- with .THead }}
+  <thead>
+    {{- range . }}
+      <tr>
+        {{- range . }}
+          <th{{ with .Alignment }} style="{{ printf "text-align: %s" . }}"{{ end }}>
+            {{- .Text -}}
+          </th>
+        {{- end }}
+      </tr>
+    {{- end }}
+  </thead>
+  {{- end }}
+  <tbody>
+    {{- range .TBody }}
+      <tr>
+        {{- range . }}
+          <td{{ with .Alignment }} style="{{ printf "text-align: %s" . }}"{{ end }}>
+            {{- .Text -}}
+          </td>
+        {{- end }}
+      </tr>
+    {{- end }}
+  </tbody>
+</table>
 

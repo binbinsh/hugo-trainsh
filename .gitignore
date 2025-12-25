@@ -1,6 +1,5 @@
-.hugo_build.lock
-.DS_Store
 .venv/
 public/
 resources/
-node_modules/
+.DS_Store
+.hugo_build.lock

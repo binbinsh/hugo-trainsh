@@ -1,18 +1,16 @@
 {{ define "main" }}
-<section>
-  <h1 class="text-3xl font-bold mb-6">{{ .Title }}</h1>
+{{ with .Content }}
+  {{ . }}
+{{ end }}
 
-  {{ with .Content }}
-  <div class="prose max-w-none mb-8">{{ . }}</div>
-  {{ end }}
-
-  <div class="flex flex-wrap gap-3">
-    {{ range .Data.Terms.Alphabetical }}
-    <a href="{{ .Page.RelPermalink }}" class="px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
-      {{ .Page.LinkTitle | lower | replaceRE "\\s+" "-" }}
-      <span class="text-[var(--color-muted)] ml-1">({{ .Count }})</span>
-    </a>
+{{- $terms := .Data.Terms.Alphabetical -}}
+{{- if $terms -}}
+<small>
+  <div class="tags">
+    {{ range $terms }}
+      <a rel="nofollow" href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle | lower }}</a>
     {{ end }}
   </div>
-</section>
+</small>
+{{- end -}}
 {{ end }}

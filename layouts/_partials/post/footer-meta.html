@@ -1,20 +1,21 @@
 {{- $params := site.Params.upvote -}}
-<footer class="mt-8 pt-4">
-  <div class="flex flex-wrap items-center justify-between gap-3">
-    {{ with .Params.tags }}
-    <div class="flex flex-wrap gap-2 text-sm text-[var(--color-muted)]">
-      {{ range . }}
-      {{ $tag := . | urlize }}
-      <a href="{{ "/tags/" | relLangURL }}{{ $tag }}/" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
-        {{ . | lower }}
-      </a>
-      {{ end }}
-    </div>
-    {{ end }}
-    {{ if ($params.enabled | default false) }}
-    <div class="ml-auto flex items-center">
-      {{ partial "post/upvote.html" . }}
-    </div>
-    {{ end }}
-  </div>
-</footer>
+{{- $blogPage := site.GetPage "/blog" -}}
+{{- $blogBase := "/blog/" -}}
+{{- with $blogPage -}}
+  {{- $blogBase = .RelPermalink -}}
+{{- end -}}
+
+{{ with .Params.tags }}
+  {{ if gt (len .) 0 }}
+  <p class="tags"><a rel="nofollow" href="{{ $blogBase }}?q=pot-of-honey" style="display:none;">#potofhoney</a>{{ range . }}{{ $tag := (printf "%v" .) | lower | replaceRE "\\s+" "-" }} <a rel="nofollow" href="{{ $blogBase }}?q={{ $tag | urlquery }}">#{{ $tag }}</a>{{ end }}</p>
+  {{ end }}
+{{ end }}
+
+{{- $discoverable := true -}}
+{{- if isset .Params "make_discoverable" -}}
+  {{- $discoverable = .Params.make_discoverable -}}
+{{- end -}}
+
+{{- if and ($params.enabled | default false) $discoverable -}}
+  {{ partial "post/upvote.html" . }}
+{{- end -}}

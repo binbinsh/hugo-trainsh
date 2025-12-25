@@ -1,33 +1,7 @@
 {{ define "main" }}
-<h1 class="text-3xl font-bold mb-6">{{ .Title }}</h1>
-
 {{ with .Content }}
-<div class="prose max-w-none mb-8">{{ . }}</div>
+{{ . }}
 {{ end }}
 
-<ul class="space-y-6">
-  {{ range .Pages.ByDate.Reverse }}
-  <li class="pb-6 border-b border-[var(--color-border)] last:border-b-0">
-    <time class="text-sm text-[var(--color-muted)] font-mono" datetime="{{ .Date | time.Format "2006-01-02" }}">
-      {{ partial "date/format.html" (dict "page" . "date" .Date "style" "long") }}
-    </time>
-    <h2 class="text-xl font-semibold mt-1">
-      <a href="{{ .RelPermalink }}" class="hover:text-[var(--color-accent)] transition-colors">{{ .Title }}</a>
-    </h2>
-    {{ with .Summary }}
-    <p class="mt-2 text-[var(--color-muted)]">{{ . }}</p>
-    {{ end }}
-    {{ with .Params.tags }}
-    <div class="flex flex-wrap gap-2 mt-3">
-      {{ range . }}
-      {{ $tag := . | urlize }}
-      <a href="{{ "/tags/" | relLangURL }}{{ $tag }}/" class="px-2 py-0.5 text-xs bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors">
-        {{ . | lower }}
-      </a>
-      {{ end }}
-    </div>
-    {{ end }}
-  </li>
-  {{ end }}
-</ul>
+{{ partial "post/blog-posts.html" (dict "pages" .Pages.ByDate.Reverse) }}
 {{ end }}

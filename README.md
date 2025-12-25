@@ -1,77 +1,36 @@
 # hugo-trainsh
 
-A Hugo theme focused on clean typography, Tailwind CSS v4 utilities, and optional Cloudflare KV-based upvotes.
+A minimal, content-first Hugo theme with a clean reading experience, inspired by [Bear Blog](https://bearblog.dev/).
+
+Includes a `/blog/` list page, tag filtering, opt-in TOC, syntax-highlighted code blocks (copy + soft wrap), Mermaid, math, PhotoSwipe, and optional upvotes.
 
 ## Quick start
-
-Install the theme as a Git submodule into `themes/`.
 
 ```bash
 git submodule add https://github.com/binbinsh/hugo-trainsh themes/hugo-trainsh
 git submodule update --init --recursive
-npm install --save-dev tailwindcss @tailwindcss/cli
-hugo serve --disableFastRender --ignoreCache
+hugo serve
 ```
 
-Then set the theme and enable Tailwind build stats in your site config ([reference](https://gohugo.io/functions/css/tailwindcss/)):
+## Documentation
+
+See the full usage guide in [`docs/usage.md`](docs/usage.md).
+
+## Configuration (minimal)
+
+Enable the JSON index (used by blog search + “most popular posts”):
 
 ```toml
-# hugo.toml
-theme = 'hugo-trainsh'
-
-[build]
-  [build.buildStats]
-    enable = true
-  [[build.cachebusters]]
-    source = 'assets/notwatching/hugo_stats\.json'
-    target = 'css'
-  [[build.cachebusters]]
-    source = '(postcss|tailwind)\.config\.js'
-    target = 'css'
-
-[[module.mounts]]
-  source = 'assets'
-  target = 'assets'
-[[module.mounts]]
-  disableWatch = true
-  source = 'hugo_stats.json'
-  target = 'assets/notwatching/hugo_stats.json'
+[outputs]
+home = ["HTML", "RSS", "JSON"]
 ```
 
-## Features
+Create `content/blog/_index.md` to enable the `/blog/` list page.
 
-- **Unified layout**: Consistent spacing, cards, and high-contrast light/dark themes across home, section, term, archive, and single pages.
-- **Tailwind CSS v4**: Uses Hugo’s Tailwind integration with CSS custom properties for theming.
-- **Upvotes**: upvote widget backed by Cloudflare Workers + KV.
-- **Table of contents**: Auto-generated from H2/H3.
-- **Mermaid & KaTeX**: Diagram + math support with theme-aware rendering.
-- **Image lightbox**: PhotoSwipe gallery for any linked images.
-- **Archive + search**: Grouped archive pages and Fuse.js-powered home search (`/index.json`).
-- **Optimized assets**: Hugo Pipes minification, fingerprinting, and scroll-friendly code blocks.
+To render a TOC, insert the shortcode where you want it in a page:
 
-## Table of contents
-
-- Disable globally via `params.toc = false` in your site config.
-- Override per post via front matter (`toc` takes precedence over `params.toc`): use `toc = false` to disable, or `toc = true` to enable when disabled globally.
-
-## Upvote widget
-
-- Controlled via `params.upvote.enabled` or setting `UPVOTE_WIDGET=true` in GitHub Action.
-- Backend lives in `cloudflare/` (Python Worker + KV). The GitHub Action auto-creates the `hugo-trainsh-UPVOTES` namespace and deploys `/api/upvote*` endpoints.
-- Generate a stable `UPVOTE_COOKIE_SECRET` for user cookie (generate once with `openssl rand -hex 64` and set as the GitHub Actions secret).
-
-```toml
-# Enable upvote widget
-[params]
-  [params.upvote]
-    enabled = true
-    endpoint = "/api/upvote"
-    infoEndpoint = "/api/upvote-info"
-    cookieDomain = ""
+```md
+{{< toc >}}
 ```
 
-## Author & Issues
-
-- **Demo**: https://hugo-trainsh.binbinsh.workers.dev
-- **Author**: [Binbin Shen](https://github.com/binbinsh)
-- **Issues**: https://github.com/binbinsh/hugo-trainsh/issues
+To enable upvotes, configure `params.upvote.*` and deploy the optional backend in `cloudflare/` (see [`docs/upvote.md`](docs/upvote.md)).

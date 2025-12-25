@@ -1,0 +1,42 @@
+{{- /*
+Renders a Bear Blog-style post list:
+
+<ul class="blog-posts">
+  <li>
+    <span><i><time>YYYY-MM-DD</time></i></span>
+    <a href="/.../">Title</a>
+  </li>
+</ul>
+
+@context {slice} pages: A slice of Page objects.
+*/ -}}
+
+{{- $pages := .pages | default (slice) -}}
+{{- $filterable := .filterable | default false -}}
+
+<ul class="blog-posts"{{ if $filterable }} data-tag-filter{{ end }}>
+  {{- range $pages -}}
+  {{- $tags := slice -}}
+  {{- with .Params.tags -}}
+    {{- range . -}}
+      {{- $tags = $tags | append ((. | lower | replaceRE "\\s+" "-")) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $tagsStr := delimit $tags "|" -}}
+  <li>
+    <span hidden aria-hidden="true" data-tags>{{ $tagsStr }}</span>
+    <span>
+      <i>
+        <time datetime="{{ .Date | time.Format "2006-01-02" }}">
+          {{ partial "date/format.html" (dict "page" . "date" .Date) }}
+        </time>
+      </i>
+    </span>
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+  </li>
+  {{- else -}}
+  <li>{{ i18n "no_posts_yet" }}</li>
+  {{- end -}}
+</ul>
+
+
