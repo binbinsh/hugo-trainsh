@@ -34,3 +34,9 @@ To render a TOC, insert the shortcode where you want it in a page:
 ```
 
 To enable upvotes, configure `params.upvote.*` and deploy the optional backend in `cloudflare/` (see [`docs/upvote.md`](docs/upvote.md)).
+
+## Theme info
+
+- Demo: `https://hugo-trainsh.binbinsh.workers.dev`  
+- Repository: `https://github.com/binbinsh/hugo-trainsh`  
+- Author: [Binbin Shen](https://github.com/binbinsh)
