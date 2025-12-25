@@ -21,14 +21,14 @@
   </ul>
 
   <h3>{{ i18n "home_most_popular_posts" }}</h3>
-  {{- $infoEndpoint := "" -}}
+  {{- $topEndpoint := "" -}}
   {{- with site.Params.upvote -}}
-    {{- $infoEndpoint = .infoEndpoint | default "/api/upvote-info" -}}
+    {{- $topEndpoint = .topEndpoint | default "/api/upvote-top" -}}
   {{- end -}}
   <ul id="home-popular-posts"
       data-limit="{{ $popularLimit }}"
       data-index-url="{{ "index.json" | relURL }}"
-      data-info-endpoint="{{ $infoEndpoint }}">
+      data-top-endpoint="{{ $topEndpoint }}">
     {{- range first $popularLimit ($posts.ByDate.Reverse) -}}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     {{- end -}}

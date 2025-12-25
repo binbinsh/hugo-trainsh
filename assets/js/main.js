@@ -773,8 +773,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const limit = parseInt(list.getAttribute('data-limit') || '5', 10) || 5;
     const indexUrl = list.getAttribute('data-index-url') || '/index.json';
-    const infoEndpoint = list.getAttribute('data-info-endpoint') || '';
-    if (!infoEndpoint) return;
+    const topEndpoint = list.getAttribute('data-top-endpoint') || '';
+    if (!topEndpoint) return;
 
     const normalizePath = (href) => {
       try {
@@ -797,54 +797,59 @@ document.addEventListener('DOMContentLoaded', () => {
       return Array.isArray(data) ? data : [];
     };
 
-    const fetchCount = async (slug) => {
-      try {
-        const res = await fetch(`${infoEndpoint}?slug=${encodeURIComponent(slug)}`, { credentials: 'include' });
-        if (!res.ok) return 0;
-        const data = await res.json();
-        return (data && typeof data.upvote_count === 'number') ? data.upvote_count : 0;
-      } catch (_) {
-        return 0;
-      }
-    };
-
     const run = async () => {
       const items = await loadIndex();
       if (!items.length) return;
 
-      // Concurrency-limited fetch to avoid hammering the endpoint.
-      const concurrency = 8;
-      const scored = [];
-      const pool = [];
-
-      let idx = 0;
-      const worker = async () => {
-        while (idx < items.length) {
-          const item = items[idx++];
-          if (!item) continue;
-          const permalink = item.permalink || '';
-          const title = item.title || '';
-          if (!permalink || !title) continue;
-          const slug = toSlug(permalink);
-          if (!slug || !slug.startsWith('/')) continue;
-          const upvotes = await fetchCount(slug);
-          scored.push({ title, permalink, upvotes, dateISO: item.dateISO || '' });
-        }
+      const dateKey = (iso) => {
+        const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+        if (!m) return 0;
+        return (Number(m[1]) * 10000) + (Number(m[2]) * 100) + Number(m[3]);
       };
 
-      for (let i = 0; i < concurrency; i++) pool.push(worker());
-      await Promise.all(pool);
+      // Build a fast lookup: slug -> { title, permalink, dateISO }.
+      const metaBySlug = new Map();
+      items.forEach((item) => {
+        const permalink = item && item.permalink ? String(item.permalink) : '';
+        const title = item && item.title ? String(item.title) : '';
+        if (!permalink || !title) return;
+        const slug = toSlug(permalink);
+        if (!slug || !slug.startsWith('/')) return;
+        metaBySlug.set(slug, { title, permalink, dateISO: item.dateISO || '' });
+      });
+
+      const candidateLimit = Math.max(limit * 20, 50);
+      let top = [];
+      try {
+        const res = await fetch(`${topEndpoint}?limit=${encodeURIComponent(String(candidateLimit))}`, { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        top = (data && Array.isArray(data.items)) ? data.items : [];
+      } catch (_) {
+        return;
+      }
+
+      const scored = top
+        .map((x) => {
+          const slug = x && typeof x.slug === 'string' ? x.slug : '';
+          const upvotes = x && typeof x.upvote_count === 'number' ? x.upvote_count : 0;
+          if (!slug) return null;
+          const meta = metaBySlug.get(slug);
+          if (!meta) return null;
+          return { title: meta.title, permalink: meta.permalink, upvotes, dateISO: meta.dateISO || '' };
+        })
+        .filter(Boolean);
 
       scored.sort((a, b) => {
         if ((b.upvotes || 0) !== (a.upvotes || 0)) return (b.upvotes || 0) - (a.upvotes || 0);
-        return String(b.dateISO || '').localeCompare(String(a.dateISO || ''));
+        return dateKey(b.dateISO) - dateKey(a.dateISO);
       });
 
-      const top = scored.slice(0, limit);
-      if (!top.length) return;
+      const out = scored.slice(0, limit);
+      if (!out.length) return;
 
       list.innerHTML = '';
-      top.forEach((p) => {
+      out.forEach((p) => {
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.href = p.permalink;

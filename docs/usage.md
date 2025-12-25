@@ -270,10 +270,10 @@ See [`docs/upvote.md`](docs/upvote.md) for deployment instructions.
 
 ## Home: “most popular posts”
 
-On the homepage, the “most popular posts” list is generated client-side using upvote counts:
+On the homepage, the “most popular posts” list is generated client-side:
 
-1. Fetch `index.json` for the list of posts
-2. Fetch `upvote-info` for each post
+1. Fetch `index.json` for post metadata
+2. Fetch `GET /api/upvote-top` for top upvoted slugs
 3. Sort by upvote count (ties broken by date)
 
 To tune how many posts show up:

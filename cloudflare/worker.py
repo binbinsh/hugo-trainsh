@@ -11,6 +11,8 @@ KV_KEY_PREFIX = "post:"
 COOKIE_PREFIX = "upvote_"
 COOKIE_SECRET_ENV = "UPVOTE_COOKIE_SECRET"
 KV_BINDING_NAME = "UPVOTES"
+LEADERBOARD_KEY = "leaderboard:v1"
+LEADERBOARD_MAX_ITEMS = 500
 
 
 def _hash_slug(slug: str) -> str:
@@ -196,6 +198,47 @@ async def _write_count(kv, slug: str, count: int):
     await kv.put(_kv_key(slug), str(count))
 
 
+async def _read_leaderboard(kv) -> list[dict]:
+    try:
+        raw = await kv.get(LEADERBOARD_KEY)
+        if not raw:
+            return []
+        data = json.loads(raw)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+
+async def _write_leaderboard(kv, items: list[dict]):
+    await kv.put(LEADERBOARD_KEY, json.dumps(items))
+
+
+async def _update_leaderboard(kv, slug: str, count: int):
+    """
+    Keep a small, KV-backed leaderboard so we can render popular posts without scanning every key.
+    """
+    items = await _read_leaderboard(kv)
+    now_ts = int(time.time())
+    updated = False
+
+    for it in items:
+        if isinstance(it, dict) and it.get("slug") == slug:
+            it["upvote_count"] = count
+            it["updated_at"] = now_ts
+            updated = True
+            break
+
+    if not updated:
+        items.append({"slug": slug, "upvote_count": count, "updated_at": now_ts})
+
+    # Sort by count desc, then updated_at desc for stability.
+    items.sort(key=lambda x: (int(x.get("upvote_count", 0)), int(x.get("updated_at", 0))), reverse=True)
+    if len(items) > LEADERBOARD_MAX_ITEMS:
+        items = items[:LEADERBOARD_MAX_ITEMS]
+
+    await _write_leaderboard(kv, items)
+
+
 async def _handle_get(request, kv, origin: str | None, secret: str):
     slug = _extract_slug_from_query(request.url)
     if not _validate_slug(slug):
@@ -230,12 +273,51 @@ async def _handle_post(request, kv, origin: str | None, secret: str):
     count = await _fetch_count(kv, slug)
     count += 1
     await _write_count(kv, slug, count)
+    try:
+        await _update_leaderboard(kv, slug, count)
+    except Exception:
+        # Leaderboard updates are best-effort.
+        pass
     cookie_header = _build_cookie(slug, secret)
     return _json_response({
         "slug": slug,
         "upvote_count": count,
         "upvoted": True,
     }, origin=origin, set_cookie=cookie_header)
+
+
+def _extract_limit_from_query(url: str, default: int = 50, max_limit: int = 500) -> int:
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query)
+    raw = query.get("limit", [str(default)])[0]
+    try:
+        value = int(raw)
+    except Exception:
+        value = default
+    value = max(1, min(max_limit, value))
+    return value
+
+
+async def _handle_top(request, kv, origin: str | None):
+    limit = _extract_limit_from_query(request.url, default=50, max_limit=500)
+
+    items = await _read_leaderboard(kv)
+    # Normalize and filter malformed entries.
+    normalized: list[dict] = []
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        slug = it.get("slug")
+        if not isinstance(slug, str) or not _validate_slug(slug):
+            continue
+        try:
+            count = int(it.get("upvote_count", 0))
+        except Exception:
+            count = 0
+        normalized.append({"slug": slug, "upvote_count": count})
+
+    # Already sorted by the writer; just slice.
+    return _json_response({"items": normalized[:limit]}, origin=origin)
 
 
 class Default(WorkerEntrypoint):
@@ -260,6 +342,9 @@ class Default(WorkerEntrypoint):
 
         if path == "/api/upvote-info" and method == "GET":
             return await _handle_get(request, kv_binding, origin, secret)
+
+        if path == "/api/upvote-top" and method == "GET":
+            return await _handle_top(request, kv_binding, origin)
 
         if path == "/api/upvote" and method == "POST":
             return await _handle_post(request, kv_binding, origin, secret)
