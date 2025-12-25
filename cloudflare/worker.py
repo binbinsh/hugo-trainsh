@@ -300,6 +300,18 @@ def _get_env_binding(env, name: str):
         return None
 
 
+async def _maybe_await(value):
+    return await value if hasattr(value, "__await__") else value
+
+
+async def _kv_get(kv, key: str):
+    return await _maybe_await(kv.get(key))
+
+
+async def _kv_put(kv, key: str, value: str):
+    return await _maybe_await(kv.put(key, value))
+
+
 async def _resolve_cookie_secret(env, kv):
     """
     Resolve cookie secret from environment variables; fallback to KV if needed.
@@ -310,7 +322,7 @@ async def _resolve_cookie_secret(env, kv):
 
     # Fallback to KV (plain text). Avoids deploy failures if secret missing in env.
     try:
-        stored = await kv.get("cookie_secret")
+        stored = await _kv_get(kv, "cookie_secret")
         if stored:
             return stored
     except Exception:
@@ -319,7 +331,7 @@ async def _resolve_cookie_secret(env, kv):
     # Generate and persist a new secret if nothing found.
     try:
         generated = secrets.token_hex(64)
-        await kv.put("cookie_secret", generated)
+        await _kv_put(kv, "cookie_secret", generated)
         return generated
     except Exception:
         return ""
@@ -331,13 +343,13 @@ async def _fetch_count(kv, slug: str) -> int:
 
 
 async def _fetch_post_record(kv, slug: str) -> dict:
-    raw = await kv.get(_kv_key(slug))
+    raw = await _kv_get(kv, _kv_key(slug))
     record, needs_migration = _parse_post_record(raw)
     if needs_migration:
         # One-time migration: persist in the new JSON format.
         record["updated_at"] = int(time.time())
         try:
-            await kv.put(_kv_key(slug), json.dumps(record))
+            await _kv_put(kv, _kv_key(slug), json.dumps(record))
         except Exception:
             pass
     return record
@@ -350,7 +362,7 @@ async def _write_post_record(kv, slug: str, record: dict):
     record["permalink"] = _sanitize_permalink(str(record.get("permalink", "") or ""))
     record["dateISO"] = _sanitize_date_iso(str(record.get("dateISO", "") or ""))
     record["updated_at"] = int(record.get("updated_at", 0) or 0)
-    await kv.put(_kv_key(slug), json.dumps(record))
+    await _kv_put(kv, _kv_key(slug), json.dumps(record))
 
 
 async def _kv_list_keys(kv, prefix: str, limit: int = 1000) -> list[str]:
@@ -370,10 +382,12 @@ async def _kv_list_keys(kv, prefix: str, limit: int = 1000) -> list[str]:
             params["cursor"] = cursor
 
         try:
-            resp = await kv.list(**params)  # type: ignore[arg-type]
+            maybe = kv.list(**params)  # type: ignore[arg-type]
+            resp = await _maybe_await(maybe)
         except TypeError:
             try:
-                resp = await kv.list(params)  # type: ignore[arg-type]
+                maybe = kv.list(params)  # type: ignore[arg-type]
+                resp = await _maybe_await(maybe)
             except Exception:
                 break
         except Exception:
@@ -391,6 +405,10 @@ async def _kv_list_keys(kv, prefix: str, limit: int = 1000) -> list[str]:
                         out.append(k)
                     elif isinstance(k, dict) and isinstance(k.get("name"), str):
                         out.append(k["name"])
+                    else:
+                        name_attr = getattr(k, "name", None)
+                        if isinstance(name_attr, str):
+                            out.append(name_attr)
 
             list_complete = resp.get("list_complete")
             cursor = resp.get("cursor") if isinstance(resp.get("cursor"), str) else None
@@ -405,7 +423,31 @@ async def _kv_list_keys(kv, prefix: str, limit: int = 1000) -> list[str]:
                     out.append(k)
                 elif isinstance(k, dict) and isinstance(k.get("name"), str):
                     out.append(k["name"])
+                else:
+                    name_attr = getattr(k, "name", None)
+                    if isinstance(name_attr, str):
+                        out.append(name_attr)
             break
+
+        # Attribute-style response
+        keys_attr = getattr(resp, "keys", None)
+        if isinstance(keys_attr, list):
+            for k in keys_attr:
+                if isinstance(k, str):
+                    out.append(k)
+                elif isinstance(k, dict) and isinstance(k.get("name"), str):
+                    out.append(k["name"])
+                else:
+                    name_attr = getattr(k, "name", None)
+                    if isinstance(name_attr, str):
+                        out.append(name_attr)
+
+            list_complete_attr = getattr(resp, "list_complete", None)
+            cursor_attr = getattr(resp, "cursor", None)
+            cursor = cursor_attr if isinstance(cursor_attr, str) else None
+            if list_complete_attr is True or not cursor:
+                break
+            continue
 
         break
 
@@ -462,9 +504,10 @@ async def _rebuild_popular_cache(env, kv) -> dict:
 
     payload = {
         "generated_at": int(time.time()),
+        "scanned_keys": len(key_names),
         "items": items,
     }
-    await kv.put(POPULAR_CACHE_KEY, json.dumps(payload))
+    await _kv_put(kv, POPULAR_CACHE_KEY, json.dumps(payload))
     return payload
 
 
@@ -545,7 +588,7 @@ async def _handle_popular(request, env, kv, origin: str | None):
     limit = _parse_int(raw_limit, default=5)
     limit = _clamp_int(limit, 1, 50)
 
-    cached_raw = await kv.get(POPULAR_CACHE_KEY)
+    cached_raw = await _kv_get(kv, POPULAR_CACHE_KEY)
     payload = None
     if cached_raw:
         try:
@@ -553,12 +596,26 @@ async def _handle_popular(request, env, kv, origin: str | None):
         except Exception:
             payload = None
 
+    now = int(time.time())
+    should_rebuild = False
+
     if not isinstance(payload, dict) or not isinstance(payload.get("items"), list):
+        should_rebuild = True
+    else:
+        generated_at = payload.get("generated_at")
+        items = payload.get("items")
+        if isinstance(items, list) and len(items) == 0:
+            # Empty cache: retry at most every 10 minutes.
+            if not isinstance(generated_at, int) or (now - generated_at) >= 600:
+                should_rebuild = True
+
+    if should_rebuild:
         payload = await _rebuild_popular_cache(env, kv)
 
     items = payload.get("items") if isinstance(payload.get("items"), list) else []
     return _json_response({
         "generated_at": payload.get("generated_at", 0),
+        "scanned_keys": payload.get("scanned_keys", 0),
         "items": items[:limit],
     }, origin=origin, headers={"cache-control": "public, max-age=600"})
 
@@ -599,18 +656,19 @@ class Default(WorkerEntrypoint):
 
         return _error_response("Not found", status=404, origin=origin)
 
-    async def scheduled(self, event):
+    async def scheduled(self, event, env=None, ctx=None):
         """
         Cron-triggered cache maintenance.
         Runs every 10 minutes, but only rebuilds when missing or stale (> 6 hours).
         """
-        env = self.env
+        if env is None:
+            env = self.env
         kv_binding = _get_env_binding(env, KV_BINDING_NAME)
         if not kv_binding:
             return
 
         try:
-            cached_raw = await kv_binding.get(POPULAR_CACHE_KEY)
+            cached_raw = await _kv_get(kv_binding, POPULAR_CACHE_KEY)
         except Exception:
             cached_raw = None
 
@@ -632,6 +690,10 @@ class Default(WorkerEntrypoint):
                 should_rebuild = True
             elif now - generated_at >= POPULAR_REFRESH_SECONDS:
                 should_rebuild = True
+            else:
+                items = payload.get("items")
+                if isinstance(items, list) and len(items) == 0 and (now - generated_at) >= 600:
+                    should_rebuild = True
 
         if not should_rebuild:
             return

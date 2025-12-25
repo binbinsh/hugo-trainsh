@@ -10,8 +10,8 @@ workers_dev = true
 # ]
 
 [triggers]
-# Check cache every 10 minutes; the worker only rebuilds when missing or stale (> 6 hours).
-crons = ["*/10 * * * *"]
+# Check cache every 5 minutes; the worker only rebuilds when missing or stale (> 6 hours).
+crons = ["*/5 * * * *"]
 
 [assets]
 directory = "../exampleSite/public"
