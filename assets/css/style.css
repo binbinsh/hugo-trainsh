@@ -65,6 +65,38 @@ nav a {
     margin-right: 8px;
 }
 
+/* Header: keep minimal but allow a right-aligned language switcher. */
+.site-header__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lang-switch {
+    margin-left: auto;
+}
+
+.lang-switch__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    font-size: 0.95em;
+}
+
+.lang-switch a {
+    margin-right: 0;
+}
+
+.lang-switch__item span[aria-current="true"] {
+    font-weight: 700;
+    color: var(--heading-color);
+}
+
 /* Blog search (Fuse): keep minimal, but make it usable on all viewports. */
 #blog-search {
     width: 420px;

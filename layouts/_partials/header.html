@@ -1,25 +1,32 @@
-<a class="title" href="{{ "/" | relLangURL }}">
-  <h1>{{ .Site.Title }}</h1>
-</a>
-<nav>
-  {{- with site.Params.nav -}}
-    {{- /*
-      Bear Blog renders `blog.nav` as markdown inside <nav>.
-      For Hugo, allow a similar `params.nav` (markdown string).
-    */ -}}
-    {{- $html := . | markdownify -}}
-    {{- $html = replaceRE `(?s)^<p>(.*)</p>$` `$1` $html -}}
-    {{- $html | safeHTML -}}
-  {{- else -}}
-    {{ with site.Menus.main }}
-      {{ range $i, $item := . }}
-        {{ if $i }} {{ end }}<a href="{{ $item.URL }}">{{ $item.Name }}</a>
+<div class="site-header">
+  <div class="site-header__top">
+    <a class="title site-header__title" href="{{ "/" | relLangURL }}">
+      <h1>{{ .Site.Title }}</h1>
+    </a>
+
+    {{ partial "lang-switch.html" . }}
+  </div>
+
+  <nav class="site-header__nav">
+    {{- with site.Params.nav -}}
+      {{- /*
+        Bear Blog renders `blog.nav` as markdown inside <nav>.
+        For Hugo, allow a similar `params.nav` (markdown string).
+      */ -}}
+      {{- $html := . | markdownify -}}
+      {{- $html = replaceRE `(?s)^<p>(.*)</p>$` `$1` $html -}}
+      {{- $html | safeHTML -}}
+    {{- else -}}
+      {{ with site.Menus.main }}
+        {{ range $i, $item := . }}
+          {{ if $i }} {{ end }}<a href="{{ $item.URL }}">{{ $item.Name }}</a>
+        {{ end }}
+      {{ else }}
+        <a href="{{ "/" | relLangURL }}">{{ i18n "home" }}</a>
+        {{ with site.GetPage "/blog" }}
+          <a href="{{ .RelPermalink }}">{{ i18n "blog" }}</a>
+        {{ end }}
       {{ end }}
-    {{ else }}
-      <a href="{{ "/" | relLangURL }}">{{ i18n "home" }}</a>
-      {{ with site.GetPage "/blog" }}
-        <a href="{{ .RelPermalink }}">{{ i18n "blog" }}</a>
-      {{ end }}
-    {{ end }}
-  {{- end -}}
-</nav>
+    {{- end -}}
+  </nav>
+</div>

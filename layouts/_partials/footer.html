@@ -73,23 +73,3 @@
 {{- end -}}
 
 <p>&copy; {{ now.Year }} {{ site.Title }} — {{ i18n "powered_by" (dict "Hugo" $hugo "Theme" $theme) | safeHTML }}</p>
-
-{{- /* Language switcher: show page translations when available, otherwise fallback to Home translations. */ -}}
-{{- $translations := .AllTranslations -}}
-{{- if lt (len $translations) 2 -}}
-  {{- $translations = site.Home.AllTranslations -}}
-{{- end -}}
-{{- if gt (len $translations) 1 -}}
-  <p>
-    <small>
-      {{- range $i, $t := $translations -}}
-        {{- if $i }} / {{ end -}}
-        {{- if eq $t.Lang $.Lang -}}
-          <span aria-current="true">{{ $t.Site.Language.LanguageName }}</span>
-        {{- else -}}
-          <a href="{{ $t.RelPermalink }}">{{ $t.Site.Language.LanguageName }}</a>
-        {{- end -}}
-      {{- end -}}
-    </small>
-  </p>
-{{- end -}}

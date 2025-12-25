@@ -67,6 +67,9 @@ other = "COPY"
 [nav_primary]
 other = "Primary"
 
+[language_switcher]
+other = "Language"
+
 [toggle_theme]
 other = "Toggle theme"
 

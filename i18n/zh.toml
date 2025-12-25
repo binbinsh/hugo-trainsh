@@ -67,6 +67,9 @@ other = "复制"
 [nav_primary]
 other = "主导航"
 
+[language_switcher]
+other = "语言"
+
 [toggle_theme]
 other = "切换主题"
 
