@@ -37,6 +37,6 @@ To enable upvotes, configure `params.upvote.*` and deploy the optional backend i
 
 ## Theme info
 
-- Demo: `https://hugo-trainsh.binbinsh.workers.dev`  
-- Repository: `https://github.com/binbinsh/hugo-trainsh`  
+- Demo: [hugo-trainsh.binbinsh.workers.dev](https://hugo-trainsh.binbinsh.workers.dev)  
+- Repository: [github.com/binbinsh/hugo-trainsh](https://github.com/binbinsh/hugo-trainsh)  
 - Author: [Binbin Shen](https://github.com/binbinsh)
