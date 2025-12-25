@@ -40,7 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
 
-      fetch(`${infoEndpoint}?slug=${encodeURIComponent(slug)}`, { credentials: 'include' })
+      const readHidden = (name) => {
+        const el = form.querySelector(`input[name="${name}"]`);
+        return el && typeof el.value === 'string' ? el.value : '';
+      };
+
+      const title = readHidden('title');
+      const permalink = readHidden('permalink');
+      const dateISO = readHidden('dateISO');
+
+      const infoUrl = new URL(infoEndpoint, window.location.origin);
+      infoUrl.searchParams.set('slug', slug);
+      if (title) infoUrl.searchParams.set('title', title);
+      if (permalink) infoUrl.searchParams.set('permalink', permalink);
+      if (dateISO) infoUrl.searchParams.set('dateISO', dateISO);
+
+      fetch(infoUrl.toString(), { credentials: 'include' })
         .then((resp) => resp.ok ? resp.json() : null)
         .then((data) => {
           if (!data) return;
@@ -56,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug }),
+          body: JSON.stringify({ slug, title, permalink, dateISO }),
           credentials: 'include'
         })
           .then((resp) => resp.ok ? resp.json() : null)
@@ -762,125 +777,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })();
 
-  // Home: populate "most popular posts" using upvote counts.
-  // This mirrors the spirit of Herman's homepage sections while keeping the markup minimal:
-  // https://herman.bearblog.dev/
+  // Home: populate "most popular posts" via a single backend call.
   (() => {
     const list = document.getElementById('home-popular-posts');
     if (!list) return;
 
     const limit = parseInt(list.getAttribute('data-limit') || '5', 10) || 5;
-    const indexUrl = list.getAttribute('data-index-url') || '/index.json';
-    const infoEndpoint = list.getAttribute('data-info-endpoint') || '';
-    if (!infoEndpoint) return;
-
-    const candidateLimit = parseInt(list.getAttribute('data-candidate-limit') || '50', 10) || 50;
+    const popularEndpoint = list.getAttribute('data-popular-endpoint') || '';
+    if (!popularEndpoint) return;
 
     const setState = (state) => {
       list.setAttribute('data-popular-state', state);
       list.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
     };
 
-    // Ensure we don't flash the server-rendered fallback list before scoring finishes.
+    // Ensure we don't flash the server-rendered fallback list before the request finishes.
     setState('loading');
-
-    const normalizePath = (href) => {
-      try {
-        const u = new URL(href, window.location.origin);
-        return u.pathname;
-      } catch (_) {
-        return String(href || '');
-      }
-    };
-
-    const toSlug = (permalink) => {
-      const path = normalizePath(permalink);
-      return path.replace(/\/$/, '') || path;
-    };
-
-    const loadIndex = async () => {
-      const res = await fetch(indexUrl);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    };
 
     const run = async () => {
       try {
-        const items = await loadIndex();
+        const u = new URL(popularEndpoint, window.location.origin);
+        u.searchParams.set('limit', String(limit));
+        const res = await fetch(u.toString(), { credentials: 'include' });
+        if (!res.ok) {
+          setState('fallback');
+          return;
+        }
+        const data = await res.json();
+        const items = (data && Array.isArray(data.items)) ? data.items : [];
         if (!items.length) {
           setState('fallback');
           return;
         }
 
-        const dateKey = (iso) => {
-          const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
-          if (!m) return 0;
-          return (Number(m[1]) * 10000) + (Number(m[2]) * 100) + Number(m[3]);
-        };
-
-        const sortedByDate = items
-          .filter((it) => it && it.permalink && it.title)
-          .slice()
-          .sort((a, b) => dateKey(b.dateISO) - dateKey(a.dateISO));
-
-        const candidates = sortedByDate.slice(0, Math.max(1, candidateLimit));
-
-        const fetchCount = async (slug) => {
-          try {
-            const res = await fetch(`${infoEndpoint}?slug=${encodeURIComponent(slug)}`, { credentials: 'include' });
-            if (!res.ok) return 0;
-            const data = await res.json();
-            return (data && typeof data.upvote_count === 'number') ? data.upvote_count : 0;
-          } catch (_) {
-            return 0;
-          }
-        };
-
-        // Concurrency-limited fetch to avoid hammering the endpoint.
-        const concurrency = 8;
-        const scored = [];
-        const pool = [];
-        let idx = 0;
-
-        const worker = async () => {
-          while (idx < candidates.length) {
-            const item = candidates[idx++];
-            if (!item) continue;
-            const permalink = String(item.permalink || '');
-            const title = String(item.title || '');
-            if (!permalink || !title) continue;
-            const slug = toSlug(permalink);
-            if (!slug || !slug.startsWith('/')) continue;
-            const upvotes = await fetchCount(slug);
-            scored.push({ title, permalink, upvotes, dateISO: item.dateISO || '' });
-          }
-        };
-
-        for (let i = 0; i < concurrency; i++) pool.push(worker());
-        await Promise.all(pool);
-
-        scored.sort((a, b) => {
-          if ((b.upvotes || 0) !== (a.upvotes || 0)) return (b.upvotes || 0) - (a.upvotes || 0);
-          return dateKey(b.dateISO) - dateKey(a.dateISO);
-        });
-
-        const out = scored.slice(0, limit);
-        if (!out.length) {
-          setState('fallback');
-          return;
-        }
-
         list.innerHTML = '';
-        out.forEach((p) => {
+        items.slice(0, limit).forEach((p) => {
+          const title = (p && typeof p.title === 'string') ? p.title : '';
+          const permalink = (p && typeof p.permalink === 'string') ? p.permalink : '';
+          if (!title || !permalink) return;
           const li = document.createElement('li');
           const a = document.createElement('a');
-          a.href = p.permalink;
-          a.textContent = p.title;
+          a.href = permalink;
+          a.textContent = title;
           li.appendChild(a);
           list.appendChild(li);
         });
 
+        if (!list.children.length) {
+          setState('fallback');
+          return;
+        }
         setState('ready');
       } catch (_) {
         setState('fallback');

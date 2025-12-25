@@ -21,17 +21,14 @@
   </ul>
 
   <h3>{{ i18n "home_most_popular_posts" }}</h3>
-  {{- $infoEndpoint := "" -}}
+  {{- $popularEndpoint := "" -}}
   {{- with site.Params.upvote -}}
-    {{- $infoEndpoint = .infoEndpoint | default "/api/upvote-info" -}}
+    {{- $popularEndpoint = .popularEndpoint | default "/api/popular" -}}
   {{- end -}}
-  {{- $candidateLimit := (site.Params.home.popular.candidateLimit | default 50) -}}
   <ul id="home-popular-posts"
       data-limit="{{ $popularLimit }}"
-      data-index-url="{{ "index.json" | relURL }}"
-      data-candidate-limit="{{ $candidateLimit }}"
-      data-info-endpoint="{{ $infoEndpoint }}"
-      {{- if $infoEndpoint -}}data-popular-state="loading" aria-busy="true"{{- end -}}>
+      data-popular-endpoint="{{ $popularEndpoint }}"
+      {{- if $popularEndpoint -}}data-popular-state="loading" aria-busy="true"{{- end -}}>
     {{- range first $popularLimit (shuffle $posts) -}}
       <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     {{- end -}}

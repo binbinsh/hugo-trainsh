@@ -46,9 +46,9 @@ If you prefer Hugo Modules:
 
 ## Required site configuration
 
-### Enable the JSON index (search + popular posts)
+### Enable the JSON index (search)
 
-This theme uses `index.json` for client-side search (and for “most popular posts” on the homepage when upvotes are enabled).
+This theme uses `index.json` for client-side search.
 
 ```toml
 [outputs]
@@ -252,6 +252,7 @@ The theme includes an optional upvote widget at the bottom of posts. It expects 
     enabled = true
     endpoint = "/api/upvote"
     infoEndpoint = "/api/upvote-info"
+    popularEndpoint = "/api/popular"
 ```
 
 ### Per-post control
@@ -270,12 +271,11 @@ See [`docs/upvote.md`](docs/upvote.md) for deployment instructions.
 
 ## Home: “most popular posts”
 
-On the homepage, the “most popular posts” list is generated client-side:
+On the homepage, the “most popular posts” list is populated with a single request:
 
-1. Fetch `index.json` for post metadata
-2. Take the most recent N posts (default: 50)
-3. Fetch `GET /api/upvote-info` for each candidate post (client-side, concurrency-limited)
-4. Sort by upvote count (ties broken by date)
+- `GET /api/popular?limit=N` → `{ generated_at, items }`
+
+The Cloudflare Worker backend (see `cloudflare/`) maintains a cached ranking in KV and refreshes it periodically via cron.
 
 To tune how many posts show up:
 

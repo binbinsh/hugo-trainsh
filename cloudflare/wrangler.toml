@@ -9,6 +9,10 @@ workers_dev = true
 #   { pattern = "*/api/*", zone_id = "${CLOUDFLARE_ZONE_ID}" },
 # ]
 
+[triggers]
+# Rebuild cached "most popular posts" periodically.
+crons = ["0 */6 * * *"]
+
 [assets]
 directory = "../exampleSite/public"
 binding = "ASSETS"

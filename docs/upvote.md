@@ -2,10 +2,16 @@
 
 This document describes the optional upvote backend shipped with this theme.
 
-It provides two endpoints:
+It provides three endpoints:
 
 - `GET /api/upvote-info?slug=/path` → `{ slug, upvote_count, upvoted }`
+  - Optional metadata can be provided to help build the popular-posts cache:
+    - `title`, `permalink`, `dateISO`
 - `POST /api/upvote` (form data or JSON with `slug`) → `{ slug, upvote_count, upvoted }`
+  - Optional metadata can be included in the request body:
+    - `title`, `permalink`, `dateISO`
+- `GET /api/popular?limit=N` → `{ generated_at, items }`
+  - Each item includes: `slug`, `title`, `permalink`, `upvote_count`, `dateISO`
 
 ## Requirements
 
@@ -49,6 +55,13 @@ wrangler deploy
 By default, `cloudflare/wrangler.toml` also serves static assets from `../exampleSite/public` (demo site).
 If you only want API endpoints, remove the `[assets]` section.
 
+## Popular posts cache
+
+The worker maintains a cached “most popular posts” list in KV and refreshes it periodically via a cron trigger.
+
+- Cron schedule is configured in `cloudflare/wrangler.toml` under `[triggers]`.
+- You can control the maximum number of cached items with the `POPULAR_CACHE_MAX` environment variable (default: `50`).
+
 ## 4) Configure your Hugo site
 
 In your site config:
@@ -59,6 +72,7 @@ In your site config:
     enabled = true
     endpoint = "/api/upvote"
     infoEndpoint = "/api/upvote-info"
+    popularEndpoint = "/api/popular"
 ```
 
 ### Same-domain routing (recommended)

@@ -19,6 +19,7 @@ home = ["HTML", "RSS", "JSON"]
     enabled = true
     endpoint = "/api/upvote"
     infoEndpoint = "/api/upvote-info"
+    popularEndpoint = "/api/popular"
 
   [params.social]
     # Demo links: replace with your own profiles.
