@@ -267,7 +267,7 @@ make_discoverable = false
 
 This repo includes a Cloudflare Worker + KV backend in `cloudflare/`.
 
-See [`docs/upvote.md`](docs/upvote.md) for deployment instructions.
+See [`docs/upvote.md`](upvote.md) for deployment instructions.
 
 ## Home: “most popular posts”
 
