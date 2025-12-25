@@ -10,8 +10,8 @@ workers_dev = true
 # ]
 
 [triggers]
-# Rebuild cached "most popular posts" periodically.
-crons = ["0 */6 * * *"]
+# Check cache every 10 minutes; the worker only rebuilds when missing or stale (> 6 hours).
+crons = ["*/10 * * * *"]
 
 [assets]
 directory = "../exampleSite/public"

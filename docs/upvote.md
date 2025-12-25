@@ -55,13 +55,6 @@ wrangler deploy
 By default, `cloudflare/wrangler.toml` also serves static assets from `../exampleSite/public` (demo site).
 If you only want API endpoints, remove the `[assets]` section.
 
-## Popular posts cache
-
-The worker maintains a cached “most popular posts” list in KV and refreshes it periodically via a cron trigger.
-
-- Cron schedule is configured in `cloudflare/wrangler.toml` under `[triggers]`.
-- You can control the maximum number of cached items with the `POPULAR_CACHE_MAX` environment variable (default: `50`).
-
 ## 4) Configure your Hugo site
 
 In your site config:
@@ -74,6 +67,14 @@ In your site config:
     infoEndpoint = "/api/upvote-info"
     popularEndpoint = "/api/popular"
 ```
+
+## Popular posts cache
+
+The worker maintains a cached “most popular posts” list in KV.
+
+- Cron schedule is configured in `cloudflare/wrangler.toml` under `[triggers]`.
+- The cron runs every 10 minutes to check the cache, but the worker only rebuilds when missing or stale (> 6 hours).
+- You can control the maximum number of cached items with the `POPULAR_CACHE_MAX` environment variable (default: `50`).
 
 ### Same-domain routing (recommended)
 

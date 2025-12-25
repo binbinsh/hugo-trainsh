@@ -12,10 +12,11 @@ COOKIE_PREFIX = "upvote_"
 COOKIE_SECRET_ENV = "UPVOTE_COOKIE_SECRET"
 KV_BINDING_NAME = "UPVOTES"
 
-# Cached "most popular posts" list (rebuilt by cron).
+# Cached "most popular posts" list (rebuilt by cron and on-demand when missing).
 POPULAR_CACHE_KEY = "popular_cache:v1"
 POPULAR_CACHE_MAX_ENV = "POPULAR_CACHE_MAX"
 POPULAR_CACHE_MAX_DEFAULT = 50
+POPULAR_REFRESH_SECONDS = 21600  # 6 hours
 
 
 def _hash_slug(slug: str) -> str:
@@ -110,34 +111,35 @@ def _validate_slug(slug: str) -> bool:
     return bool(slug) and slug.startswith("/")
 
 
-async def _read_post_slug(request) -> str:
+async def _read_upvote_payload(request) -> dict:
+    """
+    Read a best-effort payload for /api/upvote.
+    Supports JSON and (urlencoded/multipart) forms.
+    """
     content_type = (request.headers.get("Content-Type", "") or "").split(";", 1)[0].strip().lower()
 
     if "application/json" in content_type:
         try:
-            payload_text = await request.text()
-            data = json.loads(payload_text)
+            data = json.loads(await request.text())
+            return data if isinstance(data, dict) else {}
         except Exception:
-            return ""
-        value = data.get("slug", "")
-        return value if isinstance(value, str) else ""
+            return {}
 
     if content_type in ("application/x-www-form-urlencoded", "multipart/form-data"):
         try:
             form_data = await request.formData()
-            value = form_data.get("slug") if form_data else None
-            if isinstance(value, str) and value:
-                return value
+            if form_data:
+                return {k: form_data.get(k) for k in ("slug", "title", "permalink", "dateISO")}
         except Exception:
             pass
         try:
             body = await request.text()
             parsed = parse_qs(body)
-            return parsed.get("slug", [""])[0]
+            return {k: parsed.get(k, [""])[0] for k in ("slug", "title", "permalink", "dateISO")}
         except Exception:
-            return ""
+            return {}
 
-    return ""
+    return {}
 
 
 def _extract_origin(request) -> str | None:
@@ -224,37 +226,42 @@ def _default_post_record(count: int = 0) -> dict:
     }
 
 
-def _parse_post_record(raw: str | None) -> dict:
+def _parse_post_record(raw: str | None) -> tuple[dict, bool]:
+    """
+    Returns (record, needs_migration).
+    """
     if not raw:
-        return _default_post_record(0)
+        return _default_post_record(0), False
 
-    # Legacy format: plain integer.
-    as_int = _parse_int(raw, default=-1)
-    if as_int >= 0 and str(as_int) == raw.strip():
-        return _default_post_record(as_int)
+    raw = str(raw).strip()
+    if not raw:
+        return _default_post_record(0), False
 
+    # Primary: JSON record.
     try:
         data = json.loads(raw)
     except Exception:
-        return _default_post_record(0)
+        data = None
 
-    if not isinstance(data, dict):
-        return _default_post_record(0)
+    if isinstance(data, dict):
+        count = data.get("count")
+        if not isinstance(count, int):
+            count = _parse_int(str(count) if count is not None else None, default=0)
 
-    count = data.get("count")
-    if not isinstance(count, int):
-        count = _parse_int(str(count) if count is not None else None, default=0)
+        out = _default_post_record(count)
+        if isinstance(data.get("title"), str):
+            out["title"] = _sanitize_text(data.get("title", ""), 256)
+        if isinstance(data.get("permalink"), str):
+            out["permalink"] = _sanitize_permalink(data.get("permalink", ""))
+        if isinstance(data.get("dateISO"), str):
+            out["dateISO"] = _sanitize_date_iso(data.get("dateISO", ""))
+        if isinstance(data.get("updated_at"), int):
+            out["updated_at"] = int(data.get("updated_at", 0))
+        return out, False
 
-    out = _default_post_record(count)
-    if isinstance(data.get("title"), str):
-        out["title"] = _sanitize_text(data.get("title", ""), 256)
-    if isinstance(data.get("permalink"), str):
-        out["permalink"] = _sanitize_permalink(data.get("permalink", ""))
-    if isinstance(data.get("dateISO"), str):
-        out["dateISO"] = _sanitize_date_iso(data.get("dateISO", ""))
-    if isinstance(data.get("updated_at"), int):
-        out["updated_at"] = int(data.get("updated_at", 0))
-    return out
+    # Migration path: legacy integer.
+    count = _parse_int(raw, default=0)
+    return _default_post_record(count), True
 
 
 def _merge_meta_into_record(record: dict, title: str, permalink: str, date_iso: str) -> tuple[dict, bool]:
@@ -319,14 +326,21 @@ async def _resolve_cookie_secret(env, kv):
 
 
 async def _fetch_count(kv, slug: str) -> int:
-    raw = await kv.get(_kv_key(slug))
-    record = _parse_post_record(raw)
+    record = await _fetch_post_record(kv, slug)
     return int(record.get("count", 0) or 0)
 
 
 async def _fetch_post_record(kv, slug: str) -> dict:
     raw = await kv.get(_kv_key(slug))
-    return _parse_post_record(raw)
+    record, needs_migration = _parse_post_record(raw)
+    if needs_migration:
+        # One-time migration: persist in the new JSON format.
+        record["updated_at"] = int(time.time())
+        try:
+            await kv.put(_kv_key(slug), json.dumps(record))
+        except Exception:
+            pass
+    return record
 
 
 async def _write_post_record(kv, slug: str, record: dict):
@@ -355,7 +369,6 @@ async def _kv_list_keys(kv, prefix: str, limit: int = 1000) -> list[str]:
         if cursor:
             params["cursor"] = cursor
 
-        # KV bindings differ slightly across runtimes; try kwargs then dict.
         try:
             resp = await kv.list(**params)  # type: ignore[arg-type]
         except TypeError:
@@ -386,7 +399,6 @@ async def _kv_list_keys(kv, prefix: str, limit: int = 1000) -> list[str]:
                 break
             continue
 
-        # Some runtimes may return a plain list of names.
         if isinstance(resp, list):
             for k in resp:
                 if isinstance(k, str):
@@ -418,6 +430,9 @@ async def _rebuild_popular_cache(env, kv) -> dict:
             continue
         record = await _fetch_post_record(kv, slug)
         count = int(record.get("count", 0) or 0)
+        if count <= 0:
+            continue
+
         title = str(record.get("title", "") or "")
         permalink = str(record.get("permalink", "") or "")
         date_iso = str(record.get("dateISO", "") or "")
@@ -462,16 +477,18 @@ async def _handle_get(request, kv, origin: str | None, secret: str):
     upvoted = bool(cookie_value and _is_cookie_valid(slug, secret, cookie_value))
     record = await _fetch_post_record(kv, slug)
 
-    # Optional metadata backfill (best-effort, write only if it changes).
+    # Optional metadata backfill (best-effort). Do not create KV entries for never-upvoted posts.
     title = _extract_query_first(request.url, "title")
     permalink = _extract_query_first(request.url, "permalink")
     date_iso = _extract_query_first(request.url, "dateISO")
     record, changed = _merge_meta_into_record(record, title, permalink, date_iso)
 
     count = int(record.get("count", 0) or 0)
-    # Avoid creating KV entries for never-upvoted posts; only persist metadata once a counter exists.
     if changed and count > 0:
-        await _write_post_record(kv, slug, record)
+        try:
+            await _write_post_record(kv, slug, record)
+        except Exception:
+            pass
     return _json_response({
         "slug": slug,
         "upvote_count": count,
@@ -480,42 +497,27 @@ async def _handle_get(request, kv, origin: str | None, secret: str):
 
 
 async def _handle_post(request, kv, origin: str | None, secret: str):
-    payload: dict = {}
-    try:
-        content_type = (request.headers.get("Content-Type", "") or "").split(";", 1)[0].strip().lower()
-        if "application/json" in content_type:
-            data = json.loads(await request.text())
-            if isinstance(data, dict):
-                payload = data
-        elif content_type in ("application/x-www-form-urlencoded", "multipart/form-data"):
-            try:
-                form_data = await request.formData()
-                if form_data:
-                    payload = {k: form_data.get(k) for k in ("slug", "title", "permalink", "dateISO")}
-            except Exception:
-                body = await request.text()
-                parsed = parse_qs(body)
-                payload = {k: parsed.get(k, [""])[0] for k in ("slug", "title", "permalink", "dateISO")}
-    except Exception:
-        payload = {}
-
-    slug = payload.get("slug", "")
+    payload = await _read_upvote_payload(request)
+    slug = payload.get("slug", "") if isinstance(payload, dict) else ""
     if not isinstance(slug, str) or not slug:
         slug = _extract_slug_from_query(request.url)
     if not _validate_slug(slug):
         return _error_response("slug must start with '/' and not be empty", origin=origin)
 
-    title = payload.get("title", "")
-    permalink = payload.get("permalink", "")
-    date_iso = payload.get("dateISO", "")
+    title = payload.get("title", "") if isinstance(payload, dict) else ""
+    permalink = payload.get("permalink", "") if isinstance(payload, dict) else ""
+    date_iso = payload.get("dateISO", "") if isinstance(payload, dict) else ""
 
     cookie_value = _get_cookie_value(request, slug)
     if cookie_value and _is_cookie_valid(slug, secret, cookie_value):
         record = await _fetch_post_record(kv, slug)
         record, changed = _merge_meta_into_record(record, str(title or ""), str(permalink or ""), str(date_iso or ""))
-        if changed:
-            await _write_post_record(kv, slug, record)
         count = int(record.get("count", 0) or 0)
+        if changed and count > 0:
+            try:
+                await _write_post_record(kv, slug, record)
+            except Exception:
+                pass
         return _json_response({
             "slug": slug,
             "upvote_count": count,
@@ -525,7 +527,10 @@ async def _handle_post(request, kv, origin: str | None, secret: str):
     record = await _fetch_post_record(kv, slug)
     record["count"] = int(record.get("count", 0) or 0) + 1
     record, _ = _merge_meta_into_record(record, str(title or ""), str(permalink or ""), str(date_iso or ""))
-    await _write_post_record(kv, slug, record)
+    try:
+        await _write_post_record(kv, slug, record)
+    except Exception:
+        pass
     count = int(record.get("count", 0) or 0)
     cookie_header = _build_cookie(slug, secret)
     return _json_response({
@@ -549,14 +554,13 @@ async def _handle_popular(request, env, kv, origin: str | None):
             payload = None
 
     if not isinstance(payload, dict) or not isinstance(payload.get("items"), list):
-        # Best-effort on-demand rebuild for first load / missing cron.
         payload = await _rebuild_popular_cache(env, kv)
 
     items = payload.get("items") if isinstance(payload.get("items"), list) else []
     return _json_response({
         "generated_at": payload.get("generated_at", 0),
         "items": items[:limit],
-    }, origin=origin, headers={"cache-control": "public, max-age=60"})
+    }, origin=origin, headers={"cache-control": "public, max-age=600"})
 
 
 class Default(WorkerEntrypoint):
@@ -597,12 +601,41 @@ class Default(WorkerEntrypoint):
 
     async def scheduled(self, event):
         """
-        Cron-triggered refresh of the popular cache.
+        Cron-triggered cache maintenance.
+        Runs every 10 minutes, but only rebuilds when missing or stale (> 6 hours).
         """
         env = self.env
         kv_binding = _get_env_binding(env, KV_BINDING_NAME)
         if not kv_binding:
             return
+
+        try:
+            cached_raw = await kv_binding.get(POPULAR_CACHE_KEY)
+        except Exception:
+            cached_raw = None
+
+        payload = None
+        if cached_raw:
+            try:
+                payload = json.loads(cached_raw)
+            except Exception:
+                payload = None
+
+        now = int(time.time())
+        should_rebuild = False
+
+        if not isinstance(payload, dict):
+            should_rebuild = True
+        else:
+            generated_at = payload.get("generated_at")
+            if not isinstance(generated_at, int):
+                should_rebuild = True
+            elif now - generated_at >= POPULAR_REFRESH_SECONDS:
+                should_rebuild = True
+
+        if not should_rebuild:
+            return
+
         try:
             await _rebuild_popular_cache(env, kv_binding)
         except Exception:
