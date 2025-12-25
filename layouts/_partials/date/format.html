@@ -1,8 +1,22 @@
+{{- $page := .page -}}
 {{- $date := .date -}}
+{{- $context := .context | default "" -}}
+{{- $lang := site.Language.Lang -}}
+{{- with $page -}}
+  {{- $lang = .Site.Language.Lang -}}
+{{- end -}}
 
 {{- if $date -}}
-  {{- /* Bear Blog default: "d M, Y" (e.g. "03 Dec, 2025"). */ -}}
-  {{- $date | time.Format "02 Jan, 2006" -}}
+  {{- if hasPrefix $lang "zh" -}}
+    {{- if eq $context "single" -}}
+      {{- $date | time.Format "2006年1月2日" -}}
+    {{- else -}}
+      {{- $date | time.Format "2006-01-02" -}}
+    {{- end -}}
+  {{- else -}}
+    {{- /* Bear Blog default: "d M, Y" (e.g. "03 Dec, 2025"). */ -}}
+    {{- $date | time.Format "02 Jan, 2006" -}}
+  {{- end -}}
 {{- end -}}
 
 

@@ -113,7 +113,7 @@ other = "My most recent posts"
 other = "My most popular posts"
 
 [subscribe_via]
-other = "Subscribe via"
+other = "Subscribe via {{ .Links }}"
 
 [or_just_say_hello]
 other = "or just say hello."
@@ -122,10 +122,10 @@ other = "or just say hello."
 other = "or just say hello on"
 
 [follow_on]
-other = "follow on"
+other = "follow on {{ .Links }}"
 
 [or_just_say_hello_via]
-other = "or just say hello by"
+other = "or just say hello by {{ .Link }}"
 
 [enable_soft_wrap]
 other = "Enable soft wrap"

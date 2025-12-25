@@ -6,11 +6,11 @@
 {{- $followLinks := slice -}}
 {{- $helloLink := "" -}}
 {{- with site.Home.OutputFormats.Get "RSS" -}}
-  {{- $subscribeLinks = $subscribeLinks | append (printf `<a href="%s">rss</a>` .RelPermalink) -}}
+  {{- $subscribeLinks = $subscribeLinks | append (printf `<a href="%s">RSS</a>` .RelPermalink) -}}
 {{- end -}}
 
 {{- with site.Params.subscribe.emailUrl -}}
-  {{- $subscribeLinks = $subscribeLinks | append (printf `<a href="%s">email</a>` .) -}}
+  {{- $subscribeLinks = $subscribeLinks | append (printf `<a href="%s">%s</a>` . (i18n "email")) -}}
 {{- end -}}
 
 {{- with $social -}}
@@ -20,17 +20,25 @@
 
   {{- with .email -}}
     {{- $href := cond (hasPrefix . "mailto:") . (printf "mailto:%s" .) -}}
-    {{- $helloLink = printf `<a href="%s">email</a>` $href -}}
+    {{- $helloLink = printf `<a href="%s">%s</a>` $href (i18n "email") -}}
   {{- end -}}
 {{- end -}}
 
 {{- $parts := slice -}}
 
 {{- $lang := site.Language.Lang -}}
+{{- $partDelimiter := ", " -}}
+{{- $finalPunct := "." -}}
+{{- $listDelimiter := ", " -}}
+{{- if hasPrefix $lang "zh" -}}
+  {{- $partDelimiter = "，" -}}
+  {{- $finalPunct = "。" -}}
+  {{- $listDelimiter = "、" -}}
+{{- end -}}
 
 {{- if gt (len $subscribeLinks) 0 -}}
-  {{- $subscribeList := delimit $subscribeLinks ", " -}}
-  {{- if eq $lang "en" -}}
+  {{- $subscribeList := delimit $subscribeLinks $listDelimiter -}}
+  {{- if hasPrefix $lang "en" -}}
     {{- $n := len $subscribeLinks -}}
     {{- if eq $n 2 -}}
       {{- $subscribeList = printf "%s and %s" (index $subscribeLinks 0) (index $subscribeLinks 1) -}}
@@ -40,11 +48,11 @@
       {{- $subscribeList = printf "%s, and %s" (delimit $head ", ") $last -}}
     {{- end -}}
   {{- end -}}
-  {{- $parts = $parts | append (printf "%s %s" (i18n "subscribe_via") $subscribeList) -}}
+  {{- $parts = $parts | append (i18n "subscribe_via" (dict "Links" $subscribeList)) -}}
 {{- end -}}
 {{- if gt (len $followLinks) 0 -}}
-  {{- $followList := delimit $followLinks ", " -}}
-  {{- if eq $lang "en" -}}
+  {{- $followList := delimit $followLinks $listDelimiter -}}
+  {{- if hasPrefix $lang "en" -}}
     {{- $n := len $followLinks -}}
     {{- if eq $n 2 -}}
       {{- $followList = printf "%s and %s" (index $followLinks 0) (index $followLinks 1) -}}
@@ -54,14 +62,14 @@
       {{- $followList = printf "%s, and %s" (delimit $head ", ") $last -}}
     {{- end -}}
   {{- end -}}
-  {{- $parts = $parts | append (printf "%s %s" (i18n "follow_on") $followList) -}}
+  {{- $parts = $parts | append (i18n "follow_on" (dict "Links" $followList)) -}}
 {{- end -}}
 {{- if $helloLink -}}
-  {{- $parts = $parts | append (printf "%s %s" (i18n "or_just_say_hello_via") $helloLink) -}}
+  {{- $parts = $parts | append (i18n "or_just_say_hello_via" (dict "Link" $helloLink)) -}}
 {{- end -}}
 
 {{- if gt (len $parts) 0 -}}
-  <p><small>{{ delimit $parts ", " | safeHTML }}.</small></p>
+  <p><small>{{ (delimit $parts $partDelimiter) | safeHTML }}{{ $finalPunct }}</small></p>
 {{- end -}}
 
 <p>&copy; {{ now.Year }} {{ site.Title }} — {{ i18n "powered_by" (dict "Hugo" $hugo "Theme" $theme) | safeHTML }}</p>

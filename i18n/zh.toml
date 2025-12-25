@@ -80,7 +80,7 @@ other = "GitHub"
 other = "X"
 
 [email]
-other = "邮箱"
+other = "邮件"
 
 [no_results]
 other = "没有结果"
@@ -113,16 +113,16 @@ other = "最新文章"
 other = "最受欢迎文章"
 
 [subscribe_via]
-other = "订阅："
+other = "通过 {{ .Links }} 订阅"
 
 [or_just_say_hello]
 other = "或者来打个招呼。"
 
 [follow_on]
-other = "关注"
+other = "关注 {{ .Links }}"
 
 [or_just_say_hello_via]
-other = "或者来打个招呼："
+other = "或者用{{ .Link }}打个招呼"
 
 [enable_soft_wrap]
 other = "开启自动换行"

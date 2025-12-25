@@ -9,7 +9,7 @@
   <p>
     <i>
       <time datetime="{{ $page.Date | time.Format "2006-01-02" }}">
-        {{ partial "date/format.html" (dict "page" $page "date" $page.Date) }}
+        {{ partial "date/format.html" (dict "page" $page "date" $page.Date "context" "list") }}
       </time>
     </i>
   </p>

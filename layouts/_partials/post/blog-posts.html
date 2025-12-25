@@ -28,7 +28,7 @@ Renders a Bear Blog-style post list:
     <span>
       <i>
         <time datetime="{{ .Date | time.Format "2006-01-02" }}">
-          {{ partial "date/format.html" (dict "page" . "date" .Date) }}
+          {{ partial "date/format.html" (dict "page" . "date" .Date "context" "list") }}
         </time>
       </i>
     </span>
