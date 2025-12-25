@@ -4,11 +4,17 @@
 
 {{ partial "head/css.html" . }}
 
-{{- /* Optional: KaTeX auto-render (kept for compatibility; does not affect Bear Blog styling). */ -}}
-{{- $hasDisplayMath := gt (len (findRE `\$\$[^\$]+\$\$` .RawContent)) 0 -}}
-{{- $hasInlineMath := gt (len (findRE `\$[^\$]+\$` .RawContent)) 0 -}}
-{{- if or (.Page.Store.Get "hasMath") $hasDisplayMath $hasInlineMath -}}
+{{- /* Optional: KaTeX support (CSS always when math is detected; auto-render only when raw delimiters exist). */ -}}
+{{- $raw := .RawContent | default "" -}}
+{{- $hasPassthroughCodeblock := gt (len (findRE "(?m)^```passthrough\\b" $raw)) 0 -}}
+{{- $hasDisplayMath := or (gt (len (findRE "\\$\\$[^\\$]+\\$\\$" $raw)) 0) (in $raw "\\[") -}}
+{{- $hasInlineMath := or (gt (len (findRE "\\$[^\\$]+\\$" $raw)) 0) (in $raw "\\(") -}}
+{{- $needsKatexCss := or $hasPassthroughCodeblock (or $hasDisplayMath $hasInlineMath) -}}
+{{- $needsAutoRender := or $hasDisplayMath $hasInlineMath -}}
+{{- if $needsKatexCss -}}
   <link href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" rel="stylesheet">
+{{- end -}}
+{{- if $needsAutoRender -}}
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
   <script>
@@ -17,7 +23,9 @@
       renderMathInElement(document.body, {
         delimiters: [
           {left: "$$", right: "$$", display: true},
-          {left: "$", right: "$", display: false}
+          {left: "$", right: "$", display: false},
+          {left: "\\\\[", right: "\\\\]", display: true},
+          {left: "\\\\(", right: "\\\\)", display: false}
         ],
         throwOnError: false,
         ignoredTags: ["script","noscript","style","textarea","pre","code"]
