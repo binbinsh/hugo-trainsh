@@ -571,7 +571,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const b64 = tagCloud.getAttribute('data-tags') || '';
       if (!b64) return [];
       try {
-        const json = atob(b64);
+        const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+        const json = new TextDecoder('utf-8').decode(bytes);
         const arr = JSON.parse(json);
         return Array.isArray(arr) ? arr : [];
       } catch (_) {
