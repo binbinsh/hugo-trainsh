@@ -5,7 +5,6 @@ This document describes the optional upvote backend shipped with this theme.
 It provides two endpoints:
 
 - `GET /api/upvote-info?slug=/path` → `{ slug, upvote_count, upvoted }`
-- `GET /api/upvote-top?limit=50` → `{ items: [{ slug, upvote_count }] }`
 - `POST /api/upvote` (form data or JSON with `slug`) → `{ slug, upvote_count, upvoted }`
 
 ## Requirements

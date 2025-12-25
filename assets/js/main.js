@@ -56,21 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
           body: new FormData(form),
           credentials: 'include',
         })
-          .then((resp) => resp.ok ? resp.json() : null)
+          .then((resp) => resp.ok ? resp.json() : Promise.reject(new Error('Upvote failed')))
           .then((data) => {
-            // Optimistic UI: mimic Bear Blog (disable + salmon + increment).
+            // Success UI: disable + salmon + increment.
             button.disabled = true;
             button.classList.add('upvote-button--active');
             if (upvotedTitle) button.title = upvotedTitle;
 
             const current = parseInt((countEl.textContent || '').trim(), 10);
             const baseline = Number.isFinite(current) ? current : 0;
-            countEl.textContent = String(baseline + 1);
-
-            // If backend returns an updated count, sync to it.
-            if (data && typeof data.upvote_count === 'number') {
-              countEl.textContent = data.upvote_count.toString();
-            }
+            const next = (data && typeof data.upvote_count === 'number') ? data.upvote_count : (baseline + 1);
+            countEl.textContent = String(next);
           })
           .catch(() => {});
       });
@@ -773,8 +769,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const limit = parseInt(list.getAttribute('data-limit') || '5', 10) || 5;
     const indexUrl = list.getAttribute('data-index-url') || '/index.json';
-    const topEndpoint = list.getAttribute('data-top-endpoint') || '';
-    if (!topEndpoint) return;
+    const infoEndpoint = list.getAttribute('data-info-endpoint') || '';
+    if (!infoEndpoint) return;
+
+    const candidateLimit = parseInt(list.getAttribute('data-candidate-limit') || '50', 10) || 50;
 
     const normalizePath = (href) => {
       try {
@@ -807,38 +805,46 @@ document.addEventListener('DOMContentLoaded', () => {
         return (Number(m[1]) * 10000) + (Number(m[2]) * 100) + Number(m[3]);
       };
 
-      // Build a fast lookup: slug -> { title, permalink, dateISO }.
-      const metaBySlug = new Map();
-      items.forEach((item) => {
-        const permalink = item && item.permalink ? String(item.permalink) : '';
-        const title = item && item.title ? String(item.title) : '';
-        if (!permalink || !title) return;
-        const slug = toSlug(permalink);
-        if (!slug || !slug.startsWith('/')) return;
-        metaBySlug.set(slug, { title, permalink, dateISO: item.dateISO || '' });
-      });
+      const sortedByDate = items
+        .filter((it) => it && it.permalink && it.title)
+        .slice()
+        .sort((a, b) => dateKey(b.dateISO) - dateKey(a.dateISO));
 
-      const candidateLimit = Math.max(limit * 20, 50);
-      let top = [];
-      try {
-        const res = await fetch(`${topEndpoint}?limit=${encodeURIComponent(String(candidateLimit))}`, { credentials: 'include' });
-        if (!res.ok) return;
-        const data = await res.json();
-        top = (data && Array.isArray(data.items)) ? data.items : [];
-      } catch (_) {
-        return;
-      }
+      const candidates = sortedByDate.slice(0, Math.max(1, candidateLimit));
 
-      const scored = top
-        .map((x) => {
-          const slug = x && typeof x.slug === 'string' ? x.slug : '';
-          const upvotes = x && typeof x.upvote_count === 'number' ? x.upvote_count : 0;
-          if (!slug) return null;
-          const meta = metaBySlug.get(slug);
-          if (!meta) return null;
-          return { title: meta.title, permalink: meta.permalink, upvotes, dateISO: meta.dateISO || '' };
-        })
-        .filter(Boolean);
+      const fetchCount = async (slug) => {
+        try {
+          const res = await fetch(`${infoEndpoint}?slug=${encodeURIComponent(slug)}`, { credentials: 'include' });
+          if (!res.ok) return 0;
+          const data = await res.json();
+          return (data && typeof data.upvote_count === 'number') ? data.upvote_count : 0;
+        } catch (_) {
+          return 0;
+        }
+      };
+
+      // Concurrency-limited fetch to avoid hammering the endpoint.
+      const concurrency = 8;
+      const scored = [];
+      const pool = [];
+      let idx = 0;
+
+      const worker = async () => {
+        while (idx < candidates.length) {
+          const item = candidates[idx++];
+          if (!item) continue;
+          const permalink = String(item.permalink || '');
+          const title = String(item.title || '');
+          if (!permalink || !title) continue;
+          const slug = toSlug(permalink);
+          if (!slug || !slug.startsWith('/')) continue;
+          const upvotes = await fetchCount(slug);
+          scored.push({ title, permalink, upvotes, dateISO: item.dateISO || '' });
+        }
+      };
+
+      for (let i = 0; i < concurrency; i++) pool.push(worker());
+      await Promise.all(pool);
 
       scored.sort((a, b) => {
         if ((b.upvotes || 0) !== (a.upvotes || 0)) return (b.upvotes || 0) - (a.upvotes || 0);

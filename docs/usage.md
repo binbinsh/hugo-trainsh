@@ -273,8 +273,9 @@ See [`docs/upvote.md`](docs/upvote.md) for deployment instructions.
 On the homepage, the “most popular posts” list is generated client-side:
 
 1. Fetch `index.json` for post metadata
-2. Fetch `GET /api/upvote-top` for top upvoted slugs
-3. Sort by upvote count (ties broken by date)
+2. Take the most recent N posts (default: 50)
+3. Fetch `GET /api/upvote-info` for each candidate post (client-side, concurrency-limited)
+4. Sort by upvote count (ties broken by date)
 
 To tune how many posts show up:
 
