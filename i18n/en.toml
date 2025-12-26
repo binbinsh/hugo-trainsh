@@ -110,10 +110,10 @@ other = "Remove all filters"
 other = "Remove tag"
 
 [home_most_recent_posts]
-other = "My most recent posts"
+other = "Recent posts"
 
-[home_most_popular_posts]
-other = "My most popular posts"
+[home_featured_posts]
+other = "Most upvoted posts"
 
 [subscribe_via]
 other = "Subscribe via {{ .Links }}"

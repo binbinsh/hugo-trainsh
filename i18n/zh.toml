@@ -112,8 +112,8 @@ other = "移除标签"
 [home_most_recent_posts]
 other = "最新文章"
 
-[home_most_popular_posts]
-other = "最受欢迎文章"
+[home_featured_posts]
+other = "点赞最多的文章"
 
 [subscribe_via]
 other = "通过 {{ .Links }} 订阅"

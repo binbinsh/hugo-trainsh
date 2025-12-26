@@ -778,18 +778,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })();
 
-  // Home: populate "most popular posts" via a single backend call.
+  // Home: populate "featured posts" via a single backend call.
   (() => {
+    const section = document.getElementById('home-popular-section');
+    if (!section) return;
+
     const list = document.getElementById('home-popular-posts');
     if (!list) return;
 
-    const limit = parseInt(list.getAttribute('data-limit') || '5', 10) || 5;
-    const popularEndpoint = list.getAttribute('data-popular-endpoint') || '';
+    const limit = parseInt(section.getAttribute('data-limit') || '5', 10) || 5;
+    const popularEndpoint = section.getAttribute('data-popular-endpoint') || '';
     if (!popularEndpoint) return;
 
+    // Language prefix for filtering (e.g., "/en/" for English pages, "" for default language)
+    const langPrefix = section.getAttribute('data-lang-prefix') || '';
+
     const setState = (state) => {
-      list.setAttribute('data-popular-state', state);
-      list.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
+      section.setAttribute('data-popular-state', state);
+      section.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
     };
 
     // Ensure we don't flash the server-rendered fallback list before the request finishes.
@@ -798,14 +804,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const run = async () => {
       try {
         const u = new URL(popularEndpoint, window.location.origin);
-        u.searchParams.set('limit', String(limit));
+        // Request more items to allow for language filtering
+        u.searchParams.set('limit', String(limit * 3));
         const res = await fetch(u.toString(), { credentials: 'include' });
         if (!res.ok) {
           setState('fallback');
           return;
         }
         const data = await res.json();
-        const items = (data && Array.isArray(data.items)) ? data.items : [];
+        let items = (data && Array.isArray(data.items)) ? data.items : [];
+
+        // Filter by language prefix
+        if (langPrefix) {
+          // Non-default language: permalink should start with the language prefix
+          items = items.filter((p) => {
+            const permalink = (p && typeof p.permalink === 'string') ? p.permalink : '';
+            return permalink.startsWith(langPrefix);
+          });
+        } else {
+          // Default language: permalink should NOT start with any language prefix (e.g., /en/, /de/)
+          items = items.filter((p) => {
+            const permalink = (p && typeof p.permalink === 'string') ? p.permalink : '';
+            // Match /<2-3 letter lang code>/ pattern at the start
+            return !(/^\/[a-z]{2,3}\//.test(permalink));
+          });
+        }
+
         if (!items.length) {
           setState('fallback');
           return;

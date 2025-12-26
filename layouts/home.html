@@ -20,17 +20,23 @@
     {{- end -}}
   </ul>
 
-  <h3>{{ i18n "home_most_popular_posts" }}</h3>
   {{- $popularEndpoint := "" -}}
   {{- with site.Params.upvote -}}
     {{- $popularEndpoint = .popularEndpoint | default "/api/popular" -}}
   {{- end -}}
-  <ul id="home-popular-posts"
+  {{- /* site.LanguagePrefix returns "" for default lang, "/en" for others */ -}}
+  {{- $langPrefix := site.LanguagePrefix -}}
+  {{- if $langPrefix -}}{{- $langPrefix = printf "%s/" $langPrefix -}}{{- end -}}
+  <section id="home-popular-section"
       data-limit="{{ $popularLimit }}"
       data-popular-endpoint="{{ $popularEndpoint }}"
+      data-lang-prefix="{{ $langPrefix }}"
       {{- if $popularEndpoint -}}data-popular-state="loading" aria-busy="true"{{- end -}}>
-    {{- range first $popularLimit (shuffle $posts) -}}
-      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-    {{- end -}}
-  </ul>
+    <h3>{{ i18n "home_featured_posts" }}</h3>
+    <ul id="home-popular-posts">
+      {{- range first $popularLimit (shuffle $posts) -}}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{- end -}}
+    </ul>
+  </section>
 {{ end }}

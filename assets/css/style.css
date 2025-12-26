@@ -338,9 +338,20 @@ figure figcaption {
     background: transparent !important;
 }
 
-/* Home: avoid flashing the server-rendered fallback list for "most popular posts". */
-#home-popular-posts[data-popular-state="loading"] {
-    display: none;
+/* Home: hide the entire "featured posts" section (title + list) during loading
+   so they appear together after the API response is ready. */
+#home-popular-section[data-popular-state="loading"] {
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+}
+
+#home-popular-section[data-popular-state="ready"],
+#home-popular-section[data-popular-state="fallback"] {
+    visibility: visible;
+    height: auto;
+    overflow: visible;
 }
 
 
