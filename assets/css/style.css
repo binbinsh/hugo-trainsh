@@ -83,7 +83,6 @@ nav a {
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 10px;
     align-items: baseline;
     font-size: 0.95em;
 }
