@@ -8,6 +8,16 @@ draft = false
 
 A minimal, Bear Blog–style theme for Hugo with clean templates and plain CSS.
 
-Browse the blog to see posts, tags, code blocks (copy + soft-wrap), Mermaid diagrams, math, and PhotoSwipe in action.
-
 {{< recent-posts >}}
+
+## Features
+
+- Clean lists and tag pages
+- Code blocks with copy button and soft-wrap
+- Mermaid diagrams and LaTeX math
+- PhotoSwipe image galleries
+- Lightweight CSS and fast loads
+
+---
+
+Browse the blog to see posts, tags, code blocks (copy + soft-wrap), Mermaid diagrams, math, and PhotoSwipe in action.
