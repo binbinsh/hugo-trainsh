@@ -9,10 +9,6 @@ workers_dev = true
 #   { pattern = "*/api/*", zone_id = "${CLOUDFLARE_ZONE_ID}" },
 # ]
 
-[triggers]
-# Check cache every 5 minutes; the worker only rebuilds when missing or stale (> 6 hours).
-crons = ["*/5 * * * *"]
-
 [assets]
 directory = "../exampleSite/public"
 binding = "ASSETS"

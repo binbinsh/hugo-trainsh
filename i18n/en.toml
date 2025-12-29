@@ -112,9 +112,6 @@ other = "Remove tag"
 [home_most_recent_posts]
 other = "Recent posts"
 
-[home_featured_posts]
-other = "Most upvoted posts"
-
 [subscribe_via]
 other = "Subscribe via {{ .Links }}"
 

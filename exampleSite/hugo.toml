@@ -19,7 +19,6 @@ home = ["HTML", "RSS", "JSON"]
     enabled = true
     endpoint = "/api/upvote"
     infoEndpoint = "/api/upvote-info"
-    popularEndpoint = "/api/popular"
 
   [params.social]
     # Demo links: replace with your own profiles.
@@ -31,9 +30,6 @@ home = ["HTML", "RSS", "JSON"]
 
   [params.home]
     [params.home.recent]
-      limit = 5
-
-    [params.home.popular]
       limit = 5
 
 [markup]

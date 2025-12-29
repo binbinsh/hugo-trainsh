@@ -1,0 +1,11 @@
+{{- $limit := .Get "limit" | default (site.Params.home.recent.limit | default 5) -}}
+{{- $title := .Get "title" | default (i18n "home_most_recent_posts") -}}
+{{- $sections := default (slice "posts") site.Params.mainSections -}}
+{{- $posts := where site.RegularPages "Section" "in" $sections -}}
+
+<h3>{{ $title }}</h3>
+<ul>
+  {{- range first (int $limit) ($posts.ByDate.Reverse) -}}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+  {{- end -}}
+</ul>

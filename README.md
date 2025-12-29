@@ -18,7 +18,7 @@ See the full usage guide in [`docs/usage.md`](docs/usage.md).
 
 ## Configuration (minimal)
 
-Enable the JSON index (used by blog search + “most popular posts”):
+Enable the JSON index:
 
 ```toml
 [outputs]

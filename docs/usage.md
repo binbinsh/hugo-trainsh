@@ -16,7 +16,6 @@ This document explains how to use the `hugo-trainsh` theme in your Hugo site, in
 - [Math (inline + block)](#math-inline--block)
 - [Images + PhotoSwipe lightbox](#images--photoswipe-lightbox)
 - [Upvotes](#upvotes)
-- [Home: “most popular posts”](#home-most-popular-posts)
 - [Customization](#customization)
 
 ## Installation
@@ -252,7 +251,6 @@ The theme includes an optional upvote widget at the bottom of posts. It expects 
     enabled = true
     endpoint = "/api/upvote"
     infoEndpoint = "/api/upvote-info"
-    popularEndpoint = "/api/popular"
 ```
 
 ### Per-post control
@@ -268,21 +266,6 @@ make_discoverable = false
 This repo includes a Cloudflare Worker + KV backend in `cloudflare/`.
 
 See [`docs/upvote.md`](upvote.md) for deployment instructions.
-
-## Home: “most popular posts”
-
-On the homepage, the “most popular posts” list is populated with a single request:
-
-- `GET /api/popular?limit=N` → `{ generated_at, items }`
-
-The Cloudflare Worker backend (see `cloudflare/`) maintains a cached ranking in KV and refreshes it periodically via cron.
-
-To tune how many posts show up:
-
-```toml
-[params.home.popular]
-limit = 5
-```
 
 ## Customization
 
@@ -307,5 +290,4 @@ x = "https://x.com/yourname"
 linkedin = "https://www.linkedin.com/in/yourname"
 email = "hello@yourdomain.com"
 ```
-
 

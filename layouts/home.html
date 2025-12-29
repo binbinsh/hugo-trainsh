@@ -6,37 +6,4 @@
       {{ . | markdownify }}
     {{- end -}}
   {{- end -}}
-
-  {{- $sections := default (slice "posts") site.Params.mainSections -}}
-  {{- $posts := where site.RegularPages "Section" "in" $sections -}}
-
-  {{- $recentLimit := (site.Params.home.recent.limit | default 5) -}}
-  {{- $popularLimit := (site.Params.home.popular.limit | default 5) -}}
-
-  <h3>{{ i18n "home_most_recent_posts" }}</h3>
-  <ul>
-    {{- range first $recentLimit ($posts.ByDate.Reverse) -}}
-      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-    {{- end -}}
-  </ul>
-
-  {{- $popularEndpoint := "" -}}
-  {{- with site.Params.upvote -}}
-    {{- $popularEndpoint = .popularEndpoint | default "/api/popular" -}}
-  {{- end -}}
-  {{- /* site.LanguagePrefix returns "" for default lang, "/en" for others */ -}}
-  {{- $langPrefix := site.LanguagePrefix -}}
-  {{- if $langPrefix -}}{{- $langPrefix = printf "%s/" $langPrefix -}}{{- end -}}
-  <section id="home-popular-section"
-      data-limit="{{ $popularLimit }}"
-      data-popular-endpoint="{{ $popularEndpoint }}"
-      data-lang-prefix="{{ $langPrefix }}"
-      {{- if $popularEndpoint -}}data-popular-state="loading" aria-busy="true"{{- end -}}>
-    <h3>{{ i18n "home_featured_posts" }}</h3>
-    <ul id="home-popular-posts">
-      {{- range first $popularLimit (shuffle $posts) -}}
-        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
-      {{- end -}}
-    </ul>
-  </section>
 {{ end }}
