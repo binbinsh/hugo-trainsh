@@ -7,8 +7,11 @@
 {{- if gt (len $translations) 1 -}}
   <nav class="lang-switch" aria-label="{{ i18n "language_switcher" }}">
     <ul class="lang-switch__list">
-      {{- range $t := $translations -}}
+      {{- range $index, $t := $translations -}}
         <li class="lang-switch__item">
+          {{- if gt $index 0 -}}
+            <span class="lang-switch__sep" aria-hidden="true">/</span>
+          {{- end -}}
           {{- if eq $t.Lang $.Lang -}}
             <span aria-current="true">{{ $t.Site.Language.LanguageName }}</span>
           {{- else -}}
@@ -19,6 +22,5 @@
     </ul>
   </nav>
 {{- end -}}
-
 
 

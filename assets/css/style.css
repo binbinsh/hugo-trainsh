@@ -97,6 +97,12 @@ nav a {
     color: var(--heading-color);
 }
 
+.lang-switch__sep {
+    margin: 0 6px;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
 /* Blog search (Fuse): keep minimal, but make it usable on all viewports. */
 #blog-search {
     width: 420px;
@@ -337,4 +343,3 @@ figure figcaption {
     height: auto;
     background: transparent !important;
 }
-
