@@ -37,22 +37,4 @@
 </nav>
 {{- end -}}
 
-{{- /* Language switcher */ -}}
-{{- $translations := .AllTranslations -}}
-{{- if lt (len $translations) 2 -}}
-  {{- $translations = site.Home.AllTranslations -}}
-{{- end -}}
-{{- if gt (len $translations) 1 -}}
-<p class="footer-lang">
-  {{- range $i, $t := $translations -}}
-    {{- if $i }} · {{ end -}}
-    {{- if eq $t.Lang $.Lang -}}
-      <span class="footer-lang-current">{{ $t.Site.Language.LanguageName }}</span>
-    {{- else -}}
-      <a href="{{ $t.RelPermalink }}">{{ $t.Site.Language.LanguageName }}</a>
-    {{- end -}}
-  {{- end -}}
-</p>
-{{- end -}}
-
 <p>&copy; {{ now.Year }} {{ site.Title }} — {{ i18n "powered_by" (dict "Hugo" $hugo "Theme" $theme) | safeHTML }}</p>

@@ -20,5 +20,22 @@
         {{ end }}
       {{ end }}
     {{- end -}}
+    {{- /* Language switcher as nav item */ -}}
+    {{- $translations := .AllTranslations -}}
+    {{- if lt (len $translations) 2 -}}
+      {{- $translations = site.Home.AllTranslations -}}
+    {{- end -}}
+    {{- if gt (len $translations) 1 -}}
+      <span class="lang-dropdown">
+        <span class="lang-current">{{ $.Site.Language.LanguageName }}</span>
+        <span class="lang-menu">
+          {{- range $t := $translations -}}
+            {{- if ne $t.Lang $.Lang -}}
+              <a href="{{ $t.RelPermalink }}">{{ $t.Site.Language.LanguageName }}</a>
+            {{- end -}}
+          {{- end -}}
+        </span>
+      </span>
+    {{- end -}}
   </nav>
 </div>
