@@ -1,10 +1,10 @@
 {{- /*
-Renders a Bear Blog-style post list:
+Renders a post list with title on top and date below:
 
 <ul class="blog-posts">
   <li>
-    <span><i><time>YYYY-MM-DD</time></i></span>
     <a href="/.../">Title</a>
+    <time>YYYY-MM-DD</time>
   </li>
 </ul>
 
@@ -25,14 +25,10 @@ Renders a Bear Blog-style post list:
   {{- $tagsStr := delimit $tags "|" -}}
   <li>
     <span hidden aria-hidden="true" data-tags>{{ $tagsStr }}</span>
-    <span>
-      <i>
-        <time datetime="{{ .Date | time.Format "2006-01-02" }}">
-          {{ partial "date/format.html" (dict "page" . "date" .Date "context" "list") }}
-        </time>
-      </i>
-    </span>
     <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    <time datetime="{{ .Date | time.Format "2006-01-02" }}">
+      {{ partial "date/format.html" (dict "page" . "date" .Date "context" "list") }}
+    </time>
   </li>
   {{- else -}}
   <li>{{ i18n "no_posts_yet" }}</li>

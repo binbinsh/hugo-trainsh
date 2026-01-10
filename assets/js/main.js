@@ -716,12 +716,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderFilters = () => {
       if (!filtersContainer) return;
       if (activeTags.length) {
-        const spans = activeTags.map((tag) => {
+        const tags = activeTags.map((tag) => {
           const remaining = activeTags.filter((t) => t !== tag);
           const href = remaining.length ? `${base}?q=${encodeURIComponent(remaining.join(','))}` : base;
-          return `<span class="tag">#${escapeHtml(tag)} <a rel="nofollow" href="${href}" title="${escapeHtml(removeTagTitle)}" style="text-decoration:none;">✕</a></span>`;
-        }).join(' ');
-        filtersContainer.innerHTML = `<h3 style="margin-bottom:0">${escapeHtml(filteringFor)} ${spans}</h3><small><a rel="nofollow" href="${base}">${escapeHtml(removeAllLabel)}</a></small>`;
+          return `<a class="active-tag" rel="nofollow" href="${href}" title="${escapeHtml(removeTagTitle)}">#${escapeHtml(tag)}<span class="active-tag-x">×</span></a>`;
+        }).join('');
+        filtersContainer.innerHTML = `<div class="active-filters">${tags}<a class="clear-filters" rel="nofollow" href="${base}">${escapeHtml(removeAllLabel)}</a></div>`;
       } else {
         filtersContainer.innerHTML = '';
       }

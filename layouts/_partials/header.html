@@ -1,18 +1,10 @@
 <div class="site-header">
-  <div class="site-header__top">
-    <a class="title site-header__title" href="{{ "/" | relLangURL }}">
-      <h1>{{ .Site.Title }}</h1>
-    </a>
+  <a class="title" href="{{ "/" | relLangURL }}">
+    <h1>{{ .Site.Title }}</h1>
+  </a>
 
-    {{ partial "lang-switch.html" . }}
-  </div>
-
-  <nav class="site-header__nav">
+  <nav class="site-nav">
     {{- with site.Params.nav -}}
-      {{- /*
-        Bear Blog renders `blog.nav` as markdown inside <nav>.
-        For Hugo, allow a similar `params.nav` (markdown string).
-      */ -}}
       {{- $html := . | markdownify -}}
       {{- $html = replaceRE `(?s)^<p>(.*)</p>$` `$1` $html -}}
       {{- $html | safeHTML -}}

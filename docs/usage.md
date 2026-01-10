@@ -1,6 +1,6 @@
 # hugo-trainsh — Usage Guide
 
-This document explains how to use the `hugo-trainsh` theme in your Hugo site, including blog pages, tag filtering, code blocks (copy + soft wrap), TOC, Mermaid, math, PhotoSwipe, and upvotes.
+This document explains how to use the `hugo-trainsh` theme in your Hugo site, including blog pages, tag filtering, code blocks (copy + soft wrap), TOC, Mermaid diagrams, math (KaTeX), PhotoSwipe lightbox, and upvotes.
 
 ## Table of contents
 
@@ -17,6 +17,9 @@ This document explains how to use the `hugo-trainsh` theme in your Hugo site, in
 - [Images + PhotoSwipe lightbox](#images--photoswipe-lightbox)
 - [Upvotes](#upvotes)
 - [Customization](#customization)
+  - [Styling](#styling)
+  - [Social links](#social-links)
+  - [Footer and language switcher](#footer-and-language-switcher)
 
 ## Installation
 
@@ -101,7 +104,8 @@ nav = "[Home](/) [Now](/now/) [Projects](/projects/) [Blog](/blog/)"
 The `/blog/` page includes:
 
 - A search input (`Fuse.js` is lazy-loaded from a CDN when needed)
-- A tag filter UI using `?q=tag1,tag2` (matches Bear behavior)
+- A tag filter UI using `?q=tag1,tag2`
+- A two-column post grid (responsive, single column on mobile)
 - A tag cloud at the bottom
 
 Search uses `index.json` (make sure you enabled it in `[outputs]`).
@@ -150,7 +154,7 @@ export function greet(name) {
 ```
 ````
 
-The theme uses a “friendly” highlighting palette and renders code blocks using Hugo’s built-in highlighter.
+The theme uses a neutral highlighting palette and renders code blocks using Hugo's built-in highlighter.
 
 ### Wrap + copy buttons
 
@@ -271,9 +275,28 @@ See [`docs/upvote.md`](upvote.md) for deployment instructions.
 
 ### Styling
 
-The theme is styled with plain CSS via Hugo Pipes:
+The theme uses plain CSS with CSS custom properties (variables) via Hugo Pipes:
 
 - `assets/css/style.css`
+
+Key CSS variables:
+
+```css
+:root {
+  --width: 680px;
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --background-color: #fafafa;
+  --heading-color: #1a1a1a;
+  --text-color: #444;
+  --link-color: #0066cc;
+  --accent-color: #0077cc;
+  --border-color: #ddd;
+  --muted-color: #888;
+}
+```
+
+Dark mode is automatically applied via `prefers-color-scheme: dark`.
 
 ### Width
 
@@ -290,4 +313,16 @@ x = "https://x.com/yourname"
 linkedin = "https://www.linkedin.com/in/yourname"
 email = "hello@yourdomain.com"
 ```
+
+These links appear in the footer as a horizontal list.
+
+### Footer and language switcher
+
+The footer displays:
+
+1. Social/subscribe links (RSS, GitHub, X, LinkedIn, Email) as a horizontal list
+2. Language switcher (if multiple languages are configured) — shows current language and links to translations
+3. Copyright notice with site title and theme credit
+
+For multi-language sites, the language switcher appears in the footer and automatically shows all available translations for the current page (or homepage if no translations exist).
 

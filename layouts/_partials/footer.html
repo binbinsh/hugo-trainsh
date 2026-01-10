@@ -2,74 +2,57 @@
 {{- $theme := `<a href="https://github.com/binbinsh/hugo-trainsh" target="_blank">hugo-trainsh</a>` -}}
 {{- $social := site.Params.social -}}
 
-{{- $subscribeLinks := slice -}}
-{{- $followLinks := slice -}}
-{{- $helloLink := "" -}}
+{{- /* Collect all social/subscribe links */ -}}
+{{- $links := slice -}}
+
 {{- with site.Home.OutputFormats.Get "RSS" -}}
-  {{- $subscribeLinks = $subscribeLinks | append (printf `<a href="%s">RSS</a>` .RelPermalink) -}}
+  {{- $links = $links | append (dict "url" .RelPermalink "label" "RSS" "icon" "rss") -}}
 {{- end -}}
 
 {{- with site.Params.subscribe.emailUrl -}}
-  {{- $subscribeLinks = $subscribeLinks | append (printf `<a href="%s">%s</a>` . (i18n "email")) -}}
+  {{- $links = $links | append (dict "url" . "label" (i18n "email") "icon" "mail") -}}
 {{- end -}}
 
 {{- with $social -}}
-  {{- with .github -}}{{- $followLinks = $followLinks | append (printf `<a href="%s">%s</a>` . (i18n "social_github")) -}}{{- end -}}
-  {{- with .x -}}{{- $followLinks = $followLinks | append (printf `<a href="%s">%s</a>` . (i18n "social_x")) -}}{{- end -}}
-  {{- with .linkedin -}}{{- $followLinks = $followLinks | append (printf `<a href="%s">%s</a>` . (i18n "social_linkedin")) -}}{{- end -}}
-
+  {{- with .github -}}
+    {{- $links = $links | append (dict "url" . "label" (i18n "social_github") "icon" "github") -}}
+  {{- end -}}
+  {{- with .x -}}
+    {{- $links = $links | append (dict "url" . "label" (i18n "social_x") "icon" "x") -}}
+  {{- end -}}
+  {{- with .linkedin -}}
+    {{- $links = $links | append (dict "url" . "label" (i18n "social_linkedin") "icon" "linkedin") -}}
+  {{- end -}}
   {{- with .email -}}
     {{- $href := cond (hasPrefix . "mailto:") . (printf "mailto:%s" .) -}}
-    {{- $helloLink = printf `<a href="%s">%s</a>` $href (i18n "email") -}}
+    {{- $links = $links | append (dict "url" $href "label" (i18n "email") "icon" "mail") -}}
   {{- end -}}
 {{- end -}}
 
-{{- $parts := slice -}}
-
-{{- $lang := site.Language.Lang -}}
-{{- $partDelimiter := ", " -}}
-{{- $finalPunct := "." -}}
-{{- $listDelimiter := ", " -}}
-{{- if hasPrefix $lang "zh" -}}
-  {{- $partDelimiter = "，" -}}
-  {{- $finalPunct = "。" -}}
-  {{- $listDelimiter = "、" -}}
+{{- if gt (len $links) 0 -}}
+<nav class="footer-links" aria-label="Social links">
+  {{- range $links -}}
+    <a href="{{ .url }}" title="{{ .label }}" aria-label="{{ .label }}">{{ .label }}</a>
+  {{- end -}}
+</nav>
 {{- end -}}
 
-{{- if gt (len $subscribeLinks) 0 -}}
-  {{- $subscribeList := delimit $subscribeLinks $listDelimiter -}}
-  {{- if hasPrefix $lang "en" -}}
-    {{- $n := len $subscribeLinks -}}
-    {{- if eq $n 2 -}}
-      {{- $subscribeList = printf "%s and %s" (index $subscribeLinks 0) (index $subscribeLinks 1) -}}
-    {{- else if gt $n 2 -}}
-      {{- $head := first (sub $n 1) $subscribeLinks -}}
-      {{- $last := index $subscribeLinks (sub $n 1) -}}
-      {{- $subscribeList = printf "%s, and %s" (delimit $head ", ") $last -}}
+{{- /* Language switcher */ -}}
+{{- $translations := .AllTranslations -}}
+{{- if lt (len $translations) 2 -}}
+  {{- $translations = site.Home.AllTranslations -}}
+{{- end -}}
+{{- if gt (len $translations) 1 -}}
+<p class="footer-lang">
+  {{- range $i, $t := $translations -}}
+    {{- if $i }} · {{ end -}}
+    {{- if eq $t.Lang $.Lang -}}
+      <span class="footer-lang-current">{{ $t.Site.Language.LanguageName }}</span>
+    {{- else -}}
+      <a href="{{ $t.RelPermalink }}">{{ $t.Site.Language.LanguageName }}</a>
     {{- end -}}
   {{- end -}}
-  {{- $parts = $parts | append (i18n "subscribe_via" (dict "Links" $subscribeList)) -}}
-{{- end -}}
-{{- if gt (len $followLinks) 0 -}}
-  {{- $followList := delimit $followLinks $listDelimiter -}}
-  {{- if hasPrefix $lang "en" -}}
-    {{- $n := len $followLinks -}}
-    {{- if eq $n 2 -}}
-      {{- $followList = printf "%s and %s" (index $followLinks 0) (index $followLinks 1) -}}
-    {{- else if gt $n 2 -}}
-      {{- $head := first (sub $n 1) $followLinks -}}
-      {{- $last := index $followLinks (sub $n 1) -}}
-      {{- $followList = printf "%s, and %s" (delimit $head ", ") $last -}}
-    {{- end -}}
-  {{- end -}}
-  {{- $parts = $parts | append (i18n "follow_on" (dict "Links" $followList)) -}}
-{{- end -}}
-{{- if $helloLink -}}
-  {{- $parts = $parts | append (i18n "or_just_say_hello_via" (dict "Link" $helloLink)) -}}
-{{- end -}}
-
-{{- if gt (len $parts) 0 -}}
-  <p><small>{{ (delimit $parts $partDelimiter) | safeHTML }}{{ $finalPunct }}</small></p>
+</p>
 {{- end -}}
 
 <p>&copy; {{ now.Year }} {{ site.Title }} — {{ i18n "powered_by" (dict "Hugo" $hugo "Theme" $theme) | safeHTML }}</p>

@@ -5,17 +5,38 @@
   {{- $blogBase = .RelPermalink -}}
 {{- end -}}
 
-{{ with .Params.tags }}
-  {{ if gt (len .) 0 }}
-  <p class="tags"><a rel="nofollow" href="{{ $blogBase }}?q=pot-of-honey" style="display:none;">#potofhoney</a>{{ range . }}{{ $tag := (printf "%v" .) | lower | replaceRE "\\s+" "-" }} <a rel="nofollow" href="{{ $blogBase }}?q={{ $tag | urlquery }}">#{{ $tag }}</a>{{ end }}</p>
-  {{ end }}
-{{ end }}
-
 {{- $discoverable := true -}}
 {{- if isset .Params "make_discoverable" -}}
   {{- $discoverable = .Params.make_discoverable -}}
 {{- end -}}
+{{- $showUpvote := and ($params.enabled | default false) $discoverable -}}
 
-{{- if and ($params.enabled | default false) $discoverable -}}
-  {{ partial "post/upvote.html" . }}
+{{- $hasTags := false -}}
+{{- with .Params.tags -}}
+  {{- if gt (len .) 0 -}}
+    {{- $hasTags = true -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if or $hasTags $showUpvote -}}
+<footer class="post-footer">
+  <div class="post-footer-row">
+    {{- with .Params.tags -}}
+      {{- if gt (len .) 0 -}}
+      <div class="post-tags">
+        <a rel="nofollow" href="{{ $blogBase }}?q=pot-of-honey" style="display:none;">#potofhoney</a>
+        {{- range . -}}
+          {{- $tag := (printf "%v" .) | lower | replaceRE "\\s+" "-" -}}
+          <a rel="nofollow" href="{{ $blogBase }}?q={{ $tag | urlquery }}">#{{ $tag }}</a>
+        {{- end -}}
+      </div>
+      {{- end -}}
+    {{- end -}}
+    {{- if $showUpvote -}}
+      <div class="post-upvote">
+        {{ partial "post/upvote.html" . }}
+      </div>
+    {{- end -}}
+  </div>
+</footer>
 {{- end -}}

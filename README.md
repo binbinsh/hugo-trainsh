@@ -1,8 +1,8 @@
 # hugo-trainsh
 
-A minimal, content-first Hugo theme with a clean reading experience, inspired by [Bear Blog](https://bearblog.dev/).
+A minimal, content-first Hugo theme with a clean reading experience.
 
-Includes a `/blog/` list page, tag filtering, opt-in TOC, syntax-highlighted code blocks (copy + soft wrap), Mermaid, math, PhotoSwipe, and optional upvotes.
+Features: `/blog/` list page with search and tag filtering, two-column post grid, opt-in TOC, syntax-highlighted code blocks (copy + soft wrap), Mermaid diagrams, math (KaTeX), PhotoSwipe lightbox, and optional upvotes.
 
 ## Quick start
 

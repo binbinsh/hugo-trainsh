@@ -7,14 +7,12 @@
 
 {{- with $page.Params.tags -}}
   {{- if gt (len .) 0 -}}
-<small>
-  <div class="tags">
-    <a rel="nofollow" href="{{ $blogBase }}?q=pot-of-honey" style="display:none;">#potofhoney</a>
-    {{- range . -}}
-      {{- $tag := (printf "%v" .) | lower | replaceRE "\\s+" "-" -}}
-      <a rel="nofollow" href="{{ $blogBase }}?q={{ $tag | urlquery }}">#{{ $tag }}</a>
-    {{- end -}}
-  </div>
-</small>
+<div class="post-tags">
+  <a rel="nofollow" href="{{ $blogBase }}?q=pot-of-honey" style="display:none;">#potofhoney</a>
+  {{- range . -}}
+    {{- $tag := (printf "%v" .) | lower | replaceRE "\\s+" "-" -}}
+    <a rel="nofollow" href="{{ $blogBase }}?q={{ $tag | urlquery }}">#{{ $tag }}</a>
+  {{- end -}}
+</div>
   {{- end -}}
 {{- end -}}

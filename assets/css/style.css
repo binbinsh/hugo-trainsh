@@ -1,34 +1,40 @@
-/* This theme intentionally mirrors the look & feel of Bear Blog.
- * Notes:
- * - Keep the selectors minimal (Bear Blog relies on element styles).
- * - Prefer `prefers-color-scheme` for dark mode (no JS toggle).
- */
+/* Trainsh Theme - A minimal, content-focused blog theme. */
 
 :root {
-    --width: 720px;
-    --font-main: Verdana, sans-serif;
-    --font-secondary: Verdana, sans-serif;
-    --font-scale: 1em;
-    --background-color: #fff;
-    --heading-color: #222;
+    --width: 680px;
+    /* Native system fonts for each platform */
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    --font-secondary: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --font-scale: 1rem;
+
+    /* Neutral, elegant palette */
+    --background-color: #fafafa;
+    --heading-color: #1a1a1a;
     --text-color: #444;
-    --link-color: #3273dc;
-    --visited-color:  #8b6fcb;
-    --code-background-color: #f2f2f2;
-    --code-color: #222;
-    --blockquote-color: #222;
+    --link-color: #0066cc;
+    --visited-color: #551a8b;
+    --accent-color: #0077cc;
+    --code-background-color: #f5f5f5;
+    --code-color: #333;
+    --blockquote-color: #666;
+    --border-color: #ddd;
+    --muted-color: #888;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background-color: #01242e;
+        --background-color: #1a1a1a;
         --heading-color: #eee;
-        --text-color: #ddd;
-        --link-color: #8cc2dd;
-        --visited-color:  #8b6fcb;
-        --code-background-color: #000;
+        --text-color: #bbb;
+        --link-color: #6bb3ff;
+        --visited-color: #b794f4;
+        --accent-color: #6bb3ff;
+        --code-background-color: #252525;
         --code-color: #ddd;
-        --blockquote-color: #ccc;
+        --blockquote-color: #999;
+        --border-color: #333;
+        --muted-color: #777;
     }
 }
 
@@ -36,77 +42,74 @@ body {
     font-family: var(--font-secondary);
     font-size: var(--font-scale);
     margin: auto;
-    padding: 20px;
+    padding: 24px 20px;
     max-width: var(--width);
     text-align: left;
     background-color: var(--background-color);
     word-wrap: break-word;
     overflow-wrap: break-word;
-    line-height: 1.5;
+    line-height: 1.7;
     color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-main);
     color: var(--heading-color);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
 }
+
+h1 { margin-top: 0; }
+h2 { margin-top: 2em; }
+h3 { margin-top: 1.5em; }
 
 a {
     color: var(--link-color);
     cursor: pointer;
-    text-decoration: none;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
 }
 
 a:hover {
-    text-decoration: underline; 
+    text-decoration-color: var(--accent-color);
 }
 
 nav a {
-    margin-right: 8px;
+    margin-right: 10px;
+    text-decoration: none;
 }
 
-/* Header: keep minimal but allow a right-aligned language switcher. */
-.site-header__top {
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Header: title left, nav right */
+.site-header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
     flex-wrap: wrap;
+    gap: 0.5em 1em;
 }
 
-.lang-switch {
-    margin-left: auto;
+.site-nav a {
+    margin-right: 0.75em;
 }
 
-.lang-switch__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: baseline;
-    font-size: 0.95em;
-}
-
-.lang-switch a {
+.site-nav a:last-child {
     margin-right: 0;
 }
 
-.lang-switch__item span[aria-current="true"] {
-    font-weight: 700;
-    color: var(--heading-color);
+/* Footer language switcher */
+.footer-lang {
+    margin: 0.5em 0;
 }
 
-.lang-switch__sep {
-    margin: 0 6px;
+.footer-lang-current {
     color: var(--text-color);
-    opacity: 0.6;
-}
-
-/* Blog search (Fuse): keep minimal, but make it usable on all viewports. */
-#blog-search {
-    width: 420px;
-    max-width: 100%;
-    box-sizing: border-box;
 }
 
 strong, b {
@@ -118,62 +121,104 @@ button {
     cursor: pointer;
 }
 
-/* Bear Blog: dates are shown in a small monospace font. */
 time {
-    font-family: monospace;
-    font-size: 15px;
+    font-family: var(--font-main);
+    font-size: 0.875rem;
     font-style: normal;
+    color: var(--muted-color);
 }
 
 main {
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 table {
     width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.5em;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    font-weight: 600;
+    color: var(--heading-color);
 }
 
 hr {
     border: 0;
-    border-top: 1px dashed;
+    border-top: 1px dashed var(--border-color);
+    margin: 2em 0;
 }
 
 img {
     max-width: 100%;
+    border-radius: 4px;
 }
 
 code {
-    font-family: monospace;
-    padding: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 2px 6px;
     background-color: var(--code-background-color);
     color: var(--code-color);
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 pre code {
     padding: 0;
     background-color: transparent;
     border-radius: 0;
+    font-size: 0.875em;
 }
 
 blockquote {
-    border-left: 1px solid #999;
-    color: var(--code-color);
-    padding-left: 20px;
+    border-left: 3px solid var(--accent-color);
+    color: var(--blockquote-color);
+    padding-left: 1.25em;
+    margin-left: 0;
     font-style: italic;
 }
 
 footer {
-    padding: 25px 0;
+    padding: 2em 0;
     text-align: center;
+    color: var(--muted-color);
+    font-size: 0.875rem;
+}
+
+/* Only site footer has top border */
+body > footer {
+    border-top: 1px solid var(--border-color);
+    margin-top: 3em;
+}
+
+header {
+    margin-bottom: 2em;
+}
+
+/* Only site header has bottom border */
+body > header {
+    padding-bottom: 1em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.title {
+    text-decoration: none;
+    color: var(--heading-color);
 }
 
 .title:hover {
     text-decoration: none;
+    color: var(--link-color);
 }
 
 .title h1 {
     font-size: 1.5em;
+    margin-bottom: 0.25em;
 }
 
 .inline {
@@ -242,7 +287,7 @@ footer {
 }
 
 .codeblock-action--wrap.is-active {
-    color: salmon;
+    color: var(--accent-color);
 }
 
 .codeblock-action--copy .icon-check {
@@ -255,7 +300,7 @@ footer {
 
 .codeblock-action--copy.is-copied .icon-check {
     display: block;
-    color: salmon;
+    color: var(--accent-color);
 }
 
 .codeblock.wrapped pre {
@@ -263,31 +308,74 @@ footer {
     overflow-wrap: anywhere;
 }
 
-/* Chroma: keep background controlled by `.highlight` to match Bear Blog. */
+/* Chroma: keep background controlled by `.highlight`. */
 .chroma {
     background-color: transparent !important;
     color: inherit;
 }
 
-/* blog post list (Bear Blog style) */
+/* blog post list - clean grid */
 ul.blog-posts {
     list-style-type: none;
-    padding: unset;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2em 3em;
+}
+
+@media (max-width: 560px) {
+    ul.blog-posts {
+        grid-template-columns: 1fr;
+        gap: 1.5em;
+    }
 }
 
 ul.blog-posts li {
-    display: flex;
+    position: relative;
 }
 
-ul.blog-posts li span {
-    flex: 0 0 130px;
+ul.blog-posts li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--border-color);
+    transition: background 0.2s;
+}
+
+ul.blog-posts li:hover::before {
+    background: var(--link-color);
+}
+
+ul.blog-posts li a {
+    display: block;
+    padding-left: 1em;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--heading-color);
+    line-height: 1.4;
+}
+
+ul.blog-posts li a:hover {
+    color: var(--link-color);
 }
 
 ul.blog-posts li a:visited {
-    color: var(--visited-color);
+    color: var(--heading-color);
 }
 
-/* Upvote widget (mirrors Bear Blog’s minimal button) */
+ul.blog-posts li time {
+    display: block;
+    padding-left: 1em;
+    color: var(--muted-color);
+    font-size: 0.8rem;
+    margin-top: 0.3em;
+}
+
+/* Upvote widget */
 .upvote-button {
     padding: 0;
     margin: 0;
@@ -305,7 +393,7 @@ ul.blog-posts li a:visited {
 }
 
 .upvote-button--active {
-    color: salmon;
+    color: var(--accent-color);
 }
 
 .upvote-count {
@@ -314,14 +402,20 @@ ul.blog-posts li a:visited {
 
 /* Figures (kept minimal; compatible with Hugo render hooks). */
 figure {
-    margin-block-start: 1em;
-    margin-block-end: 1em;
+    margin: 1.5em 0;
+}
+
+figure img,
+figure video,
+figure audio {
+    margin-bottom: 0;
 }
 
 figure figcaption {
     text-align: center;
     font-style: italic;
-    font-size: 0.9em;
+    font-size: 0.85em;
+    color: var(--muted-color);
     margin-top: 0.5em;
 }
 
@@ -341,4 +435,272 @@ figure figcaption {
     max-width: 100%;
     height: auto;
     background: transparent !important;
+}
+
+/* Home: avoid flashing the server-rendered fallback list for "most popular posts". */
+#home-popular-posts[data-popular-state="loading"] {
+    display: none;
+}
+
+/* Blog page layout */
+.blog-header {
+    margin-bottom: 2em;
+}
+
+#blog-search {
+    width: 100%;
+    padding: 0.75em 1em;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+#blog-search:focus {
+    outline: none;
+    border-color: var(--link-color);
+}
+
+#blog-search::placeholder {
+    color: var(--muted-color);
+}
+
+.tag-filters {
+    margin-top: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+/* Tags styling */
+.tags, .tags-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin: 1.5em 0;
+}
+
+.tags a, .tags-section a, .tag-filters a {
+    display: inline-block;
+    padding: 0.25em 0.75em;
+    background: var(--code-background-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.tags a:hover, .tags-section a:hover, .tag-filters a:hover {
+    background: var(--accent-color);
+    color: var(--background-color);
+}
+
+.tag-filters a.active {
+    background: var(--link-color);
+    color: var(--background-color);
+}
+
+/* Active tag filters */
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 1.5em;
+}
+
+.active-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.3em 0.75em 0.3em 0.75em;
+    background: var(--link-color);
+    color: var(--background-color);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.active-tag:hover {
+    background: var(--accent-color);
+    text-decoration: none;
+}
+
+.active-tag-x {
+    font-size: 1.1em;
+    opacity: 0.7;
+    line-height: 1;
+}
+
+.active-tag:hover .active-tag-x {
+    opacity: 1;
+}
+
+.clear-filters {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+    text-decoration: none;
+    margin-left: 0.5em;
+}
+
+.clear-filters:hover {
+    color: var(--link-color);
+    text-decoration: underline;
+}
+
+/* Post tags at article footer */
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+.post-tags a {
+    display: inline-block;
+    padding: 0.25em 0.75em;
+    background: var(--code-background-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.post-tags a:hover {
+    background: var(--accent-color);
+    color: var(--background-color);
+}
+
+/* Footer links */
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5em 1.5em;
+    margin-bottom: 1em;
+}
+
+.footer-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--link-color);
+}
+
+/* Article/Post page styles */
+.post {
+    max-width: 100%;
+}
+
+.post-header {
+    margin-bottom: 2em;
+}
+
+.post-title {
+    font-size: 1.75em;
+    line-height: 1.3;
+    margin: 0 0 0.25em 0;
+}
+
+.page-header {
+    margin-bottom: 1.5em;
+}
+
+.page-title {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.post-meta {
+    color: var(--muted-color);
+    font-size: 0.875rem;
+}
+
+.post-meta time {
+    color: var(--muted-color);
+}
+
+.post-meta-sep {
+    margin: 0 0.25em;
+    opacity: 0.5;
+}
+
+.post-content {
+    line-height: 1.75;
+}
+
+.post-content h2 {
+    margin-top: 2em;
+}
+
+.post-content h3 {
+    margin-top: 1.5em;
+}
+
+.post-content p {
+    margin: 1.25em 0;
+}
+
+.post-content ul, .post-content ol {
+    margin: 1.25em 0;
+}
+
+.post-content li > ul,
+.post-content li > ol {
+    margin: 0.2em 0;
+}
+
+.post-content li {
+    margin: 0.4em 0;
+}
+
+.post-content img {
+    margin: 1em 0 0 0;
+}
+
+.post-content figure {
+    margin: 1em 0;
+}
+
+.post-content pre {
+    margin: 1.25em 0;
+}
+
+.post-content blockquote {
+    margin: 1.25em 0;
+}
+
+/* Post footer */
+.post-footer {
+    margin-top: 2.5em;
+    padding: 0;
+    text-align: left;
+    color: inherit;
+    font-size: inherit;
+}
+
+.post-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+}
+
+.post-footer .post-tags {
+    margin: 0;
+    padding-top: 0;
+    border-top: none;
+    flex: 1;
+}
+
+.post-upvote {
+    flex-shrink: 0;
 }
