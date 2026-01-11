@@ -6,18 +6,19 @@ draft = false
 
 # Welcome to the trainsh theme demo.
 
-A minimal, Bear Blog–style theme for Hugo with clean templates and plain CSS.
+A minimal, content-focused Hugo theme with a clean reading experience.
 
 {{< recent-posts >}}
 
 ## Features
 
-- Clean lists and tag pages
-- Code blocks with copy button and soft-wrap
-- Mermaid diagrams and LaTeX math
-- PhotoSwipe image galleries
-- Lightweight CSS and fast loads
+- Two-column post grid with search and tag filtering
+- Code blocks with syntax highlighting, copy button and soft-wrap
+- Mermaid diagrams and KaTeX math
+- PhotoSwipe image lightbox
+- Dark mode support (auto)
+- Multilingual ready
 
 ---
 
-Browse the blog to see posts, tags, code blocks (copy + soft-wrap), Mermaid diagrams, math, and PhotoSwipe in action.
+Browse the blog to see posts, tags, code blocks, Mermaid diagrams, math, and PhotoSwipe in action.

@@ -284,8 +284,9 @@ Key CSS variables:
 ```css
 :root {
   --width: 680px;
-  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  --font-main: Verdana, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --font-scale: 1rem;
   --background-color: #fafafa;
   --heading-color: #1a1a1a;
   --text-color: #444;
