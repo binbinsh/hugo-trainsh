@@ -153,27 +153,27 @@ nav a:hover {
 
 .lang-toggle {
     background: none;
-    border: none;
-    padding: 0.25em;
+    border: 1px solid var(--border-color);
+    padding: 0.35em 0.5em;
     cursor: pointer;
-    font-size: 1.25em;
+    font-size: 0.9em;
     line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    color: var(--text-color);
 }
 
 .lang-toggle:hover {
     background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+    border-color: var(--link-color);
 }
 
 .lang-icon::after {
     content: "Lang";
-    font-size: 0.75em;
-    font-weight: 600;
-    text-transform: uppercase;
+    font-weight: 500;
 }
 
 .lang-icon[data-lang="en"]::after {
@@ -216,18 +216,17 @@ nav a:hover {
 
 .lang-menu {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 4px);
     right: 0;
     display: none;
     flex-direction: column;
     background: var(--background-color);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0.25em 0;
-    min-width: max-content;
-    z-index: 10;
-    box-shadow: 0 2px 8px var(--shadow-color, rgba(0, 0, 0, 0.1));
-    margin-top: 0.25em;
+    border-radius: 6px;
+    padding: 0.35em 0;
+    min-width: 120px;
+    z-index: 100;
+    box-shadow: 0 4px 12px var(--shadow-color, rgba(0, 0, 0, 0.15));
 }
 
 .lang-dropdown.open .lang-menu {
@@ -237,8 +236,7 @@ nav a:hover {
 .lang-menu a {
     display: flex;
     align-items: center;
-    gap: 0.5em;
-    padding: 0.5em 0.75em;
+    padding: 0.5em 1em;
     color: var(--text-color);
     text-decoration: none;
     white-space: nowrap;
@@ -256,14 +254,16 @@ nav a:hover {
     color: var(--link-color);
 }
 
-.lang-menu a.lang-active::before {
-    content: "✓";
-    margin-right: 0.25em;
-    font-size: 0.85em;
+.lang-menu a.lang-active .lang-item-name::before {
+    content: "✓ ";
 }
 
 .lang-item-icon {
     display: none;
+}
+
+.lang-item-name {
+    flex: 1;
 }
 
 /* Footer language switcher */
