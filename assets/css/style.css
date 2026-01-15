@@ -7,7 +7,7 @@
     --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
     --font-scale: 1rem;
 
-    /* Neutral, elegant palette */
+    /* Light theme palette */
     --background-color: #fafafa;
     --heading-color: #1a1a1a;
     --text-color: #444;
@@ -19,22 +19,64 @@
     --blockquote-color: #666;
     --border-color: #ddd;
     --muted-color: #888;
+    --selection-bg: #b3d4fc;
+    --selection-text: #000;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --input-bg: #fff;
+    --hover-bg: rgba(0, 0, 0, 0.04);
 }
 
+/* Dark theme - applied via data-theme attribute or system preference */
+[data-theme="dark"] {
+    --background-color: #121212;
+    --heading-color: #e8e8e8;
+    --text-color: #b8b8b8;
+    --link-color: #6bb3ff;
+    --visited-color: #b794f4;
+    --accent-color: #5da8f4;
+    --code-background-color: #1e1e1e;
+    --code-color: #d4d4d4;
+    --blockquote-color: #9a9a9a;
+    --border-color: #2a2a2a;
+    --muted-color: #707070;
+    --selection-bg: #264f78;
+    --selection-text: #fff;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --input-bg: #1a1a1a;
+    --hover-bg: rgba(255, 255, 255, 0.06);
+}
+
+/* System preference fallback when no explicit theme is set */
 @media (prefers-color-scheme: dark) {
-    :root {
-        --background-color: #1a1a1a;
-        --heading-color: #eee;
-        --text-color: #bbb;
+    :root:not([data-theme="light"]) {
+        --background-color: #121212;
+        --heading-color: #e8e8e8;
+        --text-color: #b8b8b8;
         --link-color: #6bb3ff;
         --visited-color: #b794f4;
-        --accent-color: #6bb3ff;
-        --code-background-color: #252525;
-        --code-color: #ddd;
-        --blockquote-color: #999;
-        --border-color: #333;
-        --muted-color: #777;
+        --accent-color: #5da8f4;
+        --code-background-color: #1e1e1e;
+        --code-color: #d4d4d4;
+        --blockquote-color: #9a9a9a;
+        --border-color: #2a2a2a;
+        --muted-color: #707070;
+        --selection-bg: #264f78;
+        --selection-text: #fff;
+        --shadow-color: rgba(0, 0, 0, 0.4);
+        --input-bg: #1a1a1a;
+        --hover-bg: rgba(255, 255, 255, 0.06);
     }
+}
+
+/* Text selection */
+::selection {
+    background: var(--selection-bg);
+    color: var(--selection-text);
+}
+
+::-moz-selection {
+    background: var(--selection-bg);
+    color: var(--selection-text);
 }
 
 body {
@@ -109,21 +151,67 @@ nav a:hover {
     margin-left: 0.75em;
 }
 
-.lang-current {
+.lang-toggle {
+    background: none;
+    border: none;
+    padding: 0.25em;
     cursor: pointer;
-    color: var(--link-color);
+    font-size: 1.25em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
 }
 
-.lang-current::after {
-    content: "";
-    display: inline-block;
-    width: 0;
-    height: 0;
-    margin-left: 0.3em;
-    vertical-align: middle;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 4px solid currentColor;
+.lang-toggle:hover {
+    background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+}
+
+.lang-icon::after {
+    content: "Lang";
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.lang-icon[data-lang="en"]::after {
+    content: "EN";
+}
+
+.lang-icon[data-lang="zh"]::after {
+    content: "中";
+}
+
+.lang-icon[data-lang="zh-cn"]::after,
+.lang-icon[data-lang="zh-hans"]::after {
+    content: "中";
+}
+
+.lang-icon[data-lang="zh-tw"]::after,
+.lang-icon[data-lang="zh-hant"]::after {
+    content: "繁";
+}
+
+.lang-icon[data-lang="ja"]::after {
+    content: "日";
+}
+
+.lang-icon[data-lang="ko"]::after {
+    content: "한";
+}
+
+.lang-icon[data-lang="de"]::after {
+    content: "DE";
+}
+
+.lang-icon[data-lang="fr"]::after {
+    content: "FR";
+}
+
+.lang-icon[data-lang="es"]::after {
+    content: "ES";
 }
 
 .lang-menu {
@@ -138,29 +226,44 @@ nav a:hover {
     padding: 0.25em 0;
     min-width: max-content;
     z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--shadow-color, rgba(0, 0, 0, 0.1));
+    margin-top: 0.25em;
 }
 
-@media (prefers-color-scheme: dark) {
-    .lang-menu {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-}
-
-.lang-dropdown:hover .lang-menu {
+.lang-dropdown.open .lang-menu {
     display: flex;
 }
 
 .lang-menu a {
-    padding: 0.35em 0.75em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 0.75em;
     color: var(--text-color);
     text-decoration: none;
     white-space: nowrap;
+    transition: background-color 0.15s ease;
 }
 
 .lang-menu a:hover {
     background: var(--code-background-color);
     color: var(--link-color);
+}
+
+.lang-menu a.lang-active {
+    background: var(--code-background-color);
+    font-weight: 600;
+    color: var(--link-color);
+}
+
+.lang-menu a.lang-active::before {
+    content: "✓";
+    margin-right: 0.25em;
+    font-size: 0.85em;
+}
+
+.lang-item-icon {
+    display: none;
 }
 
 /* Footer language switcher */
@@ -325,14 +428,8 @@ body > header {
 }
 
 .codeblock-action:hover {
-    background-color: rgba(0, 0, 0, 0.06);
+    background-color: var(--hover-bg);
     border-radius: 4px;
-}
-
-@media (prefers-color-scheme: dark) {
-    .codeblock-action:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-    }
 }
 
 .codeblock-action:focus-visible {
@@ -763,4 +860,61 @@ figure figcaption {
 
 .post-upvote {
     flex-shrink: 0;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25em;
+    margin-left: 0.75em;
+    color: var(--text-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s;
+    vertical-align: middle;
+}
+
+.theme-toggle:hover {
+    color: var(--link-color);
+    background-color: var(--hover-bg);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+}
+
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.theme-toggle .icon-sun {
+    display: none;
+}
+
+.theme-toggle .icon-moon {
+    display: block;
+}
+
+[data-theme="dark"] .theme-toggle .icon-sun {
+    display: block;
+}
+
+[data-theme="dark"] .theme-toggle .icon-moon {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun {
+        display: block;
+    }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon {
+        display: none;
+    }
 }

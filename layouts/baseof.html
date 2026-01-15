@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
 <head>
+  <script>
+    (function() {
+      var theme = localStorage.getItem('theme');
+      if (theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+    })();
+  </script>
   {{ partial "head.html" . }}
 </head>
 <body>
@@ -14,12 +22,66 @@
     {{ partial "footer.html" . }}
   </footer>
 
+  <script>
+    (function() {
+      var toggle = document.querySelector('.theme-toggle');
+      if (!toggle) return;
+
+      function getEffectiveTheme() {
+        var stored = localStorage.getItem('theme');
+        if (stored) return stored;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      toggle.addEventListener('click', function() {
+        var current = getEffectiveTheme();
+        var next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+    })();
+
+    // Language dropdown toggle
+    (function() {
+      var langToggle = document.querySelector('.lang-toggle');
+      var langDropdown = document.querySelector('.lang-dropdown');
+      if (!langToggle || !langDropdown) return;
+
+      langToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var isOpen = langDropdown.classList.toggle('open');
+        langToggle.setAttribute('aria-expanded', isOpen);
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!langDropdown.contains(e.target)) {
+          langDropdown.classList.remove('open');
+          langToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close dropdown on Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && langDropdown.classList.contains('open')) {
+          langDropdown.classList.remove('open');
+          langToggle.setAttribute('aria-expanded', 'false');
+          langToggle.focus();
+        }
+      });
+    })();
+  </script>
+
   {{- /* Optional: Mermaid support (kept minimal). */ -}}
   {{- if .Store.Get "hasMermaid" -}}
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: prefersDark ? 'dark' : 'default' });
+    function getTheme() {
+      var stored = localStorage.getItem('theme');
+      if (stored) return stored === 'dark' ? 'dark' : 'default';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+    }
+    mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: getTheme() });
     mermaid.run({ querySelector: '.mermaid' });
   </script>
   {{- end -}}
