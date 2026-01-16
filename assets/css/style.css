@@ -130,10 +130,17 @@ nav a:hover {
 /* Header: title left, nav right */
 .site-header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 0.5em 1em;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
 }
 
 .site-nav a {
@@ -144,7 +151,7 @@ nav a:hover {
     margin-right: 0;
 }
 
-/* Language dropdown in nav */
+/* Language dropdown */
 .lang-dropdown {
     position: relative;
     display: inline-block;
@@ -156,11 +163,11 @@ nav a:hover {
     border: 1px solid var(--border-color);
     padding: 0.35em 0.5em;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 0.75rem;
     line-height: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.25em;
     border-radius: 4px;
     transition: background-color 0.2s ease, border-color 0.2s ease;
     color: var(--text-color);
@@ -171,47 +178,13 @@ nav a:hover {
     border-color: var(--link-color);
 }
 
-.lang-icon::after {
-    content: "Lang";
-    font-weight: 500;
+.lang-name {
+    white-space: nowrap;
 }
 
-.lang-icon[data-lang="en"]::after {
-    content: "EN";
-}
-
-.lang-icon[data-lang="zh"]::after {
-    content: "中";
-}
-
-.lang-icon[data-lang="zh-cn"]::after,
-.lang-icon[data-lang="zh-hans"]::after {
-    content: "中";
-}
-
-.lang-icon[data-lang="zh-tw"]::after,
-.lang-icon[data-lang="zh-hant"]::after {
-    content: "繁";
-}
-
-.lang-icon[data-lang="ja"]::after {
-    content: "日";
-}
-
-.lang-icon[data-lang="ko"]::after {
-    content: "한";
-}
-
-.lang-icon[data-lang="de"]::after {
-    content: "DE";
-}
-
-.lang-icon[data-lang="fr"]::after {
-    content: "FR";
-}
-
-.lang-icon[data-lang="es"]::after {
-    content: "ES";
+.lang-arrow {
+    flex-shrink: 0;
+    opacity: 0.7;
 }
 
 .lang-menu {
@@ -223,10 +196,10 @@ nav a:hover {
     background: var(--background-color);
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    padding: 0.35em 0;
-    min-width: 120px;
+    padding: 0.35em;
     z-index: 100;
     box-shadow: 0 4px 12px var(--shadow-color, rgba(0, 0, 0, 0.15));
+    font-size: 0.75rem;
 }
 
 .lang-dropdown.open .lang-menu {
@@ -236,43 +209,45 @@ nav a:hover {
 .lang-menu a {
     display: flex;
     align-items: center;
-    padding: 0.5em 1em;
+    justify-content: space-between;
+    padding: 0.25em 0.75em;
     color: var(--text-color);
     text-decoration: none;
     white-space: nowrap;
-    transition: background-color 0.15s ease;
+    background: var(--code-background-color);
+    border-radius: 4px;
+    margin: 0.15em 0;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .lang-menu a:hover {
-    background: var(--code-background-color);
-    color: var(--link-color);
+    background: var(--accent-color);
+    color: var(--background-color);
+    text-decoration: none;
 }
 
 .lang-menu a.lang-active {
-    background: var(--code-background-color);
     font-weight: 600;
-    color: var(--link-color);
 }
 
-.lang-menu a.lang-active .lang-item-name::before {
-    content: "✓ ";
+.lang-menu a.lang-active:hover {
+    background: var(--accent-color);
+    color: var(--background-color);
 }
 
-.lang-item-icon {
-    display: none;
+.lang-menu a.lang-active .lang-item-check::after {
+    content: "✓";
 }
 
 .lang-item-name {
     flex: 1;
+    text-align: left;
 }
 
-/* Footer language switcher */
-.footer-lang {
-    margin: 0.5em 0;
-}
-
-.footer-lang-current {
-    color: var(--text-color);
+.lang-item-check {
+    width: 1em;
+    text-align: right;
+    margin-left: 1em;
 }
 
 strong, b {

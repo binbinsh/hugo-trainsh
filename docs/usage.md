@@ -19,7 +19,7 @@ This document explains how to use the `hugo-trainsh` theme in your Hugo site, in
 - [Customization](#customization)
   - [Styling](#styling)
   - [Social links](#social-links)
-  - [Footer and language switcher](#footer-and-language-switcher)
+  - [Footer](#footer)
 
 ## Installation
 
@@ -317,13 +317,9 @@ email = "hello@yourdomain.com"
 
 These links appear in the footer as a horizontal list.
 
-### Footer and language switcher
+### Footer
 
 The footer displays:
 
 1. Social/subscribe links (RSS, GitHub, X, LinkedIn, Email) as a horizontal list
-2. Language switcher (if multiple languages are configured) — shows current language and links to translations
-3. Copyright notice with site title and theme credit
-
-For multi-language sites, the language switcher appears in the footer and automatically shows all available translations for the current page (or homepage if no translations exist).
-
+2. Copyright notice with site title and theme credit
