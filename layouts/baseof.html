@@ -23,53 +23,43 @@
   </footer>
 
   <script>
-    (function() {
-      var toggle = document.querySelector('.theme-toggle');
-      if (!toggle) return;
+    document.addEventListener('DOMContentLoaded', function() {
+      // Theme toggle
+      var themeToggle = document.querySelector('.theme-toggle');
+      if (themeToggle) {
+        function getEffectiveTheme() {
+          var stored = localStorage.getItem('theme');
+          if (stored) return stored;
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
 
-      function getEffectiveTheme() {
-        var stored = localStorage.getItem('theme');
-        if (stored) return stored;
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        themeToggle.addEventListener('click', function() {
+          var current = getEffectiveTheme();
+          var next = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('theme', next);
+        });
       }
 
-      toggle.addEventListener('click', function() {
-        var current = getEffectiveTheme();
-        var next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-      });
-    })();
+      // Language dropdown toggle
+      var dropdown = document.querySelector('.lang-dropdown');
+      if (dropdown) {
+        var langToggle = dropdown.querySelector('.lang-toggle');
 
-    // Language dropdown toggle
-    (function() {
-      var langToggle = document.querySelector('.lang-toggle');
-      var langDropdown = document.querySelector('.lang-dropdown');
-      if (!langToggle || !langDropdown) return;
+        langToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdown.classList.toggle('open');
+          langToggle.setAttribute('aria-expanded', dropdown.classList.contains('open'));
+        });
 
-      langToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var isOpen = langDropdown.classList.toggle('open');
-        langToggle.setAttribute('aria-expanded', isOpen);
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', function(e) {
-        if (!langDropdown.contains(e.target)) {
-          langDropdown.classList.remove('open');
-          langToggle.setAttribute('aria-expanded', 'false');
-        }
-      });
-
-      // Close dropdown on Escape key
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && langDropdown.classList.contains('open')) {
-          langDropdown.classList.remove('open');
-          langToggle.setAttribute('aria-expanded', 'false');
-          langToggle.focus();
-        }
-      });
-    })();
+        document.addEventListener('click', function(e) {
+          if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+            langToggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    });
   </script>
 
   {{- /* Optional: Mermaid support (kept minimal). */ -}}
