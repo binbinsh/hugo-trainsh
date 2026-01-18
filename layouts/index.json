@@ -1,6 +1,6 @@
 [
-  {{- $sections := default (slice "posts") site.Params.mainSections -}}
-  {{- $pages := where site.RegularPages "Section" "in" $sections -}}
+  {{- $sections := default (slice "posts") .Site.Params.mainSections -}}
+  {{- $pages := where .Site.RegularPages "Section" "in" $sections -}}
   {{- range $i, $p := $pages.ByDate.Reverse -}}{{ if $i }},{{ end }}
   {{- $tags := slice -}}
   {{- with $p.Params.tags -}}

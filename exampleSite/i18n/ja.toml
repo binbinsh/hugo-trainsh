@@ -1,0 +1,134 @@
+[home]
+other = "ホーム"
+
+[archive]
+other = "アーカイブ"
+
+[blog]
+other = "ブログ"
+
+[tags]
+other = "タグ"
+
+[more_posts]
+other = "すべての投稿を見る"
+
+[more_tags]
+other = "すべてのタグを見る"
+
+[popular_tags]
+other = "人気のタグ"
+
+[recent_posts]
+other = "最近の投稿"
+
+[search_posts]
+other = "投稿を検索"
+
+[type_to_search]
+other = "検索キーワードを入力..."
+
+[powered_by]
+other = "{{ .Hugo }} と {{ .Theme }} で生成"
+
+[toc]
+other = "目次"
+
+[published_on]
+other = "公開日"
+
+[upvote_hint]
+other = "クリックしていいね"
+
+[upvote_title]
+other = "この記事にいいね"
+
+[upvote_count]
+other = "いいね数"
+
+[link_to_section]
+other = "このセクションへのリンク"
+
+[code_plain_text]
+other = "プレーンテキスト"
+
+[toggle_word_wrap]
+other = "折り返しの切り替え"
+
+[wrap]
+other = "折り返し"
+
+[copy_code]
+other = "コードをコピー"
+
+[copy]
+other = "コピー"
+
+[nav_primary]
+other = "メインナビゲーション"
+
+[language_switcher]
+other = "言語"
+
+[toggle_theme]
+other = "テーマを切り替え"
+
+[social_linkedin]
+other = "LinkedIn"
+
+[social_github]
+other = "GitHub"
+
+[social_x]
+other = "X"
+
+[email]
+other = "メール"
+
+[no_results]
+other = "結果が見つかりません"
+
+[upvoted_title]
+other = "いいね済み"
+
+[copied]
+other = "コピー済み"
+
+[nowrap]
+other = "折り返さない"
+
+[no_posts_yet]
+other = "まだ投稿がありません"
+
+[filtering_for]
+other = "絞り込み中:"
+
+[remove_all_filters]
+other = "すべてのフィルターを解除"
+
+[remove_tag]
+other = "タグを削除"
+
+[home_most_recent_posts]
+other = "最近の投稿"
+
+[subscribe_via]
+other = "{{ .Links }} で購読"
+
+[or_just_say_hello]
+other = "またはひとことどうぞ。"
+
+[or_just_say_hello_on]
+other = "{{ .Links }} でひとことどうぞ"
+
+[follow_on]
+other = "{{ .Links }} をフォロー"
+
+[or_just_say_hello_via]
+other = "{{ .Link }} でひとことどうぞ"
+
+[enable_soft_wrap]
+other = "折り返しを有効化"
+
+[disable_soft_wrap]
+other = "折り返しを無効化"

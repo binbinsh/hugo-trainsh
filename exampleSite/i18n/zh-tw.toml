@@ -1,0 +1,134 @@
+[home]
+other = "首頁"
+
+[archive]
+other = "文章彙整"
+
+[blog]
+other = "部落格"
+
+[tags]
+other = "標籤"
+
+[more_posts]
+other = "查看所有文章"
+
+[more_tags]
+other = "查看所有標籤"
+
+[popular_tags]
+other = "熱門標籤"
+
+[recent_posts]
+other = "最新文章"
+
+[search_posts]
+other = "搜尋文章"
+
+[type_to_search]
+other = "輸入文字搜尋..."
+
+[powered_by]
+other = "由 {{ .Hugo }} 與 {{ .Theme }} 驅動"
+
+[toc]
+other = "目錄"
+
+[published_on]
+other = "發佈於"
+
+[upvote_hint]
+other = "點擊按讚"
+
+[upvote_title]
+other = "替這篇文章按讚"
+
+[upvote_count]
+other = "按讚數"
+
+[link_to_section]
+other = "連結到此段落"
+
+[code_plain_text]
+other = "純文字"
+
+[toggle_word_wrap]
+other = "切換自動換行"
+
+[wrap]
+other = "換行"
+
+[copy_code]
+other = "複製程式碼"
+
+[copy]
+other = "複製"
+
+[nav_primary]
+other = "主要導覽"
+
+[language_switcher]
+other = "語言"
+
+[toggle_theme]
+other = "切換主題"
+
+[social_linkedin]
+other = "LinkedIn"
+
+[social_github]
+other = "GitHub"
+
+[social_x]
+other = "X"
+
+[email]
+other = "電子郵件"
+
+[no_results]
+other = "沒有結果"
+
+[upvoted_title]
+other = "已按讚"
+
+[copied]
+other = "已複製"
+
+[nowrap]
+other = "不換行"
+
+[no_posts_yet]
+other = "尚無文章"
+
+[filtering_for]
+other = "篩選標籤："
+
+[remove_all_filters]
+other = "清除所有篩選"
+
+[remove_tag]
+other = "移除標籤"
+
+[home_most_recent_posts]
+other = "最新文章"
+
+[subscribe_via]
+other = "透過 {{ .Links }} 訂閱"
+
+[or_just_say_hello]
+other = "或是打個招呼。"
+
+[or_just_say_hello_on]
+other = "或是在 {{ .Links }} 打個招呼"
+
+[follow_on]
+other = "追蹤 {{ .Links }}"
+
+[or_just_say_hello_via]
+other = "或透過 {{ .Link }} 打個招呼"
+
+[enable_soft_wrap]
+other = "啟用自動換行"
+
+[disable_soft_wrap]
+other = "停用自動換行"

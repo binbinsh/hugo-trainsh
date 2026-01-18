@@ -1,0 +1,131 @@
+[home]
+other = "首页"
+
+[archive]
+other = "所有文章"
+
+[blog]
+other = "博客"
+
+[tags]
+other = "所有标签"
+
+[more_posts]
+other = "查看全部文章"
+
+[more_tags]
+other = "查看全部标签"
+
+[popular_tags]
+other = "热门标签"
+
+[recent_posts]
+other = "最新文章"
+
+[search_posts]
+other = "搜索文章"
+
+[type_to_search]
+other = "输入文本搜索..."
+
+[powered_by]
+other = "由 {{ .Hugo }} 和 {{ .Theme }} 驱动"
+
+[toc]
+other = "目录"
+
+[published_on]
+other = "发表于"
+
+[upvote_hint]
+other = "点击点赞"
+
+[upvote_title]
+other = "点赞这篇文章"
+
+[upvote_count]
+other = "点赞数"
+
+[link_to_section]
+other = "链接到本节"
+
+[code_plain_text]
+other = "纯文本"
+
+[toggle_word_wrap]
+other = "切换自动换行"
+
+[wrap]
+other = "换行"
+
+[copy_code]
+other = "复制代码"
+
+[copy]
+other = "复制"
+
+[nav_primary]
+other = "主导航"
+
+[language_switcher]
+other = "语言"
+
+[toggle_theme]
+other = "切换主题"
+
+[social_linkedin]
+other = "LinkedIn"
+
+[social_github]
+other = "GitHub"
+
+[social_x]
+other = "X"
+
+[email]
+other = "邮件"
+
+[no_results]
+other = "没有结果"
+
+[upvoted_title]
+other = "已点赞"
+
+[copied]
+other = "已复制"
+
+[nowrap]
+other = "不换行"
+
+[no_posts_yet]
+other = "还没有文章"
+
+[filtering_for]
+other = "筛选标签："
+
+[remove_all_filters]
+other = "清除筛选"
+
+[remove_tag]
+other = "移除标签"
+
+[home_most_recent_posts]
+other = "最新文章"
+
+[subscribe_via]
+other = "通过 {{ .Links }} 订阅"
+
+[or_just_say_hello]
+other = "或者来打个招呼。"
+
+[follow_on]
+other = "关注 {{ .Links }}"
+
+[or_just_say_hello_via]
+other = "或者用{{ .Link }}打个招呼"
+
+[enable_soft_wrap]
+other = "开启自动换行"
+
+[disable_soft_wrap]
+other = "关闭自动换行"

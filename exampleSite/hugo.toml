@@ -1,8 +1,71 @@
 baseURL = "https://example.org/"
-languageCode = "en-US"
 title = "My New Hugo Site"
 
 theme = "hugo-trainsh"
+
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false
+
+[languages]
+  [languages.en]
+    languageCode = "en-US"
+    languageName = "English"
+    weight = 1
+    title = "My New Hugo Site"
+    contentDir = "content/en"
+    [[languages.en.menu.main]]
+      name = "Home"
+      pageRef = "/"
+      weight = 1
+    [[languages.en.menu.main]]
+      name = "Blog"
+      pageRef = "/blog"
+      weight = 2
+
+  [languages.zh-cn]
+    languageCode = "zh-CN"
+    languageName = "简体中文"
+    weight = 2
+    title = "我的 Hugo 站点"
+    contentDir = "content/zh-cn"
+    [[languages.zh-cn.menu.main]]
+      name = "首页"
+      pageRef = "/"
+      weight = 1
+    [[languages.zh-cn.menu.main]]
+      name = "博客"
+      pageRef = "/blog"
+      weight = 2
+
+  [languages.zh-tw]
+    languageCode = "zh-TW"
+    languageName = "繁體中文"
+    weight = 3
+    title = "我的 Hugo 網站"
+    contentDir = "content/zh-tw"
+    [[languages.zh-tw.menu.main]]
+      name = "首頁"
+      pageRef = "/"
+      weight = 1
+    [[languages.zh-tw.menu.main]]
+      name = "部落格"
+      pageRef = "/blog"
+      weight = 2
+
+  [languages.ja]
+    languageCode = "ja-JP"
+    languageName = "日本語"
+    weight = 4
+    title = "私の Hugo サイト"
+    contentDir = "content/ja"
+    [[languages.ja.menu.main]]
+      name = "ホーム"
+      pageRef = "/"
+      weight = 1
+    [[languages.ja.menu.main]]
+      name = "ブログ"
+      pageRef = "/blog"
+      weight = 2
 
 # URL normalization
 disablePathToLower = false # ensure all paths are lowercased
