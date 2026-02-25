@@ -1,7 +1,14 @@
 <div class="site-header">
-  <a class="title" href="{{ "/" | relLangURL }}">
-    <h1>{{ .Site.Title }}</h1>
-  </a>
+  {{- $tagsPage := .Site.GetPage "/tags" -}}
+  {{- $tagsLabel := i18n "tags" -}}
+  {{- if hasPrefix .Site.Language.Lang "zh" -}}
+    {{- $tagsLabel = i18n "tag_archive" -}}
+  {{- end -}}
+  <div class="site-brand">
+    <a class="title" href="{{ "/" | relLangURL }}">
+      <h1>{{ .Site.Title }}</h1>
+    </a>
+  </div>
 
   <nav class="site-nav">
     {{- with site.Params.nav -}}
@@ -10,54 +17,48 @@
     {{- $html | safeHTML -}}
     {{- else -}}
     {{ with site.Menus.main }}
+    {{- $hasTagsLink := false -}}
     {{ range $i, $item := . }}
+    {{- if and $tagsPage (eq $item.URL $tagsPage.RelPermalink) -}}
+      {{- $hasTagsLink = true -}}
+    {{- end -}}
+    {{- with $item.Page -}}
+      {{- if and $tagsPage (eq .RelPermalink $tagsPage.RelPermalink) -}}
+        {{- $hasTagsLink = true -}}
+      {{- end -}}
+    {{- end -}}
     {{ if $i }} {{ end }}<a href="{{ $item.URL }}">{{ $item.Name }}</a>
     {{ end }}
+    {{- if and $tagsPage (not $hasTagsLink) -}}
+    <a href="{{ $tagsPage.RelPermalink }}">{{ $tagsLabel }}</a>
+    {{- end -}}
     {{ else }}
     <a href="{{ "/" | relLangURL }}">{{ i18n "home" }}</a>
     {{ with site.GetPage "/blog" }}
     <a href="{{ .RelPermalink }}">{{ i18n "blog" }}</a>
     {{ end }}
+    {{ with $tagsPage }}
+    <a href="{{ .RelPermalink }}">{{ $tagsLabel }}</a>
+    {{ end }}
     {{ end }}
     {{- end -}}
-    {{- /* Language switcher */ -}}
-    {{- $translations := .AllTranslations -}}
-    {{- if lt (len $translations) 2 -}}
-      {{- $translations = site.Home.AllTranslations -}}
-    {{- end -}}
-    {{- if gt (len $translations) 1 -}}
-      <span class="lang-dropdown">
-        <button class="lang-toggle" type="button" aria-label="Select language" aria-expanded="false">
-          <span class="lang-name">{{ $.Site.Language.LanguageName }}</span>
-          <svg class="lang-arrow" width="12" height="12" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16.1338 6.16015C16.3217 5.95783 16.6375 5.94599 16.8399 6.13378C17.0421 6.32166 17.054 6.6375 16.8662 6.83984L10.3662 13.8398L10.2891 13.9082C10.2053 13.9675 10.1043 14 9.99999 14C9.86101 14 9.72836 13.9417 9.63377 13.8398L3.13374 6.83984L3.07221 6.75976C2.95129 6.56111 2.98312 6.29824 3.16011 6.13378C3.33708 5.96954 3.60085 5.95776 3.78999 6.09277L3.86616 6.16015L9.99999 12.7666L16.1338 6.16015Z"></path></svg>
-        </button>
-        <span class="lang-menu" role="menu">
-          {{- range $t := $translations -}}
-            <a href="{{ $t.RelPermalink }}" role="menuitem" class="{{ if eq $t.Lang $.Lang }}lang-active{{ end }}">
-              <span class="lang-item-name">{{ $t.Site.Language.LanguageName }}</span>
-              <span class="lang-item-check"></span>
-            </a>
-          {{- end -}}
-        </span>
-      </span>
-    {{- end -}}
-    <button class="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
-      <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="5" />
-        <line x1="12" y1="1" x2="12" y2="3" />
-        <line x1="12" y1="21" x2="12" y2="23" />
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-        <line x1="1" y1="12" x2="3" y2="12" />
-        <line x1="21" y1="12" x2="23" y2="12" />
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-      </svg>
-      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-      </svg>
-    </button>
   </nav>
+  <button class="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle theme">
+    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  </button>
 </div>

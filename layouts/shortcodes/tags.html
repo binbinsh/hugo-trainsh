@@ -1,0 +1,45 @@
+{{- /*
+Render taxonomy terms, so authors can place a tag list anywhere in content.
+
+Usage:
+  {{< tags >}}
+  {{< tags sort="freq" limit="20" >}}
+  {{< tags taxonomy="categories" >}}
+*/ -}}
+
+{{- $taxonomy := .Get "taxonomy" | default "tags" -}}
+{{- $sortBy := (.Get "sort" | default "alphabet") | lower -}}
+{{- $limit := int (.Get "limit" | default 0) -}}
+{{- $sortByFreq := or (eq $sortBy "freq") (eq $sortBy "frequency") -}}
+{{- $taxonomyObject := index .Page.Site.Taxonomies $taxonomy -}}
+{{- $terms := slice -}}
+
+{{- if $taxonomyObject -}}
+  {{- if $sortByFreq -}}
+    {{- range $taxonomyObject.ByCount -}}
+      {{- $count := .Count -}}
+      {{- with .Page -}}
+        {{- $terms = $terms | append (dict "name" .LinkTitle "permalink" .RelPermalink "count" $count) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- range $termName, $weightedPages := $taxonomyObject -}}
+      {{- with $weightedPages.Page -}}
+        {{- $terms = $terms | append (dict "name" .LinkTitle "permalink" .RelPermalink "count" (len $weightedPages.Pages)) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $terms = sort $terms "name" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and (gt $limit 0) (gt (len $terms) $limit) -}}
+  {{- $terms = first $limit $terms -}}
+{{- end -}}
+
+{{- if gt (len $terms) 0 -}}
+<div class="tags">
+  {{- range $terms -}}
+    <a rel="nofollow" href="{{ .permalink }}">#{{ .name | lower }}</a>
+  {{- end -}}
+</div>
+{{- end -}}

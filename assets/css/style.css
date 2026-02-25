@@ -1,7 +1,7 @@
 /* Trainsh Theme - A minimal, content-focused blog theme. */
 
 :root {
-    --width: 680px;
+    --width: 760px;
     --font-main: Verdana, sans-serif;
     --font-secondary: Verdana, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
@@ -131,9 +131,19 @@ nav a:hover {
 .site-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 0.5em 1em;
+    gap: 0.5em 0.75em;
+}
+
+.site-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.35em;
+}
+
+.site-brand .title h1 {
+    margin-bottom: 0;
 }
 
 .site-nav {
@@ -141,13 +151,14 @@ nav a:hover {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.5em;
+    margin-left: auto;
 }
 
-.site-nav a {
+.site-nav > a {
     margin-right: 0.75em;
 }
 
-.site-nav a:last-child {
+.site-nav > a:last-of-type {
     margin-right: 0;
 }
 
@@ -214,25 +225,28 @@ nav a:hover {
     color: var(--text-color);
     text-decoration: none;
     white-space: nowrap;
-    background: var(--code-background-color);
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: 4px;
     margin: 0.15em 0;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .lang-menu a:hover {
-    background: var(--accent-color);
-    color: var(--background-color);
+    background: var(--hover-bg);
+    color: var(--text-color);
     text-decoration: none;
 }
 
 .lang-menu a.lang-active {
     font-weight: 600;
+    background: var(--code-background-color);
+    border-color: var(--border-color);
 }
 
 .lang-menu a.lang-active:hover {
-    background: var(--accent-color);
-    color: var(--background-color);
+    background: var(--code-background-color);
+    color: var(--text-color);
 }
 
 .lang-menu a.lang-active .lang-item-check::after {
@@ -341,7 +355,7 @@ header {
 /* Only site header has bottom border */
 body > header {
     padding-bottom: 1em;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: none;
 }
 
 .title {
@@ -579,6 +593,64 @@ figure figcaption {
     margin-bottom: 2em;
 }
 
+.blog-archive {
+    margin: 1.5em 0;
+}
+
+.blog-archive-year {
+    margin-bottom: 2.25em;
+}
+
+.blog-archive-year-title {
+    margin: 0 0 0.75em 0;
+    color: var(--muted-color);
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+}
+
+.blog-archive-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45em;
+}
+
+.blog-archive-item {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+}
+
+.blog-archive-date {
+    flex: 0 0 10.5rem;
+    color: var(--muted-color);
+    font-size: 0.875rem;
+}
+
+.blog-archive-link {
+    color: var(--heading-color);
+    text-decoration: none;
+    text-align: left;
+}
+
+.blog-archive-link:hover {
+    color: var(--link-color);
+}
+
+@media (max-width: 640px) {
+    .blog-archive-item {
+        flex-direction: column;
+        gap: 0.1em;
+        align-items: flex-start;
+    }
+
+    .blog-archive-date {
+        flex: 0 0 auto;
+    }
+}
+
 #blog-search {
     width: 100%;
     padding: 0.75em 1em;
@@ -708,23 +780,53 @@ figure figcaption {
 }
 
 /* Footer links */
+.footer-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55em;
+    margin-bottom: 1em;
+}
+
 .footer-links {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.5em 1.5em;
-    margin-bottom: 1em;
+    gap: 0.35em;
+    margin-bottom: 0;
 }
 
 .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 4px;
     color: var(--text-color);
     text-decoration: none;
-    font-size: 0.875rem;
-    transition: color 0.2s;
+    margin-right: 0;
+    transition: color 0.2s, background-color 0.2s;
 }
 
 .footer-links a:hover {
     color: var(--link-color);
+    background-color: var(--hover-bg);
+}
+
+.footer-links a:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+}
+
+.footer-links a svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.footer-lang {
+    margin-left: 0;
 }
 
 /* Article/Post page styles */
@@ -843,7 +945,7 @@ figure figcaption {
     border: none;
     cursor: pointer;
     padding: 0.25em;
-    margin-left: 0.75em;
+    margin-left: 0.35em;
     color: var(--text-color);
     display: inline-flex;
     align-items: center;

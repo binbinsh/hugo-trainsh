@@ -10,6 +10,9 @@ other = "ブログ"
 [tags]
 other = "タグ"
 
+[tag_archive]
+other = "タグ"
+
 [more_posts]
 other = "すべての投稿を見る"
 

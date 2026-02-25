@@ -5,38 +5,27 @@
 
 {{- $sections := default (slice "posts") .Site.Params.mainSections -}}
 {{- $pages := where .Site.RegularPages "Section" "in" $sections -}}
+{{- $groupedPages := ($pages.ByDate.Reverse).GroupByDate "2006" -}}
 
-<div class="blog-header">
-  <input id="blog-search"
-         type="search"
-         placeholder="{{ i18n "type_to_search" }}"
-         aria-label="{{ i18n "search_posts" }}"
-         autocomplete="off"
-         data-index-url="{{ "index.json" | relLangURL }}"
-         data-no-results="{{ i18n "no_results" }}">
-  <div id="tag-filters" class="tag-filters"></div>
-</div>
-
-{{ partial "post/blog-posts.html" (dict "pages" $pages.ByDate.Reverse "filterable" true) }}
-
-{{- $allTags := slice -}}
-{{- range $pages -}}
-  {{- with .Params.tags -}}
-    {{- range . -}}
-      {{- $allTags = $allTags | append ((printf "%v" .) | lower | replaceRE "\\s+" "-") -}}
-    {{- end -}}
+{{- if gt (len $groupedPages) 0 -}}
+<div class="blog-archive">
+  {{- range $groupedPages -}}
+  <section class="blog-archive-year">
+    <h2 class="blog-archive-year-title">{{ .Key }}</h2>
+    <ul class="blog-archive-list">
+      {{- range .Pages.ByDate.Reverse -}}
+      <li class="blog-archive-item">
+        <time class="blog-archive-date" datetime="{{ .Date | time.Format "2006-01-02" }}">
+          {{ partial "date/format.html" (dict "page" . "date" .Date "context" "list") }}
+        </time>
+        <a class="blog-archive-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </li>
+      {{- end -}}
+    </ul>
+  </section>
   {{- end -}}
-{{- end -}}
-{{- $allTags = $allTags | uniq | sort -}}
-{{- $tagsJson := $allTags | jsonify -}}
-{{- $tagsB64 := $tagsJson | base64Encode -}}
-
-<div class="tags-section" id="tags"
-     data-tags="{{ $tagsB64 }}"
-     data-base="{{ .RelPermalink }}"
-     data-filtering-for="{{ i18n "filtering_for" }}"
-     data-remove-all="{{ i18n "remove_all_filters" }}"
-     data-remove-tag="{{ i18n "remove_tag" }}">
-  <a rel="nofollow" href="{{ .RelPermalink }}?q=pot-of-honey" style="display:none;">#potofhoney</a>
 </div>
+{{- else -}}
+<p>{{ i18n "no_posts_yet" }}</p>
+{{- end -}}
 {{ end }}

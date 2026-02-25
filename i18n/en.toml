@@ -10,6 +10,9 @@ other = "Blog"
 [tags]
 other = "Tags"
 
+[tag_archive]
+other = "Tag"
+
 [more_posts]
 other = "View all posts"
 

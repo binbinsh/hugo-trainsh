@@ -1,9 +1,10 @@
 {{- $hugo := `<a href="https://gohugo.io/" target="_blank">Hugo</a>` -}}
 {{- $theme := `<a href="https://github.com/binbinsh/hugo-trainsh" target="_blank">hugo-trainsh</a>` -}}
-{{- $social := site.Params.social -}}
-
-{{- /* Collect all social/subscribe links */ -}}
 {{- $links := slice -}}
+{{- $translations := .AllTranslations -}}
+{{- if lt (len $translations) 2 -}}
+  {{- $translations = site.Home.AllTranslations -}}
+{{- end -}}
 
 {{- with site.Home.OutputFormats.Get "RSS" -}}
   {{- $links = $links | append (dict "url" .RelPermalink "label" "RSS" "icon" "rss") -}}
@@ -13,7 +14,7 @@
   {{- $links = $links | append (dict "url" . "label" (i18n "email") "icon" "mail") -}}
 {{- end -}}
 
-{{- with $social -}}
+{{- with site.Params.social -}}
   {{- with .github -}}
     {{- $links = $links | append (dict "url" . "label" (i18n "social_github") "icon" "github") -}}
   {{- end -}}
@@ -29,12 +30,58 @@
   {{- end -}}
 {{- end -}}
 
-{{- if gt (len $links) 0 -}}
-<nav class="footer-links" aria-label="Social links">
-  {{- range $links -}}
-    <a href="{{ .url }}" title="{{ .label }}" aria-label="{{ .label }}">{{ .label }}</a>
+{{- if or (gt (len $links) 0) (gt (len $translations) 1) -}}
+<div class="footer-controls">
+  {{- if gt (len $links) 0 -}}
+  <nav class="footer-links" aria-label="Social links">
+    {{- range $links -}}
+      {{- $isExternal := or (hasPrefix .url "http://") (hasPrefix .url "https://") -}}
+      <a href="{{ .url }}" title="{{ .label }}" aria-label="{{ .label }}"{{ if $isExternal }} target="_blank" rel="noopener noreferrer"{{ end }}>
+        {{- if eq .icon "rss" -}}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 11a9 9 0 0 1 9 9"></path>
+            <path d="M4 4a16 16 0 0 1 16 16"></path>
+            <circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"></circle>
+          </svg>
+        {{- else if eq .icon "github" -}}
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2A10 10 0 0 0 8.84 21.5c.5.1.68-.22.68-.48v-1.7c-2.78.6-3.37-1.18-3.37-1.18-.46-1.16-1.12-1.47-1.12-1.47-.92-.63.07-.62.07-.62 1.01.08 1.54 1.04 1.54 1.04.9 1.55 2.37 1.1 2.94.84.09-.66.35-1.1.64-1.36-2.22-.25-4.55-1.12-4.55-4.96 0-1.1.39-2 1.03-2.7-.1-.26-.45-1.3.1-2.72 0 0 .85-.27 2.78 1.03A9.6 9.6 0 0 1 12 6.84a9.6 9.6 0 0 1 2.53.34c1.93-1.3 2.78-1.03 2.78-1.03.55 1.42.2 2.46.1 2.72.64.7 1.03 1.6 1.03 2.7 0 3.85-2.33 4.71-4.56 4.96.36.31.68.92.68 1.85v2.74c0 .27.18.59.69.48A10 10 0 0 0 12 2z"></path>
+          </svg>
+        {{- else if eq .icon "x" -}}
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.9 2H22l-6.77 7.73L23.2 22h-6.26l-4.9-7.44L5.54 22H2.4l7.23-8.25L1.8 2h6.38l4.42 6.77L18.9 2zm-1.1 18h1.73L7.25 3.9H5.4L17.8 20z"></path>
+          </svg>
+        {{- else if eq .icon "linkedin" -}}
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M6.94 8.5a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8zM5.3 9.9h3.3V20H5.3V9.9zm5.2 0h3.2v1.4h.05c.45-.84 1.55-1.73 3.2-1.73 3.42 0 4.05 2.25 4.05 5.17V20h-3.3v-4.7c0-1.12-.02-2.56-1.56-2.56-1.57 0-1.81 1.22-1.81 2.48V20h-3.3V9.9z"></path>
+          </svg>
+        {{- else if eq .icon "mail" -}}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            <path d="m3 7 9 6 9-6"></path>
+          </svg>
+        {{- end -}}
+      </a>
+    {{- end -}}
+  </nav>
   {{- end -}}
-</nav>
+  {{- if gt (len $translations) 1 -}}
+    <span class="lang-dropdown footer-lang">
+      <button class="lang-toggle" type="button" aria-label="Select language" aria-expanded="false">
+        <span class="lang-name">{{ $.Site.Language.LanguageName }}</span>
+        <svg class="lang-arrow" width="12" height="12" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16.1338 6.16015C16.3217 5.95783 16.6375 5.94599 16.8399 6.13378C17.0421 6.32166 17.054 6.6375 16.8662 6.83984L10.3662 13.8398L10.2891 13.9082C10.2053 13.9675 10.1043 14 9.99999 14C9.86101 14 9.72836 13.9417 9.63377 13.8398L3.13374 6.83984L3.07221 6.75976C2.95129 6.56111 2.98312 6.29824 3.16011 6.13378C3.33708 5.96954 3.60085 5.95776 3.78999 6.09277L3.86616 6.16015L9.99999 12.7666L16.1338 6.16015Z"></path></svg>
+      </button>
+      <span class="lang-menu" role="menu">
+        {{- range $t := $translations -}}
+          <a href="{{ $t.RelPermalink }}" role="menuitem" class="{{ if eq $t.Lang $.Lang }}lang-active{{ end }}">
+            <span class="lang-item-name">{{ $t.Site.Language.LanguageName }}</span>
+            <span class="lang-item-check"></span>
+          </a>
+        {{- end -}}
+      </span>
+    </span>
+  {{- end -}}
+</div>
 {{- end -}}
 
 <p>&copy; {{ now.Year }} {{ site.Title }} — {{ i18n "powered_by" (dict "Hugo" $hugo "Theme" $theme) | safeHTML }}</p>

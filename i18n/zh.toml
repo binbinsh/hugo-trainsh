@@ -10,6 +10,9 @@ other = "博客"
 [tags]
 other = "所有标签"
 
+[tag_archive]
+other = "标签"
+
 [more_posts]
 other = "查看全部文章"
 

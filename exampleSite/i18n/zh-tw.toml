@@ -10,6 +10,9 @@ other = "部落格"
 [tags]
 other = "標籤"
 
+[tag_archive]
+other = "標籤"
+
 [more_posts]
 other = "查看所有文章"
 
