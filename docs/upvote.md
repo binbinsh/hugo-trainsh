@@ -1,57 +1,63 @@
-# Upvote backend (Cloudflare Worker + KV)
+# Upvote Backend (Cloudflare Worker + KV)
 
-This document describes the optional upvote backend shipped with this theme.
+This document explains the optional upvote backend included in this repository (`cloudflare/`).
 
-- `GET /api/upvote-info?slug=/path` → `{ slug, upvote_count, upvoted }`
-- `POST /api/upvote` (form data or JSON with `slug`) → `{ slug, upvote_count, upvoted }`
-  - Optional metadata can be included in the request body:
-    - `title`, `permalink`, `dateISO`
+## API contract
+
+- `GET /api/upvote-info?slug=/path` -> `{ slug, upvote_count, upvoted }`
+- `POST /api/upvote` (JSON or form body with `slug`) -> `{ slug, upvote_count, upvoted }`
+
+Optional metadata fields for `POST /api/upvote`:
+
+- `title`
+- `permalink`
+- `dateISO` (`YYYY-MM-DD`)
 
 ## Requirements
 
-- A Cloudflare account
-- `wrangler` installed
+- Cloudflare account
+- Wrangler CLI (`wrangler` or `npx wrangler`)
 
 ## 1) Create a KV namespace
 
-Create a KV namespace for storing counters (binding name: `UPVOTES`).
+Create a KV namespace for counters and bind it as `UPVOTES`.
 
-You can do this in the Cloudflare dashboard, or via CLI.
-
-After creation, copy the namespace ID and set it in `cloudflare/wrangler.toml` by replacing:
+In `cloudflare/wrangler.toml`:
 
 ```toml
+[[kv_namespaces]]
+binding = "UPVOTES"
 id = "${UPVOTE_KV_NAMESPACE}"
 ```
 
-with the actual ID, or provide the `UPVOTE_KV_NAMESPACE` variable via your deploy environment.
+Set `UPVOTE_KV_NAMESPACE` in your deploy environment, or replace it with a concrete namespace ID.
 
-## 2) (Optional) Set a cookie signing secret
+## 2) Configure cookie signing secret (recommended)
 
-The worker uses a signed cookie to remember whether a visitor already upvoted a post.
+The worker uses signed cookies to prevent duplicate upvotes from the same browser.
 
-You can provide a fixed secret:
+Set a secret:
 
 ```bash
 wrangler secret put UPVOTE_COOKIE_SECRET
 ```
 
-If you do not set this, the worker will generate one and store it in KV under the key `cookie_secret`.
+If omitted, the worker auto-generates a secret and stores it in KV as `cookie_secret`.
 
-## 3) Deploy
+## 3) Deploy worker
 
-From the `cloudflare/` directory:
+From `cloudflare/`:
 
 ```bash
 wrangler deploy
 ```
 
-By default, `cloudflare/wrangler.toml` also serves static assets from `../exampleSite/public` (demo site).
-If you only want API endpoints, remove the `[assets]` section.
+By default, `wrangler.toml` also serves static assets from `../exampleSite/public`.
+If you only want API routes, remove the `[assets]` section.
 
-## 4) Configure your Hugo site
+## 4) Configure theme
 
-In your site config:
+In your Hugo site config:
 
 ```toml
 [params]
@@ -61,14 +67,17 @@ In your site config:
     infoEndpoint = "/api/upvote-info"
 ```
 
-### Same-domain routing (recommended)
+## Routing and cookies
 
-For best compatibility with browser cookie policies, route the worker to your site’s domain (first-party),
-for example `https://yourdomain.com/api/*`.
+For best cookie compatibility, serve the API from the same domain as your site (first-party), for example:
 
-You can do this by adding a `routes` entry in `cloudflare/wrangler.toml` and deploying to your zone.
+- `https://yourdomain.com/api/upvote`
+- `https://yourdomain.com/api/upvote-info`
+
+You can set this using `routes` in `cloudflare/wrangler.toml`.
 
 ## Notes
 
-- Cookies are set with `Secure` and require HTTPS.
-- Slugs must start with `/` (the theme uses the page permalink without a trailing slash).
+- Cookies are `Secure`, `HttpOnly`, `SameSite=Lax`, and require HTTPS.
+- Slug must start with `/`.
+- The theme normalizes upvote slug across language prefixes, so translated pages share the same upvote counter.
