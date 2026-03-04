@@ -477,6 +477,30 @@ ul.blog-posts {
     }
 }
 
+@media (max-width: 768px) {
+    .site-header {
+        align-items: flex-start;
+    }
+
+    .site-brand {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .theme-toggle {
+        order: 1;
+        margin-left: auto;
+    }
+
+    .site-nav {
+        order: 2;
+        width: 100%;
+        margin-left: 0;
+        align-self: stretch;
+    }
+}
+
+
 ul.blog-posts li {
     position: relative;
 }
