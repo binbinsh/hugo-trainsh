@@ -12,7 +12,7 @@ translationKey = 'mermaid-math'
 sequenceDiagram
   participant U as User
   participant H as Hugo
-  participant T as trainsh Theme
+  participant T as Theme runtime
   U->>H: Save content
   H->>T: Render with templates
   T-->>U: Live reload

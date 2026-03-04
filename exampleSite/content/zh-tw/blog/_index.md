@@ -5,4 +5,4 @@ draft = false
 layout = 'list'
 +++
 
-trainsh 主題示範網站的所有文章。
+當前 hugo-trainsh 示範站的全部文章。

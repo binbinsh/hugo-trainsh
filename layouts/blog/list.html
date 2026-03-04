@@ -8,7 +8,19 @@
 {{- $groupedPages := ($pages.ByDate.Reverse).GroupByDate "2006" -}}
 
 {{- if gt (len $groupedPages) 0 -}}
-<div class="blog-archive">
+<div class="blog-search-wrap">
+  <input
+    id="blog-search"
+    type="search"
+    autocomplete="off"
+    placeholder='{{ i18n "type_to_search" }}'
+    aria-label='{{ i18n "search_posts" }}'
+    data-index-url='{{ "index.json" | relLangURL }}'
+    data-no-results='{{ i18n "no_results" }}'
+  />
+  <p id="blog-search-empty" class="blog-empty-state" hidden>{{ i18n "no_results" }}</p>
+</div>
+<div class="blog-archive" id="blog-archive">
   {{- range $groupedPages -}}
   <section class="blog-archive-year">
     <h2 class="blog-archive-year-title">{{ .Key }}</h2>

@@ -1,27 +1,32 @@
 +++
-title = "Product Walkthrough"
+title = "Demo Feature Walkthrough"
 date = "2021-03-18"
 draft = false
 tags = ["product", "how to", "getting started"]
 translationKey = 'product-walkthrough'
 +++
 
-## Why this matters
-A short, practical walkthrough for a fictional product. It shows how to mix headings, lists, and callouts.
+## Why this article exists
 
-## Steps
-1. Open the dashboard.
-2. Create a new workspace.
-3. Invite teammates.
-4. Ship something small.
+This demo post now tracks what should be verified after updating to a newer theme release.
 
-> Tip: keep steps terse and outcomes clear.
+## Verification flow
 
-## Checklist
-- [x] Sign up
-- [x] Create first project
-- [ ] Enable notifications
-- [ ] Write docs
+1. Confirm multilingual pages can be reached from the language switcher.
+2. Confirm listing pages support search and tag filtering.
+3. Confirm shortcodes on content (`toc`, `tags`, `recent-posts`) render correctly.
+4. Confirm interactive features: copy/soft-wrap on code blocks, Mermaid, KaTeX, and PhotoSwipe.
+5. Confirm optional post upvote is visible and API wiring is working.
 
-## Links
-- https://example.com/product
+## Expected config
+
+- `params.mainSections` includes your publishing section (demo uses `posts`).
+- `outputs.home` includes `JSON` for search indexing.
+- `params.upvote` is configured with `endpoint` and `infoEndpoint` if upvotes are enabled.
+
+## Optional checks
+- Use `translationKey` on related pages to keep language variants linked.
+- Keep tags concise; they power tag filtering in list views.
+
+## Reference
+- https://gohugo.io/content-management/multilingual/

@@ -9,19 +9,25 @@ translationKey = 'code-samples'
 ## JavaScript
 
 ```js
-export function greet(name) {
-  return `Hello, ${name}!`;
+export function hasFeature(name) {
+  return ['短代碼', 'Mermaid', 'KaTeX', 'PhotoSwipe', 'upvote', 'i18n'].includes(name);
 }
-console.log(greet('trainsh'));
+console.log(hasFeature('短代碼'));
 ```
 
 ## Python
 
 ```python
+from dataclasses import dataclass
 from datetime import date
 
-def days_in_year(year: int) -> int:
-    return 366 if (year % 400 == 0) or (year % 4 == 0 and year % 100 != 0) else 365
+@dataclass
+class DemoFeature:
+  name: str
+  enabled: bool
 
-print(date.today(), days_in_year(date.today().year))
+features = ["程式碼區塊增強", "搜尋", "標籤篩選", "按讚", "多語系"]
+status = [DemoFeature(name=feature, enabled=True) for feature in features]
+
+print(date.today().isoformat(), status[:2], f"total={len(status)}")
 ```

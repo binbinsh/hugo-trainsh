@@ -9,22 +9,25 @@ translationKey = 'code-samples'
 ## JavaScript
 
 ```js
-export function add(a, b) {
-  return a + b;
+export function hasFeature(name) {
+  return ['短代码', 'Mermaid', 'KaTeX', 'PhotoSwipe', 'upvote', 'i18n'].includes(name);
 }
-console.log(add(2, 3));
+console.log(hasFeature('短代码'));
 ```
 
 ## Python
 
 ```python
-def fib(n: int) -> list[int]:
-    a, b = 0, 1
-    seq = []
-    for _ in range(n):
-        seq.append(a)
-        a, b = b, a + b
-    return seq
+from dataclasses import dataclass
+from datetime import date
 
-print(fib(10))
+@dataclass
+class DemoFeature:
+  name: str
+  enabled: bool
+
+features = ["代码块增强", "搜索", "标签筛选", "点赞", "多语言"]
+status = [DemoFeature(name=feature, enabled=True) for feature in features]
+
+print(date.today().isoformat(), status[:2], f"total={len(status)}")
 ```

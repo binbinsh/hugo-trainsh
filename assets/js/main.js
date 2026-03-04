@@ -367,6 +367,173 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Keep the annual blog list style and filter it in-place while typing.
+  (() => {
+    const searchInput = document.getElementById('blog-search');
+    const archiveEl = document.getElementById('blog-archive');
+    if (!searchInput || !archiveEl) return;
+
+    const noResultsEl = document.getElementById('blog-search-empty');
+    const indexUrl = searchInput.getAttribute('data-index-url') || '/index.json';
+    const noResultsText = searchInput.getAttribute('data-no-results') || 'No results';
+    const fuseSrc = 'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0';
+
+    const normalizeHref = (href) => {
+      try {
+        const u = new URL(href, window.location.origin);
+        return u.pathname;
+      } catch (_) {
+        return href;
+      }
+    };
+
+    const years = Array.from(archiveEl.querySelectorAll('.blog-archive-year'));
+    const archiveItems = years.flatMap((yearSection) => {
+      const titleEl = yearSection.querySelector('.blog-archive-year-title');
+      const year = titleEl ? titleEl.textContent.trim() : '';
+
+      return Array.from(yearSection.querySelectorAll('.blog-archive-item')).map((itemEl) => {
+        const link = itemEl.querySelector('a[href]');
+        const href = link ? normalizeHref(link.getAttribute('href') || '') : '';
+        return {
+          section: yearSection,
+          itemEl,
+          link,
+          href,
+          title: link ? (link.textContent || '').trim() : '',
+          year,
+          date: itemEl.querySelector('.blog-archive-date')?.textContent?.trim() || ''
+        };
+      });
+    });
+
+    if (!archiveItems.length) return;
+
+    if (noResultsEl) noResultsEl.textContent = noResultsText;
+    searchInput.setAttribute('role', 'search');
+
+    let fuseInstance = null;
+    let indexData = null;
+
+    const loadScriptOnce = (src) => {
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing) {
+        if (window.Fuse) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true });
+        });
+      }
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.defer = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error(`Failed to load ${src}`));
+        document.head.appendChild(s);
+      });
+    };
+
+    const initFuse = async () => {
+      if (fuseInstance) return fuseInstance;
+      if (!indexData) {
+        try {
+          const res = await fetch(indexUrl);
+          if (!res.ok) return null;
+          indexData = await res.json();
+        } catch (e) {
+          return null;
+        }
+      }
+      if (!Array.isArray(indexData)) return null;
+
+      const Fuse = window.Fuse;
+      if (!Fuse) {
+        try {
+          await loadScriptOnce(fuseSrc);
+        } catch (e) {
+          return null;
+        }
+      }
+      if (!window.Fuse) return null;
+      fuseInstance = new window.Fuse(indexData, {
+        includeScore: true,
+        threshold: 0.3,
+        ignoreLocation: true,
+        minMatchCharLength: 1,
+        keys: [
+          { name: 'title', weight: 2 },
+          { name: 'summary', weight: 1 },
+          { name: 'tags', weight: 0.75 },
+          { name: 'content', weight: 0.25 }
+        ]
+      });
+      return fuseInstance;
+    };
+
+    const filterMap = async () => {
+      const raw = String(searchInput.value || '').trim();
+      const query = raw.toLowerCase();
+      if (!query) return null;
+
+      const fuse = await initFuse();
+      if (fuse) {
+        const results = fuse.search(raw).slice(0, 200);
+        return new Set(results
+          .map((r) => normalizeHref((r.item && r.item.permalink) || ''))
+          .filter(Boolean));
+      }
+
+      if (Array.isArray(indexData) && indexData.length) {
+        const set = new Set();
+        indexData.forEach((item) => {
+          const title = String(item && item.title ? item.title : '').toLowerCase();
+          const summary = String(item && item.summary ? item.summary : '').toLowerCase();
+          const href = normalizeHref(item && item.permalink ? item.permalink : '');
+          if (href && (title.includes(query) || summary.includes(query))) {
+            set.add(href);
+          }
+        });
+        return set;
+      }
+
+      return new Set(archiveItems.filter((it) => (it.title.toLowerCase().includes(query))).map((it) => it.href));
+    };
+
+    const applyVisibility = async () => {
+      const shouldMatch = await filterMap();
+      let visibleCount = 0;
+
+      const visibleSections = new Set();
+      archiveItems.forEach((entry) => {
+        const show = !shouldMatch || shouldMatch.has(entry.href);
+        entry.itemEl.style.display = show ? '' : 'none';
+        if (show) {
+          visibleCount += 1;
+          visibleSections.add(entry.section);
+        }
+      });
+
+      years.forEach((year) => {
+        year.style.display = shouldMatch ? (visibleSections.has(year) ? '' : 'none') : '';
+      });
+
+      if (noResultsEl) {
+        noResultsEl.hidden = !(searchInput.value && searchInput.value.trim() && visibleCount === 0);
+      }
+    };
+
+    searchInput.addEventListener('focus', () => {
+      void initFuse();
+    }, { once: true });
+    searchInput.addEventListener('input', () => {
+      void applyVisibility();
+    });
+    if (searchInput.value) {
+      void applyVisibility();
+    }
+  })();
+
   // PhotoSwipe lightbox for images in article content (lazy-loaded)
   (() => {
     // Bear Blog pages render content directly inside <main>; keep lightbox wiring

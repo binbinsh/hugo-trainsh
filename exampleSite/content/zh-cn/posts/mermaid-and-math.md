@@ -12,7 +12,7 @@ translationKey = 'mermaid-math'
 sequenceDiagram
   participant 用户
   participant Hugo
-  participant 主题 as trainsh 主题
+  participant 主题 as 主题运行时
   用户->>Hugo: 保存内容
   Hugo->>主题: 模板渲染
   主题-->>用户: 实时刷新

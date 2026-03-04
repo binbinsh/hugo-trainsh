@@ -12,7 +12,7 @@ translationKey = 'mermaid-math'
 sequenceDiagram
   participant U as 使用者
   participant H as Hugo
-  participant T as trainsh 主題
+  participant T as 主題執行時
   U->>H: 儲存內容
   H->>T: 套用樣板渲染
   T-->>U: 即時重新載入

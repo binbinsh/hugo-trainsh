@@ -663,6 +663,10 @@ figure figcaption {
     color: var(--link-color);
 }
 
+.blog-search-wrap {
+    margin: 0 0 1.25em;
+}
+
 @media (max-width: 640px) {
     .blog-archive-item {
         flex-direction: column;
@@ -677,6 +681,7 @@ figure figcaption {
 
 #blog-search {
     width: 100%;
+    margin: 0;
     padding: 0.75em 1em;
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -684,6 +689,12 @@ figure figcaption {
     color: var(--text-color);
     font-size: 1rem;
     transition: border-color 0.2s;
+}
+
+.blog-empty-state {
+    margin: 0.35em 0 0;
+    color: var(--muted-color);
+    font-size: 0.95rem;
 }
 
 #blog-search:focus {

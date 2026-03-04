@@ -4,21 +4,22 @@ date = 2023-01-01T08:00:00-07:00
 draft = false
 +++
 
-# Welcome to the trainsh theme demo.
+# Welcome to the hugo-trainsh demo.
 
-A minimal, content-focused Hugo theme with a clean reading experience.
+A content-first Hugo theme for multilingual blogs with a clean reading experience.
 
 {{< recent-posts >}}
 
-## Features
+## What to try in this demo
 
-- Two-column post grid with search and tag filtering
-- Code blocks with syntax highlighting, copy button and soft-wrap
-- Mermaid diagrams and KaTeX math
-- PhotoSwipe image lightbox
-- Dark mode support (auto)
-- Multilingual ready
+- Blog list filtering and archive/tag browsing
+- Built-in shortcodes: `toc`, `tags`, `recent-posts`
+- Syntax-highlighted code blocks with copy + soft-wrap toggle
+- Mermaid diagrams and KaTeX math rendering
+- PhotoSwipe lightbox with local image dimension support
+- Optional post upvote widget (demo API configured)
+- Theme toggle and language switcher
 
 ---
 
-Browse the blog to see posts, tags, code blocks, Mermaid diagrams, math, and PhotoSwipe in action.
+Browse the blog to preview the latest features: post listing, tags, shortcodes, math/diagrams, lightbox images, and interaction widgets.

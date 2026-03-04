@@ -12,7 +12,7 @@ translationKey = 'mermaid-math'
 sequenceDiagram
   participant U as ユーザー
   participant H as Hugo
-  participant T as trainsh テーマ
+  participant T as テーマランタイム
   U->>H: コンテンツを保存
   H->>T: テンプレートでレンダリング
   T-->>U: ライブリロード

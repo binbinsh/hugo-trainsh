@@ -5,4 +5,4 @@ draft = false
 layout = 'list'
 +++
 
-All posts from the trainsh theme demo site.
+All posts from the current hugo-trainsh demo site.

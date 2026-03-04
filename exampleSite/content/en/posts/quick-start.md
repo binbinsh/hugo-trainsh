@@ -1,30 +1,36 @@
 +++
-title = 'Quick Start with trainsh'
+title = 'Quick Start with the latest features'
 date = '2025-10-26'
 draft = false
-tags = ['getting started','theme','mermaid','math']
+tags = ['getting started','theme','mermaid','math','shortcodes']
 translationKey = 'quick-start'
 +++
 
-## Typography & Layout
+## Why this post was updated
 
-This is an English example post to preview the trainsh theme.
+This post follows the latest demo structure and verifies current theme capabilities.
 
 {{< toc >}}
 
-### Features in this post
+### Demonstrated features
 - Table of contents (TOC)
+- Shortcodes: `toc`, `tags`, `recent-posts`
 - Mermaid diagram
 - Math (KaTeX, if enabled)
 - Image lightbox
+- Copy + soft-wrap controls for code blocks
+
+{{< tags >}}
+
+{{< recent-posts >}}
 
 ### Mermaid
 
 ```mermaid
 graph TD
   A[Start] --> B{Option}
-  B -->|Yes| C[Do thing]
-  B -->|No| D[Other]
+  B -->|Yes| C[Publish]
+  B -->|No| D[Iterate]
 ```
 
 ### Math
@@ -37,6 +43,7 @@ E = mc^2
 
 ![Sunset over hills](https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=60 "Click to view")
 
+You can replace this with a local image in a page bundle to let Hugo emit intrinsic dimensions for better lightbox rendering.
 
 ### Very long URL
 
