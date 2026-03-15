@@ -94,4 +94,16 @@
 .token.function { color: #06287e }
 .token.class-name { color: #0e84b5; font-weight: bold }
 
-
+/* Retro theme — NES palette syntax highlighting */
+[data-theme="retro"] .c, [data-theme="retro"] .ch,
+[data-theme="retro"] .cm, [data-theme="retro"] .c1 { color: #7C7C7C; font-style: normal; }
+[data-theme="retro"] .k, [data-theme="retro"] .kc,
+[data-theme="retro"] .kd, [data-theme="retro"] .kn,
+[data-theme="retro"] .kr { color: #6888FC; font-weight: normal; }
+[data-theme="retro"] .s, [data-theme="retro"] .s1,
+[data-theme="retro"] .s2, [data-theme="retro"] .sb { color: #58D854; }
+[data-theme="retro"] .m, [data-theme="retro"] .mi,
+[data-theme="retro"] .mf { color: #F8B800; }
+[data-theme="retro"] .nf, [data-theme="retro"] .fm { color: #FCA044; }
+[data-theme="retro"] .nc { color: #3CBCFC; }
+[data-theme="retro"] .o { color: #B8B8F8; }

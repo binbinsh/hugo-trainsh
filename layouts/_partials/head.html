@@ -3,6 +3,7 @@
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ printf "%s | %s" .Title .Site.Title }}{{ end }}</title>
 
 {{ partial "head/css.html" . }}
+{{ partial "head/fonts.html" . }}
 
 {{- /* Optional: KaTeX support (CSS always when math is detected; auto-render only when raw delimiters exist). */ -}}
 {{- $raw := .RawContent | default "" -}}

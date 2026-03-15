@@ -16,7 +16,8 @@ translationKey = 'product-walkthrough'
 2. 列表頁可使用搜尋與標籤篩選。
 3. 文章內短代碼（`toc`、`tags`、`recent-posts`）可正常渲染。
 4. 代碼區塊、Mermaid、KaTeX、PhotoSwipe 都可正常顯示。
-5. 若啟用按讚，確認 post footer 的 upvote 有回應。
+5. 主題切換按鈕三態循環正常：明亮（太陽）→ 暗黑（月亮）→ 復古（手把）→ 明亮。復古模式應顯示 NES 像素風格（深藍背景、像素字體標題）。
+6. 若啟用按讚，確認 post footer 的 upvote 有回應。
 
 ## 推薦設定
 

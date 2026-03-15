@@ -16,7 +16,8 @@ This demo post now tracks what should be verified after updating to a newer them
 2. Confirm listing pages support search and tag filtering.
 3. Confirm shortcodes on content (`toc`, `tags`, `recent-posts`) render correctly.
 4. Confirm interactive features: copy/soft-wrap on code blocks, Mermaid, KaTeX, and PhotoSwipe.
-5. Confirm optional post upvote is visible and API wiring is working.
+5. Confirm three-way theme toggle works: Light (sun) → Dark (moon) → Retro (gamepad) → Light. Retro mode should show NES pixel styling with deep-blue background and pixel font headings.
+6. Confirm optional post upvote is visible and API wiring is working.
 
 ## Expected config
 

@@ -276,7 +276,7 @@ Main stylesheet:
 
 - `assets/css/style.css`
 
-Useful variables:
+Useful variables (Light/Dark themes):
 
 ```css
 :root {
@@ -292,12 +292,39 @@ Useful variables:
 }
 ```
 
+The retro theme overrides these via `[data-theme="retro"]` and adds its own variables:
+
+```css
+[data-theme="retro"] {
+  --background-color: #00237C;   /* NES deep blue */
+  --dialog-bg: #000000;          /* dialog/code block background */
+  --dialog-border: #FCFCFC;      /* white pixel border */
+  --gold-color: #F8B800;         /* RPG gold for tags/highlights */
+  --pixel-shadow: 3px 3px 0 #000000;
+}
+```
+
 ### Theme mode
 
-The theme supports:
+The theme ships three visual modes that cycle on each click of the header toggle button:
 
-- System preference fallback (`prefers-color-scheme`)
-- Manual light/dark toggle stored in `localStorage`
+**Retro** → **Light** → **Dark** → Retro …
+
+| Mode | Icon | Description |
+|------|------|-------------|
+| Retro | Gamepad | **Default.** NES/FC pixel-art style — deep-blue background, white pixel borders, Fusion Pixel font, NES palette syntax highlighting |
+| Light | Sun | Clean light palette |
+| Dark | Moon | Clean dark palette |
+
+The active mode is stored in `localStorage` and restored on page load. When no preference is stored, **Retro mode is used by default**.
+
+The retro theme uses the **Fusion Pixel 12px** pixel font for headings and UI elements, with per-language font variants automatically selected:
+
+- English / Simplified Chinese: `fusion-pixel-12px.woff2`
+- Traditional Chinese: `fusion-pixel-12px-zh-hant.woff2`
+- Japanese: `fusion-pixel-12px-ja.woff2`
+
+Font files are only preloaded when the retro theme is active (removed via inline script otherwise).
 
 ### Social links
 

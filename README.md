@@ -1,6 +1,19 @@
 # hugo-trainsh
 
-A minimal, content-first Hugo theme.
+A minimal, content-first Hugo theme — defaults to a **NES/FC retro pixel style** inspired by classic 8-bit RPGs.
+
+## Retro Mode (Default)
+
+The theme ships with a **Retro** mode enabled by default, inspired by the NES/FC era (think 吞食天地):
+
+- Deep-blue background (`#00237C`) with white pixel-art dialog borders
+- **Fusion Pixel 12px** font for headings, navigation, and UI elements
+- Per-language font variants: Simplified Chinese, Traditional Chinese, Japanese, and Latin
+- NES palette syntax highlighting for code blocks
+- RPG-style gold tags, pixel dashed `<hr>`, hard shadows, zero border-radius
+- No CSS transitions — everything snaps like an 8-bit console
+
+Two additional modes are available via the header toggle: **Light** and **Dark** (clean, modern palettes). The cycle is: Retro (gamepad) → Light (sun) → Dark (moon) → Retro …
 
 ## Features
 
@@ -14,7 +27,8 @@ A minimal, content-first Hugo theme.
 - Mermaid diagrams and KaTeX math rendering
 - Image rendering with figure captions + PhotoSwipe lightbox
 - Optional upvote widget (`params.upvote`) with Cloudflare Worker backend
-- Multilingual support, theme toggle, and footer social links
+- Three theme modes: Retro (default), Light, and Dark
+- Multilingual support (with per-language pixel font variants) and footer social links
 
 ## Quick Start
 

@@ -3,9 +3,12 @@
 <head>
   <script>
     (function() {
-      var theme = localStorage.getItem('theme');
-      if (theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+      var theme = localStorage.getItem('theme') || 'retro';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme !== 'retro') {
+        document.querySelectorAll('link[data-retro-font]').forEach(function(el) {
+          el.remove();
+        });
       }
     })();
   </script>
@@ -28,14 +31,14 @@
       var themeToggle = document.querySelector('.theme-toggle');
       if (themeToggle) {
         function getEffectiveTheme() {
-          var stored = localStorage.getItem('theme');
-          if (stored) return stored;
-          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          return localStorage.getItem('theme') || 'retro';
         }
 
         themeToggle.addEventListener('click', function() {
           var current = getEffectiveTheme();
-          var next = current === 'dark' ? 'light' : 'dark';
+          var order = ['light', 'dark', 'retro'];
+          var idx = order.indexOf(current);
+          var next = order[(idx + 1) % order.length];
           document.documentElement.setAttribute('data-theme', next);
           localStorage.setItem('theme', next);
         });
@@ -68,7 +71,7 @@
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
     function getTheme() {
       var stored = localStorage.getItem('theme');
-      if (stored) return stored === 'dark' ? 'dark' : 'default';
+      if (stored) return (stored === 'dark' || stored === 'retro') ? 'dark' : 'default';
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
     }
     mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: getTheme() });

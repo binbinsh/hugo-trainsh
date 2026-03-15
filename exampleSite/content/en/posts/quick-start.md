@@ -19,6 +19,7 @@ This post follows the latest demo structure and verifies current theme capabilit
 - Math (KaTeX, if enabled)
 - Image lightbox
 - Copy + soft-wrap controls for code blocks
+- Three theme modes: Light / Dark / Retro (NES pixel style)
 
 {{< tags >}}
 

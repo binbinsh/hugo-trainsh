@@ -20,6 +20,7 @@ translationKey = 'quick-start'
 - 数学公式（KaTeX）
 - 图片灯箱
 - 代码块复制与换行控制
+- 三种主题模式：明亮 / 暗黑 / 复古（NES 像素风）
 
 ### Mermaid
 

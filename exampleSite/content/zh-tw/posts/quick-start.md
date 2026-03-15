@@ -19,6 +19,7 @@ translationKey = 'quick-start'
 - 數學（若已啟用 KaTeX）
 - 圖片燈箱
 - 程式碼區塊複製與換行控制
+- 三種主題模式：明亮 / 暗黑 / 復古（NES 像素風）
 
 {{< tags >}}
 

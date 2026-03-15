@@ -1,5 +1,16 @@
 /* Trainsh Theme - A minimal, content-focused blog theme. */
 
+@font-face {
+    font-family: 'Press Start 2P';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/press-start-2p-latin.woff2') format('woff2');
+    unicode-range: U+0020-007F, U+00A0-00FF;
+}
+
+/* Fusion Pixel 12px @font-face is injected per-language via layouts/_partials/head/fonts.html */
+
 :root {
     --width: 760px;
     --font-main: Verdana, sans-serif;
@@ -24,6 +35,8 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --input-bg: #fff;
     --hover-bg: rgba(0, 0, 0, 0.04);
+    --font-pixel: 'Fusion Pixel 12px', 'Press Start 2P', monospace;
+    --pixel-border-width: 3px;
 }
 
 /* Dark theme - applied via data-theme attribute or system preference */
@@ -66,6 +79,31 @@
         --input-bg: #1a1a1a;
         --hover-bg: rgba(255, 255, 255, 0.06);
     }
+}
+
+/* Retro theme - NES pixel art style (吞食天地 FC) */
+[data-theme="retro"] {
+    --background-color: #00237C;
+    --heading-color: #FCFCFC;
+    --text-color: #B8B8F8;
+    --link-color: #FCA044;
+    --visited-color: #D8B8F8;
+    --accent-color: #F87858;
+    --code-background-color: #000000;
+    --code-color: #FCFCFC;
+    --blockquote-color: #A4E4FC;
+    --border-color: #FCFCFC;
+    --muted-color: #7C7C7C;
+    --selection-bg: #0058F8;
+    --selection-text: #FCFCFC;
+    --shadow-color: #000000;
+    --input-bg: #000000;
+    --hover-bg: rgba(0, 88, 248, 0.3);
+    --pixel-shadow: 3px 3px 0 #000000;
+    --dialog-border: #FCFCFC;
+    --dialog-bg: #000000;
+    --gold-color: #F8B800;
+    --border-radius: 0;
 }
 
 /* Text selection */
@@ -1006,27 +1044,271 @@ figure figcaption {
     display: block;
 }
 
-.theme-toggle .icon-sun {
-    display: none;
+.theme-toggle .icon-retro {
+    width: 24px;
+    height: 24px;
 }
 
-.theme-toggle .icon-moon {
-    display: block;
+/* Default / Retro: show gamepad (current theme) */
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: none; }
+.theme-toggle .icon-retro { display: block; }
+
+/* Light: show sun */
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+[data-theme="light"] .theme-toggle .icon-retro { display: none; }
+
+/* Dark: show moon */
+[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+[data-theme="dark"] .theme-toggle .icon-retro { display: none; }
+
+/* ===== Retro Theme — NES Pixel Style Overrides ===== */
+
+/* 3a. Global pixel style */
+[data-theme="retro"] * {
+    border-radius: 0 !important;
+    transition: none !important;
 }
 
-[data-theme="dark"] .theme-toggle .icon-sun {
-    display: block;
+[data-theme="retro"] body {
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+    image-rendering: pixelated;
 }
 
-[data-theme="dark"] .theme-toggle .icon-moon {
-    display: none;
+/* 3b. Pixel font on headings and UI elements */
+[data-theme="retro"] h1,
+[data-theme="retro"] h2,
+[data-theme="retro"] h3,
+[data-theme="retro"] h4,
+[data-theme="retro"] h5,
+[data-theme="retro"] h6 {
+    font-family: var(--font-pixel);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+    text-shadow: 2px 2px 0 var(--shadow-color);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-toggle .icon-sun {
-        display: block;
-    }
-    :root:not([data-theme="light"]) .theme-toggle .icon-moon {
-        display: none;
-    }
+[data-theme="retro"] .title h1 { font-size: 1.375rem; }
+[data-theme="retro"] h1 { font-size: 1.75rem; }
+[data-theme="retro"] h2 { font-size: 1.5rem; }
+[data-theme="retro"] h3 { font-size: 1.25rem; }
+
+[data-theme="retro"] nav a,
+[data-theme="retro"] .lang-toggle,
+[data-theme="retro"] .lang-menu,
+[data-theme="retro"] footer,
+[data-theme="retro"] .post-meta,
+[data-theme="retro"] time,
+[data-theme="retro"] .blog-archive-year-title,
+[data-theme="retro"] .blog-archive-date,
+[data-theme="retro"] .blog-archive-link,
+[data-theme="retro"] #blog-search,
+[data-theme="retro"] #blog-search::placeholder {
+    font-family: var(--font-pixel);
+}
+
+[data-theme="retro"] nav a { font-size: 1rem; }
+[data-theme="retro"] footer { font-size: 0.875rem; line-height: 2.2; }
+[data-theme="retro"] .post-meta { font-size: 0.875rem; }
+[data-theme="retro"] .blog-archive-year-title { font-size: 1.25rem; color: var(--gold-color); }
+[data-theme="retro"] .blog-archive-date { font-size: 0.875rem; }
+[data-theme="retro"] .blog-archive-link { font-size: 1rem; }
+[data-theme="retro"] #blog-search { font-size: 1rem; }
+[data-theme="retro"] .post-title { font-size: 1.5rem; line-height: 1.8; }
+
+/* 3c. NES dialog borders — code blocks, blockquotes, search */
+[data-theme="retro"] .highlight,
+[data-theme="retro"] .code {
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+    background-color: var(--dialog-bg);
+}
+
+[data-theme="retro"] blockquote {
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    border-left: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+    background: var(--dialog-bg);
+    font-style: normal;
+    padding: 1.25em;
+}
+
+[data-theme="retro"] #blog-search {
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+    background: var(--dialog-bg);
+}
+
+[data-theme="retro"] :not(pre) > code {
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="retro"] pre code {
+    border: none;
+}
+
+/* 3d. Blog post list cards */
+[data-theme="retro"] ul.blog-posts li::before {
+    content: none;
+}
+
+[data-theme="retro"] ul.blog-posts li {
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+    padding: 1em;
+    background: var(--dialog-bg);
+}
+
+[data-theme="retro"] ul.blog-posts li a {
+    font-family: var(--font-pixel);
+    font-size: 1rem;
+    padding-left: 0;
+    line-height: 1.8;
+}
+
+[data-theme="retro"] ul.blog-posts li time {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+    padding-left: 0;
+}
+
+/* 3e. Tags — RPG attribute tag style */
+[data-theme="retro"] .tags a,
+[data-theme="retro"] .tags-section a,
+[data-theme="retro"] .tag-filters a,
+[data-theme="retro"] .post-tags a {
+    border: 2px solid var(--gold-color);
+    color: var(--gold-color);
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+    background: transparent;
+}
+
+[data-theme="retro"] .tags a:hover,
+[data-theme="retro"] .tags-section a:hover,
+[data-theme="retro"] .tag-filters a:hover,
+[data-theme="retro"] .post-tags a:hover {
+    background: var(--gold-color);
+    color: var(--dialog-bg);
+}
+
+[data-theme="retro"] .tag-filters a.active,
+[data-theme="retro"] .active-tag {
+    background: var(--accent-color);
+    color: var(--dialog-bg);
+    border-color: var(--accent-color);
+}
+
+/* 3f. Buttons and interactive elements */
+[data-theme="retro"] .theme-toggle {
+    border: 2px solid var(--border-color);
+}
+
+[data-theme="retro"] .theme-toggle:hover {
+    color: var(--gold-color);
+    border-color: var(--gold-color);
+}
+
+[data-theme="retro"] .lang-toggle {
+    border: 2px solid var(--border-color);
+}
+
+[data-theme="retro"] .lang-menu {
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+    background: var(--dialog-bg);
+}
+
+[data-theme="retro"] .footer-links a:hover {
+    background-color: rgba(0, 88, 248, 0.3);
+}
+
+/* 3g. Tables */
+[data-theme="retro"] table {
+    border: var(--pixel-border-width) solid var(--border-color);
+    box-shadow: var(--pixel-shadow);
+}
+
+[data-theme="retro"] th {
+    font-family: var(--font-pixel);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    background: var(--code-background-color);
+}
+
+[data-theme="retro"] th, [data-theme="retro"] td {
+    border: 1px solid var(--border-color);
+}
+
+/* 3h. Horizontal rule — dashed pixel line */
+[data-theme="retro"] hr {
+    border: 0;
+    height: 3px;
+    background: repeating-linear-gradient(
+        to right,
+        var(--border-color) 0px, var(--border-color) 6px,
+        transparent 6px, transparent 12px
+    );
+}
+
+/* 3i. Link style */
+[data-theme="retro"] a {
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+
+[data-theme="retro"] a:hover {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+/* 3j. Header/Footer frame */
+[data-theme="retro"] .site-header {
+    padding: 1em;
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+}
+
+[data-theme="retro"] body > footer {
+    border-top: var(--pixel-border-width) solid var(--border-color);
+}
+
+/* 3k. Upvote — RPG command menu style */
+[data-theme="retro"] .upvote-widget {
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+    background: var(--dialog-bg);
+    padding: 0.75em 1em;
+    display: inline-block;
+}
+
+[data-theme="retro"] .upvote-button {
+    color: var(--text-color);
+    gap: 0.25em;
+}
+
+[data-theme="retro"] .upvote-button:not(:disabled):hover {
+    color: var(--gold-color);
+}
+
+[data-theme="retro"] .upvote-button svg {
+    stroke-width: 3;
+}
+
+[data-theme="retro"] .upvote-button--active {
+    color: var(--gold-color);
+}
+
+[data-theme="retro"] .upvote-button--active svg {
+    fill: var(--gold-color);
+    stroke: var(--gold-color);
+}
+
+[data-theme="retro"] .upvote-count {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
 }

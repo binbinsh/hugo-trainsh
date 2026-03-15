@@ -9,8 +9,8 @@ homepage = "https://github.com/binbinsh/hugo-trainsh"
 # If you have a running demo of the theme.
 demosite = "https://hugo-trainsh.binbinsh.workers.dev"
 
-tags = ["blog", "minimal", "mermaid", "katex", "photoswipe", "upvote"]
-features = ["fast", "responsive"]
+tags = ["blog", "minimal", "mermaid", "katex", "photoswipe", "upvote", "retro", "pixel", "nes"]
+features = ["fast", "responsive", "dark mode", "retro theme"]
 
 [author]
 name = "Binbin Shen"
