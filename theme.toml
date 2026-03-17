@@ -1,7 +1,7 @@
 name = "hugo-trainsh"
 license = "MIT"
 licenselink = "https://github.com/binbinsh/hugo-trainsh/blob/main/LICENSE"
-description = "A simple Hugo theme."
+description = "A minimal, multilingual Hugo blog theme with a default NES/FC retro pixel mode — 8-bit dialog borders, RPG-style UI, pixel fonts — plus clean Light and Dark alternatives."
 
 # The home page of the theme, where the source can be found.
 homepage = "https://github.com/binbinsh/hugo-trainsh"
@@ -9,8 +9,8 @@ homepage = "https://github.com/binbinsh/hugo-trainsh"
 # If you have a running demo of the theme.
 demosite = "https://hugo-trainsh.binbinsh.workers.dev"
 
-tags = ["blog", "minimal", "mermaid", "katex", "photoswipe", "upvote", "retro", "pixel", "nes"]
-features = ["fast", "responsive", "dark mode", "retro theme"]
+tags = ["blog", "minimal", "retro", "pixel", "dark", "multilingual", "responsive", "search", "mermaid", "math", "lightbox"]
+features = ["fast", "responsive", "dark mode", "retro theme", "multilingual", "search"]
 
 [author]
 name = "Binbin Shen"

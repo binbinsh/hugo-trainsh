@@ -4,11 +4,18 @@
   <script>
     (function() {
       var theme = localStorage.getItem('theme') || 'retro';
-      document.documentElement.setAttribute('data-theme', theme);
-      if (theme !== 'retro') {
-        document.querySelectorAll('link[data-retro-font]').forEach(function(el) {
-          el.remove();
-        });
+      var html = document.documentElement;
+      html.setAttribute('data-theme', theme);
+      if (theme === 'retro') {
+        html.classList.add('retro-fonts-loading');
+        var revealed = false;
+        function reveal() {
+          if (revealed) return;
+          revealed = true;
+          html.classList.remove('retro-fonts-loading');
+        }
+        document.fonts.ready.then(reveal);
+        setTimeout(reveal, 3000);
       }
     })();
   </script>
@@ -41,6 +48,7 @@
           var next = order[(idx + 1) % order.length];
           document.documentElement.setAttribute('data-theme', next);
           localStorage.setItem('theme', next);
+          try { window.dispatchEvent(new Event('themechange')); } catch (_) {}
         });
       }
 

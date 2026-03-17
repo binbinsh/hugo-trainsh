@@ -1,52 +1,78 @@
 +++
-title = '最新機能クイックスタート'
+title = 'テーマガイド'
 date = '2025-10-26'
 draft = false
-tags = ['入門','テーマ','mermaid','数学']
+tags = ['ガイド','テーマ','mermaid','数学']
 translationKey = 'quick-start'
 +++
 
-## この記事の更新理由
-
-この投稿は最新のデモ構成に合わせて更新し、テーマの主要機能を確認できるようにしました。
+この記事では **hugo-trainsh** の描画機能を紹介します——見出し、コード、テーブル、図、数式、画像など。
 
 {{< toc >}}
 
-### この記事の内容
-- 目次（TOC）
-- 短コード: `toc`、`tags`、`recent-posts`
-- Mermaid 図
-- 数式（KaTeX を有効化している場合）
-- 画像ライトボックス
-- コードブロックのコピー / ソフトラップ
-- 3つのテーマモード: ライト / ダーク / レトロ（NES ピクセル風）
+## 3つのテーマモード
+
+ヘッダーのトグルボタンで順に切り替えます：
+
+1. **レトロ** (ゲームパッド) — NES ディープブルー背景、ピクセルフォント見出し、8-bit ダイアログ枠
+2. **ライト** (太陽) — すっきりしたモダン配色
+3. **ダーク** (月) — 夜間の閲覧に最適
+
+## テキスト
+
+通常の Markdown がそのまま使えます。**太字**はレトロモードでゴールドに、*斜体*も問題なく表示されます。[任意のリンク](/)もテーマに合わせてスタイルが変わります。
+
+> 引用ブロックはレトロモードでシアンの枠が付き、長い記事でもすぐ見分けがつきます。
+
+---
+
+## コード
+
+フェンスコードブロックにはシンタックスハイライト、コピーボタン、ソフトラップが付きます：
+
+```python
+from datetime import date
+
+def greet(name: str) -> str:
+    return f"こんにちは、{name}！今日は {date.today()} です。"
+
+print(greet("世界"))
+```
+
+`hugo server` のようなインラインコードもスタイル付きです。
+
+## テーブル
+
+| コマンド | 説明 |
+|---|---|
+| `hugo server` | ローカル開発サーバーを起動 |
+| `hugo` | 静的サイトをビルド |
+| `hugo new posts/hello.md` | 新しい記事を作成 |
+
+## 図表
+
+Mermaid 図表はインラインで描画されます：
+
+```mermaid
+graph LR
+  A[執筆] --> B[ビルド]
+  B --> C{テスト}
+  C -->|合格| D[デプロイ]
+  C -->|不合格| A
+```
+
+## 数式
+
+$$E = mc^2$$
+
+## 画像
+
+クリックでライトボックスが開きます：
+
+![丘の夕焼け](https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=60 "クリックして表示")
+
+## タグ
 
 {{< tags >}}
 
 {{< recent-posts >}}
-
-### Mermaid
-
-```mermaid
-graph TD
-  A[開始] --> B{選択肢}
-  B -->|はい| C[公開]
-  B -->|いいえ| D[調整]
-```
-
-### 数式
-
-```passthrough
-E = mc^2
-```
-
-### 画像
-
-![丘の夕焼け](https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=60 "クリックして表示")
-
-ページバンドルで画像を `index.md` と同じ場所に置くと、画像サイズが自動で付与され、ライトボックス表示が安定します。
-
-
-### とても長いURL
-
-- https://www.verylonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglongdomain.com/news/new_center_opens_in_city_name_september_15_2023

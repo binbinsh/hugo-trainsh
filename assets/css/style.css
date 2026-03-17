@@ -1,14 +1,4 @@
 /* Trainsh Theme - A minimal, content-focused blog theme. */
-
-@font-face {
-    font-family: 'Press Start 2P';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('../fonts/press-start-2p-latin.woff2') format('woff2');
-    unicode-range: U+0020-007F, U+00A0-00FF;
-}
-
 /* Fusion Pixel 12px @font-face is injected per-language via layouts/_partials/head/fonts.html */
 
 :root {
@@ -35,7 +25,7 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --input-bg: #fff;
     --hover-bg: rgba(0, 0, 0, 0.04);
-    --font-pixel: 'Fusion Pixel 12px', 'Press Start 2P', monospace;
+    --font-pixel: 'Fusion Pixel 12px', monospace;
     --pixel-border-width: 3px;
 }
 
@@ -87,23 +77,30 @@
     --heading-color: #FCFCFC;
     --text-color: #B8B8F8;
     --link-color: #FCA044;
-    --visited-color: #D8B8F8;
+    --visited-color: #FCA044;             /* same as link — NES has no visited state */
     --accent-color: #F87858;
     --code-background-color: #000000;
     --code-color: #FCFCFC;
     --blockquote-color: #A4E4FC;
     --border-color: #FCFCFC;
-    --muted-color: #7C7C7C;
+    --muted-color: #9898B8;               /* brighter for WCAG contrast on deep blue */
     --selection-bg: #0058F8;
     --selection-text: #FCFCFC;
     --shadow-color: #000000;
     --input-bg: #000000;
     --hover-bg: rgba(0, 88, 248, 0.3);
     --pixel-shadow: 3px 3px 0 #000000;
+    --dialog-shadow: 3px 3px 0 #000000, inset 0 0 0 2px rgba(124, 124, 124, 0.25);
     --dialog-border: #FCFCFC;
     --dialog-bg: #000000;
     --gold-color: #F8B800;
+    --retro-bg-deep: var(--retro-bg-deep);
     --border-radius: 0;
+}
+
+/* Prevent FOUT: hide body until pixel fonts are ready in retro theme */
+html.retro-fonts-loading body {
+    opacity: 0;
 }
 
 /* Text selection */
@@ -1018,7 +1015,7 @@ figure figcaption {
     border: none;
     cursor: pointer;
     padding: 0.25em;
-    margin-left: 0.35em;
+    margin-left: 0.5em;
     color: var(--text-color);
     display: inline-flex;
     align-items: center;
@@ -1072,11 +1069,7 @@ figure figcaption {
     transition: none !important;
 }
 
-[data-theme="retro"] body {
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: unset;
-    image-rendering: pixelated;
-}
+/* font-smoothing disabled per-element below (only on pixel-font elements, not body text) */
 
 /* 3b. Pixel font on headings and UI elements */
 [data-theme="retro"] h1,
@@ -1090,6 +1083,8 @@ figure figcaption {
     letter-spacing: 0.05em;
     line-height: 1.8;
     text-shadow: 2px 2px 0 var(--shadow-color);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
 }
 
 [data-theme="retro"] .title h1 { font-size: 1.375rem; }
@@ -1109,9 +1104,37 @@ figure figcaption {
 [data-theme="retro"] #blog-search,
 [data-theme="retro"] #blog-search::placeholder {
     font-family: var(--font-pixel);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
 }
 
 [data-theme="retro"] nav a { font-size: 1rem; }
+
+/* RPG menu cursor ▶ — shared for nav, archive, and post cards */
+[data-theme="retro"] .site-nav > a,
+[data-theme="retro"] .blog-archive-link,
+[data-theme="retro"] ul.blog-posts li a {
+    padding-left: 1.25em;
+    position: relative;
+}
+
+[data-theme="retro"] .site-nav > a::before,
+[data-theme="retro"] .blog-archive-link::before,
+[data-theme="retro"] ul.blog-posts li a::before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    font-size: 0.65em;
+    color: var(--gold-color);
+    visibility: hidden;
+}
+
+[data-theme="retro"] .site-nav > a:hover::before,
+[data-theme="retro"] .blog-archive-link:hover::before,
+[data-theme="retro"] ul.blog-posts li:hover a::before {
+    visibility: visible;
+}
+
 [data-theme="retro"] footer { font-size: 0.875rem; line-height: 2.2; }
 [data-theme="retro"] .post-meta { font-size: 0.875rem; }
 [data-theme="retro"] .blog-archive-year-title { font-size: 1.25rem; color: var(--gold-color); }
@@ -1119,28 +1142,27 @@ figure figcaption {
 [data-theme="retro"] .blog-archive-link { font-size: 1rem; }
 [data-theme="retro"] #blog-search { font-size: 1rem; }
 [data-theme="retro"] .post-title { font-size: 1.5rem; line-height: 1.8; }
+[data-theme="retro"] .page-title { font-size: 1.25rem; line-height: 1.8; }
 
-/* 3c. NES dialog borders — code blocks, blockquotes, search */
+/* 3c. NES dialog borders — shared frame for all dialog-style boxes */
 [data-theme="retro"] .highlight,
-[data-theme="retro"] .code {
+[data-theme="retro"] .code,
+[data-theme="retro"] blockquote,
+[data-theme="retro"] #blog-search,
+[data-theme="retro"] ul.blog-posts li,
+[data-theme="retro"] .lang-menu,
+[data-theme="retro"] .upvote-widget,
+[data-theme="retro"] .toc-dropdown {
     border: var(--pixel-border-width) solid var(--dialog-border);
-    box-shadow: var(--pixel-shadow);
-    background-color: var(--dialog-bg);
+    box-shadow: var(--dialog-shadow);
+    background: var(--dialog-bg);
 }
 
 [data-theme="retro"] blockquote {
-    border: var(--pixel-border-width) solid var(--dialog-border);
-    border-left: var(--pixel-border-width) solid var(--dialog-border);
-    box-shadow: var(--pixel-shadow);
-    background: var(--dialog-bg);
+    border-color: var(--blockquote-color);
+    border-left: 5px solid var(--blockquote-color);
     font-style: normal;
     padding: 1.25em;
-}
-
-[data-theme="retro"] #blog-search {
-    border: var(--pixel-border-width) solid var(--dialog-border);
-    box-shadow: var(--pixel-shadow);
-    background: var(--dialog-bg);
 }
 
 [data-theme="retro"] :not(pre) > code {
@@ -1157,23 +1179,24 @@ figure figcaption {
 }
 
 [data-theme="retro"] ul.blog-posts li {
-    border: var(--pixel-border-width) solid var(--dialog-border);
-    box-shadow: var(--pixel-shadow);
     padding: 1em;
-    background: var(--dialog-bg);
+}
+
+[data-theme="retro"] ul.blog-posts li:hover {
+    background: var(--selection-bg);
+    border-color: var(--gold-color);
 }
 
 [data-theme="retro"] ul.blog-posts li a {
     font-family: var(--font-pixel);
     font-size: 1rem;
-    padding-left: 0;
     line-height: 1.8;
 }
 
 [data-theme="retro"] ul.blog-posts li time {
     font-family: var(--font-pixel);
     font-size: 0.875rem;
-    padding-left: 0;
+    padding-left: 1.25em;
 }
 
 /* 3e. Tags — RPG attribute tag style */
@@ -1201,6 +1224,8 @@ figure figcaption {
     background: var(--accent-color);
     color: var(--dialog-bg);
     border-color: var(--accent-color);
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
 }
 
 /* 3f. Buttons and interactive elements */
@@ -1217,18 +1242,14 @@ figure figcaption {
     border: 2px solid var(--border-color);
 }
 
-[data-theme="retro"] .lang-menu {
-    border: var(--pixel-border-width) solid var(--dialog-border);
-    box-shadow: var(--pixel-shadow);
-    background: var(--dialog-bg);
-}
-
 [data-theme="retro"] .footer-links a:hover {
-    background-color: rgba(0, 88, 248, 0.3);
+    background-color: var(--hover-bg);
 }
 
 /* 3g. Tables */
 [data-theme="retro"] table {
+    border-collapse: separate;
+    border-spacing: 0;
     border: var(--pixel-border-width) solid var(--border-color);
     box-shadow: var(--pixel-shadow);
 }
@@ -1266,6 +1287,10 @@ figure figcaption {
     border-bottom-color: var(--accent-color);
 }
 
+[data-theme="retro"] nav a:hover {
+    text-decoration: none;
+}
+
 /* 3j. Header/Footer frame */
 [data-theme="retro"] .site-header {
     padding: 1em;
@@ -1277,11 +1302,12 @@ figure figcaption {
     border-top: var(--pixel-border-width) solid var(--border-color);
 }
 
+[data-theme="retro"] figcaption {
+    font-style: normal;
+}
+
 /* 3k. Upvote — RPG command menu style */
 [data-theme="retro"] .upvote-widget {
-    border: var(--pixel-border-width) solid var(--dialog-border);
-    box-shadow: var(--pixel-shadow);
-    background: var(--dialog-bg);
     padding: 0.75em 1em;
     display: inline-block;
 }
@@ -1311,4 +1337,77 @@ figure figcaption {
 [data-theme="retro"] .upvote-count {
     font-family: var(--font-pixel);
     font-size: 0.875rem;
+}
+
+/* 3l. Strong/bold — gold to distinguish (pixel fonts have no bold weight) */
+[data-theme="retro"] strong,
+[data-theme="retro"] b {
+    color: var(--gold-color);
+}
+
+/* 3m. Code block action buttons */
+[data-theme="retro"] .codeblock-action {
+    border: 1px solid var(--border-color);
+    padding: 3px;
+}
+
+[data-theme="retro"] .codeblock-action:hover {
+    background: var(--hover-bg);
+    color: var(--gold-color);
+    border-color: var(--gold-color);
+}
+
+/* 3n. Table of contents — NES dialog frame */
+[data-theme="retro"] .toc-dropdown {
+    padding: 1em;
+}
+
+[data-theme="retro"] .toc-dropdown summary {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+    color: var(--gold-color);
+    cursor: pointer;
+    list-style: none;
+}
+
+[data-theme="retro"] .toc-dropdown summary::before {
+    content: "▶ ";
+    font-size: 0.75em;
+}
+
+[data-theme="retro"] .toc-dropdown[open] summary::before {
+    content: "▼ ";
+}
+
+[data-theme="retro"] .toc-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+
+/* 3o. Blog empty state */
+[data-theme="retro"] .blog-empty-state {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+}
+
+/* 3p. Scrollbar — NES-themed */
+[data-theme="retro"] ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+[data-theme="retro"] ::-webkit-scrollbar-track {
+    background: var(--retro-bg-deep);
+}
+
+[data-theme="retro"] ::-webkit-scrollbar-thumb {
+    background: var(--dialog-border);
+    border: 2px solid var(--retro-bg-deep);
+}
+
+[data-theme="retro"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-color);
+}
+
+[data-theme="retro"] {
+    scrollbar-color: var(--dialog-border) var(--retro-bg-deep);
 }

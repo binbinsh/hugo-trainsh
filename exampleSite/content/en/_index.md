@@ -4,23 +4,8 @@ date = 2023-01-01T08:00:00-07:00
 draft = false
 +++
 
-# Welcome to the hugo-trainsh demo.
+# hugo-trainsh
 
-A content-first Hugo theme for multilingual blogs — **defaults to NES/FC retro pixel style**.
+A minimal, multilingual Hugo theme — **defaults to NES/FC retro pixel style**. Click the gamepad icon in the header to switch between Retro, Light, and Dark modes.
 
 {{< recent-posts >}}
-
-## What to try in this demo
-
-- **Retro NES pixel mode** — the default look. Deep-blue background, pixel font headings, 8-bit dialog borders, RPG-style gold tags. Click the gamepad icon to cycle through Light and Dark modes.
-- Blog list filtering and archive/tag browsing
-- Built-in shortcodes: `toc`, `tags`, `recent-posts`
-- Syntax-highlighted code blocks with copy + soft-wrap toggle
-- Mermaid diagrams and KaTeX math rendering
-- PhotoSwipe lightbox with local image dimension support
-- Optional post upvote widget (demo API configured)
-- Language switcher (EN / 简中 / 繁中 / 日本語)
-
----
-
-Browse the blog to preview the latest features: post listing, tags, shortcodes, math/diagrams, lightbox images, and interaction widgets.
