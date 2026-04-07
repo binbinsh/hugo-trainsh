@@ -320,11 +320,11 @@ The active mode is stored in `localStorage` and restored on page load. When no p
 
 #### Changing the default style
 
-Set `params.defaultStyle` to choose the initial visual mode for first-time visitors (before they toggle):
+Set `params.defaultColorScheme` to choose the initial visual mode for first-time visitors (before they toggle):
 
 ```toml
 [params]
-defaultStyle = "light"   # "retro" (default), "light", or "dark"
+defaultColorScheme = "light"   # "retro" (default), "light", or "dark"
 ```
 
 Omit or leave empty to keep the default (`retro`). Returning visitors who have already toggled are unaffected — their `localStorage` preference takes priority.

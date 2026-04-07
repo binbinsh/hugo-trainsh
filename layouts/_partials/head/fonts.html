@@ -40,7 +40,7 @@
 {{- else -}}
   {{- $pixelFont = "fonts/fusion-pixel-12px.woff2" -}}
 {{- end -}}
-{{- $defaultStyle := site.Params.defaultStyle | default "retro" -}}
+{{- $defaultColorScheme := site.Params.defaultColorScheme | default "retro" -}}
 {{- with resources.Get $pixelFont -}}
 <style>
 @font-face {
@@ -51,7 +51,7 @@
     src: url('{{ .RelPermalink }}') format('woff2');
 }
 </style>
-{{- if eq $defaultStyle "retro" -}}
+{{- if eq $defaultColorScheme "retro" -}}
 <link rel="preload" as="font" href="{{ .RelPermalink }}" type="font/woff2" crossorigin="anonymous" data-retro-font>
 {{- end -}}
 {{- end -}}

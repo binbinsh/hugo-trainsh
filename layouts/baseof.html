@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
 <head>
-  {{- $defaultStyle := "retro" -}}
-  {{- with site.Params.defaultStyle -}}
+  {{- $defaultColorScheme := "retro" -}}
+  {{- with site.Params.defaultColorScheme -}}
     {{- if in (slice "light" "dark" "retro") . -}}
-      {{- $defaultStyle = . -}}
+      {{- $defaultColorScheme = . -}}
     {{- end -}}
   {{- end -}}
   <script>
     (function() {
-      var defaultStyle = '{{ $defaultStyle }}';
-      var theme = localStorage.getItem('theme') || defaultStyle;
+      var defaultColorScheme = '{{ $defaultColorScheme }}';
+      var theme = localStorage.getItem('theme') || defaultColorScheme;
       var html = document.documentElement;
       html.setAttribute('data-theme', theme);
       if (theme === 'retro') {
@@ -44,9 +44,9 @@
       // Theme toggle
       var themeToggle = document.querySelector('.theme-toggle');
       if (themeToggle) {
-        var defaultStyle = '{{ $defaultStyle }}';
+        var defaultColorScheme = '{{ $defaultColorScheme }}';
         function getEffectiveTheme() {
-          return localStorage.getItem('theme') || defaultStyle;
+          return localStorage.getItem('theme') || defaultColorScheme;
         }
 
         themeToggle.addEventListener('click', function() {
@@ -86,7 +86,7 @@
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
     function getTheme() {
-      var stored = localStorage.getItem('theme') || '{{ $defaultStyle }}';
+      var stored = localStorage.getItem('theme') || '{{ $defaultColorScheme }}';
       return (stored === 'dark' || stored === 'retro') ? 'dark' : 'default';
     }
     mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: getTheme() });

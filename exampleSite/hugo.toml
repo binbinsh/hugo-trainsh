@@ -79,7 +79,7 @@ home = ["HTML", "RSS", "JSON"]
   mainSections = ["posts"]
   # Default visual style for first-time visitors: "retro", "light", or "dark".
   # Omit or leave empty to default to "retro".
-  # defaultStyle = "light"
+  # defaultColorScheme = "light"
 
   [params.upvote]
     enabled = true
