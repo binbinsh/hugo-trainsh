@@ -318,6 +318,17 @@ The theme ships three visual modes that cycle on each click of the header toggle
 
 The active mode is stored in `localStorage` and restored on page load. When no preference is stored, **Retro mode is used by default**.
 
+#### Changing the default style
+
+Set `params.defaultStyle` to choose the initial visual mode for first-time visitors (before they toggle):
+
+```toml
+[params]
+defaultStyle = "light"   # "retro" (default), "light", or "dark"
+```
+
+Omit or leave empty to keep the default (`retro`). Returning visitors who have already toggled are unaffected — their `localStorage` preference takes priority.
+
 The retro theme uses the **Fusion Pixel 12px** pixel font for headings and UI elements, with per-language font variants automatically selected:
 
 - English / Simplified Chinese: `fusion-pixel-12px.woff2`

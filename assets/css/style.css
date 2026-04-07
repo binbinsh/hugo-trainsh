@@ -642,6 +642,81 @@ figure figcaption {
     background: transparent !important;
 }
 
+/* Retro theme — override Mermaid dark-theme colors for readability on deep-blue bg */
+[data-theme="retro"] .mermaid .node rect,
+[data-theme="retro"] .mermaid .node circle,
+[data-theme="retro"] .mermaid .node polygon {
+    fill: #000000 !important;
+    stroke: #FCFCFC !important;
+    stroke-width: 2px !important;
+}
+
+[data-theme="retro"] .mermaid .label,
+[data-theme="retro"] .mermaid .nodeLabel,
+[data-theme="retro"] .mermaid .edgeLabel,
+[data-theme="retro"] .mermaid text {
+    fill: #FCFCFC !important;
+    color: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .edgePath .path,
+[data-theme="retro"] .mermaid .flowchart-link {
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .arrowheadPath,
+[data-theme="retro"] .mermaid marker path {
+    fill: #B8B8F8 !important;
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .edgeLabel rect,
+[data-theme="retro"] .mermaid .labelBkg {
+    fill: #00237C !important;
+    opacity: 1 !important;
+}
+
+/* Sequence diagram overrides */
+[data-theme="retro"] .mermaid .actor {
+    fill: #000000 !important;
+    stroke: #FCFCFC !important;
+    stroke-width: 2px !important;
+}
+
+[data-theme="retro"] .mermaid text.actor > tspan {
+    fill: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .messageLine0,
+[data-theme="retro"] .mermaid .messageLine1 {
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .messageText {
+    fill: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .loopText > tspan,
+[data-theme="retro"] .mermaid .noteText > tspan {
+    fill: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .loopLine {
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .note {
+    fill: #000000 !important;
+    stroke: #F8B800 !important;
+}
+
+[data-theme="retro"] .mermaid .activation0,
+[data-theme="retro"] .mermaid .activation1,
+[data-theme="retro"] .mermaid .activation2 {
+    fill: #0058F8 !important;
+    stroke: #FCFCFC !important;
+}
+
 /* Home: avoid flashing the server-rendered fallback list for "most popular posts". */
 #home-popular-posts[data-popular-state="loading"] {
     display: none;
