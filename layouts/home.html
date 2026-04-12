@@ -1,7 +1,7 @@
 {{ define "main" }}
   {{- $feedEnabled := site.Params.home.feed.enabled | default false -}}
   {{- if .Content -}}
-    {{ . }}
+    {{ .Content }}
   {{- else if not $feedEnabled -}}
     {{- with site.Params.home.intro -}}
       {{ . | markdownify }}
