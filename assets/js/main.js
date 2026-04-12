@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const langStorageKey = 'trainsh-preferred-lang';
+  const langCookieKey = 'trainsh-preferred-lang';
   const langConfig = window.__TRAINSH_LANG_CONFIG__ || {};
-  let currentPageTranslations = window.__TRAINSH_PAGE_TRANSLATIONS__ || {};
+  const currentPageTranslations = window.__TRAINSH_PAGE_TRANSLATIONS__ || {};
 
   const knownLanguages = () => Object.keys(langConfig.languages || {});
 
@@ -33,6 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const getPreferredLang = () => {
     try {
+      const cookieMatch = document.cookie.match(/(?:^|; )trainsh-preferred-lang=([^;]+)/);
+      const cookieLang = resolveLang(cookieMatch ? decodeURIComponent(cookieMatch[1]) : '');
+      if (cookieLang) return cookieLang;
+    } catch (_) {}
+    try {
       return resolveLang(localStorage.getItem(langStorageKey) || '');
     } catch (_) {
       return '';
@@ -44,6 +50,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!resolved) return;
     try {
       localStorage.setItem(langStorageKey, resolved);
+    } catch (_) {}
+    try {
+      document.cookie = `${langCookieKey}=${encodeURIComponent(resolved)}; Path=/; Max-Age=15552000; SameSite=Lax; Secure`;
     } catch (_) {}
   };
 
@@ -86,42 +95,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  const isPagerNeutralPath = (pathname) => /(?:^|\/)page\/\d+\/?$/.test(String(pathname || ''));
-
-  const actualizeNeutralPath = (neutralPath, lang) => {
-    const resolvedLang = resolveLang(lang) || langConfig.defaultLang || '';
-    const info = (langConfig.languages || {})[resolvedLang] || {};
-    const prefix = String(info.prefix || '');
-    const path = String(neutralPath || '/').startsWith('/') ? String(neutralPath || '/') : `/${neutralPath || '/'}`;
-    if (!prefix || resolvedLang === langConfig.defaultLang) return path || '/';
-    if (path === '/') return `${prefix}/`;
-    return `${prefix}${path}`;
-  };
-
-  const resolveActualUrlForLang = (targetLang) => {
-    const resolvedLang = resolveLang(targetLang);
-    const translations = currentPageTranslations.translations || {};
-    const neutralCurrentPath = actualToNeutralPath(window.location.pathname);
-    const explicit = translations[resolvedLang];
-
-    if (explicit) {
-      const explicitNeutral = actualToNeutralPath(explicit);
-      if (!isPagerNeutralPath(neutralCurrentPath) || explicitNeutral === neutralCurrentPath) {
-        return `${explicit}${window.location.search}${window.location.hash}`;
-      }
-    }
-
-    return `${actualizeNeutralPath(neutralCurrentPath, resolvedLang)}${window.location.search}${window.location.hash}`;
-  };
-
-  const syncNeutralUrl = () => {
-    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    const next = `${actualToNeutralPath(window.location.pathname)}${window.location.search}${window.location.hash}`;
-    if (next !== current) {
-      window.history.replaceState(window.history.state, '', next);
-    }
-  };
-
   const rewriteInternalLinks = (root = document) => {
     root.querySelectorAll('a[href]').forEach((anchor) => {
       const href = anchor.getAttribute('href') || '';
@@ -136,56 +109,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   };
 
-  const updateTranslationState = (nextDoc) => {
-    const dataEl = nextDoc.querySelector('meta[name="trainsh-page-translations"]');
-    if (!dataEl) return;
-    try {
-      currentPageTranslations = JSON.parse(atob(dataEl.getAttribute('content') || ''));
-      window.__TRAINSH_PAGE_TRANSLATIONS__ = currentPageTranslations;
-    } catch (_) {}
-  };
-
-  const swapLocalizedDocument = async (actualUrl) => {
-    try {
-      const res = await fetch(actualUrl, { credentials: 'same-origin' });
-      if (!res.ok) return false;
-      const html = await res.text();
-      const nextDoc = new DOMParser().parseFromString(html, 'text/html');
-      ['body > header', 'body > main', 'body > footer'].forEach((selector) => {
-        const currentNode = document.querySelector(selector);
-        const nextNode = nextDoc.querySelector(selector);
-        if (currentNode && nextNode) currentNode.replaceWith(nextNode);
-      });
-      if (nextDoc.title) document.title = nextDoc.title;
-      if (nextDoc.documentElement.lang) document.documentElement.lang = nextDoc.documentElement.lang;
-      if (nextDoc.documentElement.dir) document.documentElement.dir = nextDoc.documentElement.dir;
-      updateTranslationState(nextDoc);
-      rewriteInternalLinks(document);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
-  const hydratePreferredLanguage = async () => {
-    const currentPath = window.location.pathname;
+  const redirectToPreferredLanguage = () => {
     const currentLang = getCurrentLang();
-    let preferredLang = getPreferredLang();
-
-    if (!preferredLang && actualToNeutralPath(currentPath) !== currentPath) {
-      preferredLang = currentLang;
-      setPreferredLang(currentLang);
-    }
-
+    const preferredLang = getPreferredLang();
     if (preferredLang && preferredLang !== currentLang) {
-      const actualUrl = resolveActualUrlForLang(preferredLang);
-      if (actualUrl) {
-        await swapLocalizedDocument(actualUrl);
+      const translations = currentPageTranslations.translations || {};
+      const targetActualUrl = translations[preferredLang];
+      if (targetActualUrl) {
+        setPreferredLang(preferredLang);
+        window.location.replace(targetActualUrl);
+        return true;
       }
     }
-
     rewriteInternalLinks(document);
-    syncNeutralUrl();
+    return false;
   };
 
   const bindLanguageSwitcher = () => {
@@ -201,9 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       event.preventDefault();
       setPreferredLang(lang);
-
-      const targetHref = link.getAttribute('href') || '/';
-      const nextUrl = neutralizeHref(targetHref) || '/';
+      const nextUrl = link.dataset.langUrl || link.getAttribute('href') || '/';
       const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
       if (nextUrl === currentUrl) {
@@ -214,10 +149,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   };
 
-  try {
-    await hydratePreferredLanguage();
-  } finally {
-    document.documentElement.classList.remove('lang-hydrating');
+  if (redirectToPreferredLanguage()) {
+    return;
   }
   bindLanguageSwitcher();
 

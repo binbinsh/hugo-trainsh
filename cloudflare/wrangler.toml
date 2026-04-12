@@ -12,6 +12,7 @@ workers_dev = true
 [assets]
 directory = "../exampleSite/public"
 binding = "ASSETS"
+run_worker_first = true
 not_found_handling = "none"
 
 [[kv_namespaces]]

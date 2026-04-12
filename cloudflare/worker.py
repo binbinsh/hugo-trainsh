@@ -3,6 +3,7 @@ import time
 import hmac
 import hashlib
 import secrets
+import re
 from urllib.parse import urlparse, parse_qs
 from workers import WorkerEntrypoint, Response
 
@@ -11,6 +12,13 @@ KV_KEY_PREFIX = "post:"
 COOKIE_PREFIX = "upvote_"
 COOKIE_SECRET_ENV = "UPVOTE_COOKIE_SECRET"
 KV_BINDING_NAME = "UPVOTES"
+LANG_COOKIE_NAME = "trainsh-preferred-lang"
+DEFAULT_LANGUAGE = "en"
+LANG_SEGMENT_RE = re.compile(r"^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$")
+LANG_PREFIX_HINTS = {
+    "ar", "de", "en", "es", "fr", "hi", "it", "ja", "ko", "pt", "ru",
+    "zh", "zh-cn", "zh-hk", "zh-tw",
+}
 
 
 def _hash_slug(slug: str) -> str:
@@ -52,6 +60,122 @@ def _parse_cookies(header_value: str | None) -> dict[str, str]:
         name, value = item.split("=", 1)
         cookies[name.strip()] = value.strip()
     return cookies
+
+
+def _normalize_lang_code(value: str | None) -> str:
+    return (value or "").strip().lower().replace("_", "-")
+
+
+def _build_lang_cookie(lang: str) -> str:
+    lang = _normalize_lang_code(lang)
+    parts = [
+        f"{LANG_COOKIE_NAME}={lang}",
+        f"Max-Age={MAX_AGE_SECONDS}",
+        "Path=/",
+        "Secure",
+        "SameSite=Lax",
+    ]
+    return "; ".join(parts)
+
+
+def _get_lang_cookie(request) -> str:
+    cookies = _parse_cookies(request.headers.get("Cookie"))
+    return _normalize_lang_code(cookies.get(LANG_COOKIE_NAME))
+
+
+def _split_lang_prefix(path: str) -> tuple[str, str]:
+    parts = [part for part in (path or "/").split("/") if part]
+    if not parts:
+        return "", "/"
+    candidate = _normalize_lang_code(parts[0])
+    if not LANG_SEGMENT_RE.match(candidate) or candidate not in LANG_PREFIX_HINTS:
+        return "", path or "/"
+    rest = "/" + "/".join(parts[1:]) if len(parts) > 1 else "/"
+    if path.endswith("/") and rest != "/" and not rest.endswith("/"):
+        rest += "/"
+    return candidate, rest
+
+
+def _prefix_path(lang: str, neutral_path: str) -> str:
+    lang = _normalize_lang_code(lang)
+    path = neutral_path if neutral_path.startswith("/") else f"/{neutral_path}"
+    if not lang or lang == DEFAULT_LANGUAGE:
+        return path
+    if path == "/":
+        return f"/{lang}/"
+    return f"/{lang}{path}"
+
+
+def _preferred_languages(request) -> list[str]:
+    out: list[str] = []
+    cookie_lang = _get_lang_cookie(request)
+    if cookie_lang:
+        out.append(cookie_lang)
+
+    accept = request.headers.get("Accept-Language") or ""
+    weighted: list[tuple[float, str]] = []
+    for item in accept.split(","):
+        item = item.strip()
+        if not item:
+            continue
+        lang = item
+        q = 1.0
+        if ";" in item:
+            lang, params = item.split(";", 1)
+            for token in params.split(";"):
+                token = token.strip()
+                if token.startswith("q="):
+                    try:
+                        q = float(token[2:])
+                    except ValueError:
+                        q = 0.0
+        normalized = _normalize_lang_code(lang)
+        if not normalized:
+            continue
+        weighted.append((q, normalized))
+        if "-" in normalized:
+            weighted.append((q - 0.001, normalized.split("-", 1)[0]))
+
+    for _, lang in sorted(weighted, key=lambda x: x[0], reverse=True):
+        if lang not in out:
+            out.append(lang)
+
+    if DEFAULT_LANGUAGE not in out:
+        out.append(DEFAULT_LANGUAGE)
+    return out
+
+
+def _asset_url_for_request(request, path: str) -> str:
+    parsed = urlparse(request.url)
+    query = f"?{parsed.query}" if parsed.query else ""
+    return f"{parsed.scheme}://{parsed.netloc}{path}{query}"
+
+
+async def _asset_fetch(assets, request, path: str):
+    return await assets.fetch(_asset_url_for_request(request, path))
+
+
+def _is_asset_found(response) -> bool:
+    return 200 <= int(getattr(response, "status", 500)) < 400
+
+
+def _asset_content_type(response) -> str:
+    headers = getattr(response, "headers", {}) or {}
+    return (headers.get("content-type") or "").lower()
+
+
+async def _build_asset_response(response):
+    content_type = _asset_content_type(response)
+    headers = dict(getattr(response, "headers", {}) or {})
+    if "text/html" in content_type or "application/json" in content_type:
+        headers["Cache-Control"] = "private, no-store"
+        vary = headers.get("Vary", "")
+        vary_values = {v.strip() for v in vary.split(",") if v.strip()}
+        vary_values.update({"Accept-Language", "Cookie"})
+        headers["Vary"] = ", ".join(sorted(vary_values))
+        body = await response.text()
+        return Response(body, status=response.status, headers=headers)
+    return response
 
 
 def _is_cookie_valid(slug: str, secret: str, cookie_value: str) -> bool:
@@ -444,6 +568,26 @@ class Default(WorkerEntrypoint):
         # Fallback to static assets (demo site).
         assets = _get_env_binding(env, "ASSETS")
         if assets:
-            return await assets.fetch(request)
+            if method in ("GET", "HEAD"):
+                lang_prefix, neutral_path = _split_lang_prefix(path)
+                if lang_prefix:
+                    prefixed_resp = await _asset_fetch(assets, request, path)
+                    if _is_asset_found(prefixed_resp):
+                        location = _asset_url_for_request(request, neutral_path)
+                        headers = {
+                            "Location": location,
+                            "Set-Cookie": _build_lang_cookie(lang_prefix),
+                            "Cache-Control": "private, no-store",
+                        }
+                        return Response("", status=302, headers=headers)
+
+                for lang in _preferred_languages(request):
+                    localized_path = _prefix_path(lang, path)
+                    localized_resp = await _asset_fetch(assets, request, localized_path)
+                    if _is_asset_found(localized_resp):
+                        return await _build_asset_response(localized_resp)
+
+            asset_resp = await assets.fetch(request)
+            return await _build_asset_response(asset_resp)
 
         return _error_response("Not found", status=404, origin=origin)
