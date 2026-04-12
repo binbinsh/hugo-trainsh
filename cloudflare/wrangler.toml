@@ -16,4 +16,4 @@ not_found_handling = "none"
 
 [[kv_namespaces]]
 binding = "UPVOTES"
-id = "${UPVOTE_KV_NAMESPACE}"
+id = "b16570d1a5dc4cfb87e65bc344fea42c"
