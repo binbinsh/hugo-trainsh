@@ -40,15 +40,6 @@ other = "目次"
 [published_on]
 other = "公開日"
 
-[upvote_hint]
-other = "クリックしていいね"
-
-[upvote_title]
-other = "この記事にいいね"
-
-[upvote_count]
-other = "いいね数"
-
 [link_to_section]
 other = "このセクションへのリンク"
 
@@ -90,9 +81,6 @@ other = "メール"
 
 [no_results]
 other = "結果が見つかりません"
-
-[upvoted_title]
-other = "いいね済み"
 
 [copied]
 other = "コピー済み"

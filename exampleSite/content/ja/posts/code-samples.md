@@ -10,7 +10,7 @@ translationKey = 'code-samples'
 
 ```js
 export function hasFeature(name) {
-  return ['ショートコード', 'Mermaid', 'KaTeX', 'PhotoSwipe', 'upvote', 'i18n'].includes(name);
+  return ['ショートコード', 'Mermaid', 'KaTeX', 'PhotoSwipe', 'i18n'].includes(name);
 }
 console.log(hasFeature('ショートコード'));
 ```

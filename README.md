@@ -26,7 +26,6 @@ Two additional modes are available via the header toggle: **Light** and **Dark**
 - Code blocks with syntax highlighting, copy button, and soft-wrap toggle
 - Mermaid diagrams and KaTeX math rendering
 - Image rendering with figure captions + PhotoSwipe lightbox
-- Optional upvote widget (`params.upvote`) with Cloudflare Worker backend
 - Three theme modes: Retro (default), Light, and Dark
 - Multilingual support (with per-language pixel font variants) and footer social links
 
@@ -57,22 +56,9 @@ home = ["HTML", "RSS", "JSON"]
 
 Create `content/blog/_index.md` to enable the `/blog/` page.
 
-## Upvote (Optional)
-
-```toml
-[params]
-  [params.upvote]
-    enabled = true
-    endpoint = "/api/upvote"
-    infoEndpoint = "/api/upvote-info"
-```
-
-Deploy the optional backend in `cloudflare/`. See [`docs/upvote.md`](docs/upvote.md).
-
 ## Documentation
 
 - Usage guide: [`docs/usage.md`](docs/usage.md)
-- Upvote backend: [`docs/upvote.md`](docs/upvote.md)
 
 ## Theme Info
 

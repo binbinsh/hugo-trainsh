@@ -81,11 +81,6 @@ home = ["HTML", "RSS", "JSON"]
   # Omit or leave empty to default to "retro".
   # defaultColorScheme = "light"
 
-  [params.upvote]
-    enabled = true
-    endpoint = "/api/upvote"
-    infoEndpoint = "/api/upvote-info"
-
   [params.social]
     # Demo links: replace with your own profiles.
     github = "https://github.com/username"

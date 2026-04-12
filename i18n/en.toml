@@ -40,15 +40,6 @@ other = "Table of Contents"
 [published_on]
 other = "Published on"
 
-[upvote_hint]
-other = "Click to upvote"
-
-[upvote_title]
-other = "Toast this post"
-
-[upvote_count]
-other = "Upvote count"
-
 [link_to_section]
 other = "Link to this section"
 
@@ -90,9 +81,6 @@ other = "Email"
 
 [no_results]
 other = "No results"
-
-[upvoted_title]
-other = "Toasted"
 
 [copied]
 other = "COPIED"

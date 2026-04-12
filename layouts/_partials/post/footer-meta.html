@@ -1,24 +1,11 @@
-{{- $params := site.Params.upvote -}}
-
-{{- $discoverable := true -}}
-{{- if isset .Params "make_discoverable" -}}
-  {{- $discoverable = .Params.make_discoverable -}}
-{{- end -}}
-{{- $showUpvote := and ($params.enabled | default false) $discoverable -}}
-
 {{- $tagTerms := .GetTerms "tags" -}}
 {{- $hasTags := and $tagTerms (gt (len $tagTerms) 0) -}}
 
-{{- if or $hasTags $showUpvote -}}
+{{- if $hasTags -}}
 <footer class="post-footer">
   <div class="post-footer-row">
     {{- if $hasTags -}}
       {{- partial "terms.html" (dict "page" . "taxonomy" "tags") -}}
-    {{- end -}}
-    {{- if $showUpvote -}}
-      <div class="post-upvote">
-        {{ partial "post/upvote.html" . }}
-      </div>
     {{- end -}}
   </div>
 </footer>

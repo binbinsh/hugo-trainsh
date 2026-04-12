@@ -574,31 +574,6 @@ ul.blog-posts li time {
     margin-top: 0.3em;
 }
 
-/* Upvote widget */
-.upvote-button {
-    padding: 0;
-    margin: 0;
-    border: 0;
-    background-color: inherit;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.upvote-button:disabled {
-    opacity: 0.9;
-    cursor: default;
-}
-
-.upvote-button--active {
-    color: var(--accent-color);
-}
-
-.upvote-count {
-    margin-top: -3px;
-}
-
 /* Figures (kept minimal; compatible with Hugo render hooks). */
 figure {
     margin: 1.5em 0;
@@ -1148,10 +1123,6 @@ figure figcaption {
     flex: 1;
 }
 
-.post-upvote {
-    flex-shrink: 0;
-}
-
 /* Theme toggle button */
 .theme-toggle {
     background: transparent;
@@ -1310,7 +1281,6 @@ figure figcaption {
 [data-theme="retro"] #blog-search,
 [data-theme="retro"] ul.blog-posts li,
 [data-theme="retro"] .lang-menu,
-[data-theme="retro"] .upvote-widget,
 [data-theme="retro"] .toc-dropdown {
     border: var(--pixel-border-width) solid var(--dialog-border);
     box-shadow: var(--dialog-shadow);
@@ -1463,39 +1433,6 @@ figure figcaption {
 
 [data-theme="retro"] figcaption {
     font-style: normal;
-}
-
-/* 3k. Upvote — RPG command menu style */
-[data-theme="retro"] .upvote-widget {
-    padding: 0.75em 1em;
-    display: inline-block;
-}
-
-[data-theme="retro"] .upvote-button {
-    color: var(--text-color);
-    gap: 0.25em;
-}
-
-[data-theme="retro"] .upvote-button:not(:disabled):hover {
-    color: var(--gold-color);
-}
-
-[data-theme="retro"] .upvote-button svg {
-    stroke-width: 3;
-}
-
-[data-theme="retro"] .upvote-button--active {
-    color: var(--gold-color);
-}
-
-[data-theme="retro"] .upvote-button--active svg {
-    fill: var(--gold-color);
-    stroke: var(--gold-color);
-}
-
-[data-theme="retro"] .upvote-count {
-    font-family: var(--font-pixel);
-    font-size: 0.875rem;
 }
 
 /* 3l. Strong/bold — gold to distinguish (pixel fonts have no bold weight) */

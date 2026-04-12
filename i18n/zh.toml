@@ -40,15 +40,6 @@ other = "目录"
 [published_on]
 other = "发表于"
 
-[upvote_hint]
-other = "点击点赞"
-
-[upvote_title]
-other = "点赞这篇文章"
-
-[upvote_count]
-other = "点赞数"
-
 [link_to_section]
 other = "链接到本节"
 
@@ -90,9 +81,6 @@ other = "邮件"
 
 [no_results]
 other = "没有结果"
-
-[upvoted_title]
-other = "已点赞"
 
 [copied]
 other = "已复制"

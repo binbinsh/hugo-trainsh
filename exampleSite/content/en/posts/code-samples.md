@@ -10,7 +10,7 @@ translationKey = 'code-samples'
 
 ```js
 export function hasFeature(name) {
-  return ['shortcodes', 'mermaid', 'math', 'lightbox', 'upvote', 'i18n'].includes(name);
+  return ['shortcodes', 'mermaid', 'math', 'lightbox', 'i18n'].includes(name);
 }
 console.log(hasFeature('shortcodes'));
 ```
@@ -26,7 +26,7 @@ class DemoFeature:
   name: str
   enabled: bool
 
-features = ["codeblock-enhanced", "search", "tag-filter", "upvote", "i18n"]
+features = ["codeblock-enhanced", "search", "tag-filter", "i18n"]
 status = [DemoFeature(name=feature, enabled=True) for feature in features]
 
 print(date.today().isoformat(), status[:2], f"total={len(status)}")

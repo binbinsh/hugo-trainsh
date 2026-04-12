@@ -1,6 +1,6 @@
 # hugo-trainsh - Usage Guide
 
-This document covers installation, content structure, shortcodes, markdown features, and optional upvotes for the `hugo-trainsh` theme.
+This document covers installation, content structure, shortcodes, and markdown features for the `hugo-trainsh` theme.
 
 ## Table of contents
 
@@ -13,7 +13,6 @@ This document covers installation, content structure, shortcodes, markdown featu
 - [Mermaid diagrams](#mermaid-diagrams)
 - [Math (inline + block)](#math-inline--block)
 - [Images + PhotoSwipe lightbox](#images--photoswipe-lightbox)
-- [Upvotes](#upvotes)
 - [Customization](#customization)
 
 ## Installation
@@ -240,33 +239,6 @@ In `index.md`:
 ```
 
 When the image is a page resource, intrinsic dimensions are emitted in markup for better lightbox UX.
-
-## Upvotes
-
-The theme includes an optional upvote widget at the end of posts.
-
-Expected endpoints:
-
-- `GET /api/upvote-info?slug=/path` -> `{ slug, upvote_count, upvoted }`
-- `POST /api/upvote` -> `{ slug, upvote_count, upvoted }`
-
-Configure:
-
-```toml
-[params]
-  [params.upvote]
-    enabled = true
-    endpoint = "/api/upvote"
-    infoEndpoint = "/api/upvote-info"
-```
-
-Per-post disable:
-
-```toml
-make_discoverable = false
-```
-
-Backend setup is documented in [docs/upvote.md](upvote.md).
 
 ## Customization
 

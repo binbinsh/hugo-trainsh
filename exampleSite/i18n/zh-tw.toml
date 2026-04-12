@@ -40,15 +40,6 @@ other = "目錄"
 [published_on]
 other = "發佈於"
 
-[upvote_hint]
-other = "點擊按讚"
-
-[upvote_title]
-other = "替這篇文章按讚"
-
-[upvote_count]
-other = "按讚數"
-
 [link_to_section]
 other = "連結到此段落"
 
@@ -90,9 +81,6 @@ other = "電子郵件"
 
 [no_results]
 other = "沒有結果"
-
-[upvoted_title]
-other = "已按讚"
 
 [copied]
 other = "已複製"
