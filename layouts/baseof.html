@@ -15,8 +15,8 @@
     )) -}}
   {{- end -}}
   {{- $actualToNeutral := dict -}}
-  {{- range hugo.Sites -}}
-    {{- range .Pages -}}
+  {{- range $home := $homePages -}}
+    {{- range $home.Site.Pages -}}
       {{- $group := slice . | append .AllTranslations -}}
       {{- $neutral := .RelPermalink -}}
       {{- range $group -}}
