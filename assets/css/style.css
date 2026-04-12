@@ -1416,6 +1416,18 @@ figure figcaption {
     border-bottom-color: var(--accent-color);
 }
 
+[data-theme="retro"] .pagination-link {
+    color: var(--gold-color);
+    border-color: var(--dialog-border);
+    border-bottom-color: var(--dialog-border);
+}
+
+[data-theme="retro"] .pagination-link:hover {
+    color: var(--gold-color);
+    border-color: var(--gold-color);
+    border-bottom-color: var(--gold-color);
+}
+
 [data-theme="retro"] nav a:hover {
     text-decoration: none;
 }
