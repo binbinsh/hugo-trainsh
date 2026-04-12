@@ -4,7 +4,7 @@ A minimal, content-first Hugo theme — defaults to a **NES/FC retro pixel style
 
 ## Retro Mode (Default)
 
-The theme ships with a **Retro** mode enabled by default, inspired by the NES/FC era (think 吞食天地):
+The theme ships with a **Retro** mode enabled by default, inspired by the NES/FC era:
 
 - Deep-blue background (`#00237C`) with white pixel-art dialog borders
 - **Fusion Pixel 12px** font for headings, navigation, and UI elements
