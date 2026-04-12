@@ -103,10 +103,6 @@ html.retro-fonts-loading body {
     opacity: 0;
 }
 
-html.lang-hydrating body {
-    opacity: 0;
-}
-
 /* Text selection */
 ::selection {
     background: var(--selection-bg);

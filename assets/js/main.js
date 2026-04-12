@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   const debouncedAsync = (fn, ms = 200) => {
     let timer = null;
     let gen = 0;
@@ -11,148 +11,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }, ms);
     };
   };
-
-  const langStorageKey = 'trainsh-preferred-lang';
-  const langCookieKey = 'trainsh-preferred-lang';
-  const langConfig = window.__TRAINSH_LANG_CONFIG__ || {};
-  const currentPageTranslations = window.__TRAINSH_PAGE_TRANSLATIONS__ || {};
-
-  const knownLanguages = () => Object.keys(langConfig.languages || {});
-
-  const resolveLang = (value) => {
-    const raw = String(value || '').trim().toLowerCase();
-    if (!raw) return '';
-    const exact = knownLanguages().find((lang) => lang.toLowerCase() === raw);
-    if (exact) return exact;
-    return knownLanguages().find((lang) => {
-      const htmlLang = String((langConfig.languages[lang] && langConfig.languages[lang].htmlLang) || '').toLowerCase();
-      return raw === htmlLang || raw.startsWith(`${lang.toLowerCase()}-`) || (htmlLang && raw.startsWith(`${htmlLang.split('-')[0]}-`));
-    }) || '';
-  };
-
-  const getCurrentLang = () => resolveLang(document.documentElement.lang || langConfig.currentLang || langConfig.defaultLang) || langConfig.defaultLang || '';
-
-  const getPreferredLang = () => {
-    try {
-      const cookieMatch = document.cookie.match(/(?:^|; )trainsh-preferred-lang=([^;]+)/);
-      const cookieLang = resolveLang(cookieMatch ? decodeURIComponent(cookieMatch[1]) : '');
-      if (cookieLang) return cookieLang;
-    } catch (_) {}
-    try {
-      return resolveLang(localStorage.getItem(langStorageKey) || '');
-    } catch (_) {
-      return '';
-    }
-  };
-
-  const setPreferredLang = (lang) => {
-    const resolved = resolveLang(lang);
-    if (!resolved) return;
-    try {
-      localStorage.setItem(langStorageKey, resolved);
-    } catch (_) {}
-    try {
-      document.cookie = `${langCookieKey}=${encodeURIComponent(resolved)}; Path=/; Max-Age=15552000; SameSite=Lax; Secure`;
-    } catch (_) {}
-  };
-
-  const actualToNeutralPath = (pathname) => {
-    let next = String(pathname || '/');
-    if (!next.startsWith('/')) next = `/${next}`;
-
-    const mapped = langConfig.actualToNeutral && langConfig.actualToNeutral[next];
-    if (mapped) return mapped;
-
-    const prefixes = Object.entries(langConfig.languages || {})
-      .filter(([lang]) => lang !== langConfig.defaultLang)
-      .map(([, info]) => String((info && info.prefix) || '').trim())
-      .filter(Boolean)
-      .sort((a, b) => b.length - a.length);
-
-    for (const prefix of prefixes) {
-      if (next === prefix || next === `${prefix}/`) return '/';
-      if (next.startsWith(`${prefix}/`)) {
-        return next.slice(prefix.length) || '/';
-      }
-    }
-
-    return next || '/';
-  };
-
-  const neutralizeHref = (href) => {
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
-      return href;
-    }
-    try {
-      const url = new URL(href, window.location.origin);
-      if (url.origin !== window.location.origin) return href;
-      if (/\.[a-z0-9]+$/i.test(url.pathname) && !/\.html?$/i.test(url.pathname)) {
-        return href;
-      }
-      return `${actualToNeutralPath(url.pathname)}${url.search}${url.hash}`;
-    } catch (_) {
-      return href;
-    }
-  };
-
-  const rewriteInternalLinks = (root = document) => {
-    root.querySelectorAll('a[href]').forEach((anchor) => {
-      const href = anchor.getAttribute('href') || '';
-      if (!href) return;
-      if (anchor.dataset.langCode && !anchor.dataset.langUrl) {
-        anchor.dataset.langUrl = href;
-      }
-      const neutralHref = neutralizeHref(href);
-      if (neutralHref && neutralHref !== href) {
-        anchor.setAttribute('href', neutralHref);
-      }
-    });
-  };
-
-  const redirectToPreferredLanguage = () => {
-    const currentLang = getCurrentLang();
-    const preferredLang = getPreferredLang();
-    if (preferredLang && preferredLang !== currentLang) {
-      const translations = currentPageTranslations.translations || {};
-      const targetActualUrl = translations[preferredLang];
-      if (targetActualUrl) {
-        setPreferredLang(preferredLang);
-        window.location.replace(targetActualUrl);
-        return true;
-      }
-    }
-    rewriteInternalLinks(document);
-    return false;
-  };
-
-  const bindLanguageSwitcher = () => {
-    if (document.documentElement.dataset.langSwitcherBound === 'true') return;
-    document.documentElement.dataset.langSwitcherBound = 'true';
-
-    document.addEventListener('click', (event) => {
-      const link = event.target.closest('a[data-lang-code]');
-      if (!link) return;
-
-      const lang = resolveLang(link.dataset.langCode || '');
-      if (!lang) return;
-
-      event.preventDefault();
-      setPreferredLang(lang);
-      const nextUrl = link.dataset.langUrl || link.getAttribute('href') || '/';
-      const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-
-      if (nextUrl === currentUrl) {
-        window.location.reload();
-      } else {
-        window.location.assign(nextUrl);
-      }
-    });
-  };
-
-  if (redirectToPreferredLanguage()) {
-    return;
-  }
-  bindLanguageSwitcher();
 
   const upvoteContainers = Array.from(document.querySelectorAll('[data-upvote]'));
   if (upvoteContainers.length) {
@@ -380,7 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const title = r.item.title || '';
           const dateShort = r.item.dateShort || r.item.date || '';
           const dateISO = r.item.dateISO || '';
-          const link = neutralizeHref(r.item.permalink || '#');
+          const link = r.item.permalink || '#';
           const matchedLines = collectMatchedLines(r, query);
 
           const snippetHtml = matchedLines.length
@@ -536,9 +394,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const normalizeHref = (href) => {
       try {
         const u = new URL(href, window.location.origin);
-        return actualToNeutralPath(u.pathname);
+        return u.pathname;
       } catch (_) {
-        return actualToNeutralPath(href);
+        return href;
       }
     };
 
@@ -956,9 +814,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         // Make absolute → pathname, keep relative untouched.
         const u = new URL(href, window.location.origin);
-        return actualToNeutralPath(u.pathname);
+        return u.pathname;
       } catch (_) {
-        return actualToNeutralPath(href);
+        return href;
       }
     };
 
