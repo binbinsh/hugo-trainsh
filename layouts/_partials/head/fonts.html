@@ -30,3 +30,29 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* Retro theme — inject one Fusion Pixel @font-face per language (no unicode-range split) */ -}}
+{{- $lang := .Site.Language.Lang -}}
+{{- $pixelFont := "" -}}
+{{- if hasPrefix $lang "ja" -}}
+  {{- $pixelFont = "fonts/fusion-pixel-12px-ja.woff2" -}}
+{{- else if eq $lang "zh-tw" -}}
+  {{- $pixelFont = "fonts/fusion-pixel-12px-zh-hant.woff2" -}}
+{{- else -}}
+  {{- $pixelFont = "fonts/fusion-pixel-12px.woff2" -}}
+{{- end -}}
+{{- $defaultColorScheme := site.Params.defaultColorScheme | default "retro" -}}
+{{- with resources.Get $pixelFont -}}
+<style>
+@font-face {
+    font-family: 'Fusion Pixel 12px';
+    font-style: normal;
+    font-weight: 400;
+    font-display: block;
+    src: url('{{ .RelPermalink }}') format('woff2');
+}
+</style>
+{{- if eq $defaultColorScheme "retro" -}}
+<link rel="preload" as="font" href="{{ .RelPermalink }}" type="font/woff2" crossorigin="anonymous" data-retro-font>
+{{- end -}}
+{{- end -}}
+

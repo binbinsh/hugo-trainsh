@@ -94,4 +94,111 @@
 .token.function { color: #06287e }
 .token.class-name { color: #0e84b5; font-weight: bold }
 
+/* Retro theme — NES palette syntax highlighting (complete) */
 
+/* Reset bold/italic — NES fonts have no variants */
+[data-theme="retro"] .k,  [data-theme="retro"] .kc, [data-theme="retro"] .kd,
+[data-theme="retro"] .kn, [data-theme="retro"] .kr, [data-theme="retro"] .kp,
+[data-theme="retro"] .gs, [data-theme="retro"] .gh, [data-theme="retro"] .gu,
+[data-theme="retro"] .gp, [data-theme="retro"] .nb, [data-theme="retro"] .nc,
+[data-theme="retro"] .nd, [data-theme="retro"] .ne, [data-theme="retro"] .ni,
+[data-theme="retro"] .nl, [data-theme="retro"] .nn, [data-theme="retro"] .nt,
+[data-theme="retro"] .ow, [data-theme="retro"] .se,
+[data-theme="retro"] .token.keyword,
+[data-theme="retro"] .token.class-name { font-weight: normal; }
+
+[data-theme="retro"] .c,  [data-theme="retro"] .ch, [data-theme="retro"] .cm,
+[data-theme="retro"] .c1, [data-theme="retro"] .cp, [data-theme="retro"] .cpf,
+[data-theme="retro"] .cs, [data-theme="retro"] .ge, [data-theme="retro"] .sd,
+[data-theme="retro"] .si,
+[data-theme="retro"] .token.comment,
+[data-theme="retro"] .token.prolog,
+[data-theme="retro"] .token.doctype,
+[data-theme="retro"] .token.cdata { font-style: normal; }
+
+/* Highlight line — dark blue instead of bright yellow */
+[data-theme="retro"] .hll { background-color: #0058F8; }
+
+/* Comments — gray */
+[data-theme="retro"] .c,  [data-theme="retro"] .ch,
+[data-theme="retro"] .cm, [data-theme="retro"] .c1,
+[data-theme="retro"] .cpf { color: #7C7C7C; }
+[data-theme="retro"] .cp  { color: #A4E4FC; }  /* Preproc — cyan */
+[data-theme="retro"] .cs  { color: #7C7C7C; background-color: transparent; }
+
+/* Keywords — blue */
+[data-theme="retro"] .k,  [data-theme="retro"] .kc,
+[data-theme="retro"] .kd, [data-theme="retro"] .kn,
+[data-theme="retro"] .kr, [data-theme="retro"] .kp,
+[data-theme="retro"] .ow { color: #6888FC; }
+[data-theme="retro"] .kt  { color: #3CBCFC; }  /* Keyword.Type — light blue */
+
+/* Strings — green */
+[data-theme="retro"] .s,  [data-theme="retro"] .s1,
+[data-theme="retro"] .s2, [data-theme="retro"] .sb,
+[data-theme="retro"] .sa, [data-theme="retro"] .sc,
+[data-theme="retro"] .dl, [data-theme="retro"] .sh,
+[data-theme="retro"] .sx, [data-theme="retro"] .sr,
+[data-theme="retro"] .ss, [data-theme="retro"] .sd { color: #58D854; }
+[data-theme="retro"] .se  { color: #F8B800; }  /* String.Escape — gold */
+[data-theme="retro"] .si  { color: #FCA044; }  /* String.Interpol — orange */
+
+/* Numbers — gold */
+[data-theme="retro"] .m,  [data-theme="retro"] .mi,
+[data-theme="retro"] .mf, [data-theme="retro"] .mh,
+[data-theme="retro"] .mb, [data-theme="retro"] .mo,
+[data-theme="retro"] .il { color: #F8B800; }
+
+/* Names — functions, classes, tags, attributes, etc. */
+[data-theme="retro"] .nf, [data-theme="retro"] .fm { color: #FCA044; }  /* Functions — orange */
+[data-theme="retro"] .nc, [data-theme="retro"] .nn { color: #3CBCFC; }  /* Class/Namespace — light blue */
+[data-theme="retro"] .nt  { color: #3CBCFC; }  /* Tag — light blue (was invisible #062873) */
+[data-theme="retro"] .na  { color: #58D854; }  /* Attribute — green */
+[data-theme="retro"] .nb, [data-theme="retro"] .bp { color: #A4E4FC; } /* Builtin — cyan */
+[data-theme="retro"] .no  { color: #FCA044; }  /* Constant — orange */
+[data-theme="retro"] .nd  { color: #F87858; }  /* Decorator — coral */
+[data-theme="retro"] .ne  { color: #F87858; }  /* Exception — coral */
+[data-theme="retro"] .ni  { color: #F8B800; }  /* Entity — gold */
+[data-theme="retro"] .nl  { color: #FCA044; }  /* Label — orange (was invisible #002070) */
+[data-theme="retro"] .nv, [data-theme="retro"] .vc,
+[data-theme="retro"] .vg, [data-theme="retro"] .vi,
+[data-theme="retro"] .vm { color: #D8B8F8; }   /* Variables — light purple */
+
+/* Operators — light lavender */
+[data-theme="retro"] .o  { color: #B8B8F8; }
+
+/* Generic — diffs, headings, prompts, etc. */
+[data-theme="retro"] .gd { color: #F87858; }   /* Deleted — coral-red */
+[data-theme="retro"] .gi { color: #58D854; }   /* Inserted — green */
+[data-theme="retro"] .ge { color: #B8B8F8; }   /* Emph — lavender */
+[data-theme="retro"] .gr { color: #F83800; }   /* Error — bright red */
+[data-theme="retro"] .gh { color: #FCFCFC; }   /* Heading — white (was invisible #000080) */
+[data-theme="retro"] .go { color: #7C7C7C; }   /* Output — gray */
+[data-theme="retro"] .gp { color: #FCA044; }   /* Prompt — orange */
+[data-theme="retro"] .gs { color: #FCFCFC; }   /* Strong — white */
+[data-theme="retro"] .gu { color: #A4E4FC; }   /* Subheading — cyan (was low-contrast #800080) */
+[data-theme="retro"] .gt { color: #3CBCFC; }   /* Traceback — light blue */
+
+/* Error */
+[data-theme="retro"] .err { color: #F83800; border-color: #F83800; }
+
+/* Whitespace */
+[data-theme="retro"] .w  { color: #7C7C7C; }
+
+/* Prism compatibility — retro overrides */
+[data-theme="retro"] .token.comment,
+[data-theme="retro"] .token.prolog,
+[data-theme="retro"] .token.doctype,
+[data-theme="retro"] .token.cdata    { color: #7C7C7C; }
+[data-theme="retro"] .token.keyword   { color: #6888FC; }
+[data-theme="retro"] .token.operator  { color: #B8B8F8; }
+[data-theme="retro"] .token.number,
+[data-theme="retro"] .token.boolean,
+[data-theme="retro"] .token.constant  { color: #F8B800; }
+[data-theme="retro"] .token.string,
+[data-theme="retro"] .token.template-string,
+[data-theme="retro"] .token.char,
+[data-theme="retro"] .token.regex,
+[data-theme="retro"] .token.url       { color: #58D854; }
+[data-theme="retro"] .token.function  { color: #FCA044; }
+[data-theme="retro"] .token.class-name { color: #3CBCFC; }

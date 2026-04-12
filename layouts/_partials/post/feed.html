@@ -1,0 +1,37 @@
+{{- $page := .page -}}
+{{- $site := $page.Site -}}
+{{- $sections := default (slice "posts") $site.Params.mainSections -}}
+{{- $pageSize := .pageSize | default ($site.Params.home.feed.pageSize | default 5) -}}
+{{- $title := .title | default "" -}}
+{{- $showSummary := .showSummary | default true -}}
+{{- $showTags := .showTags | default false -}}
+{{- $paginate := .paginate | default false -}}
+{{- $posts := where $site.RegularPages "Section" "in" $sections -}}
+{{- $posts = $posts.ByDate.Reverse -}}
+
+{{- with $title -}}
+  <h2>{{ . }}</h2>
+{{- end -}}
+
+{{- if gt (len $posts) 0 -}}
+  <div class="post-feed">
+    {{- if $paginate -}}
+      {{- $paginator := $page.Paginate $posts (int $pageSize) -}}
+      {{- range $paginator.Pages -}}
+        <div class="post-feed-item">
+          {{- partial "post/summary.html" (dict "page" . "showSummary" $showSummary "showTags" $showTags) -}}
+        </div>
+      {{- end -}}
+
+      {{- partial "pagination.html" (dict "paginator" $paginator) -}}
+    {{- else -}}
+      {{- range first (int $pageSize) $posts -}}
+        <div class="post-feed-item">
+          {{- partial "post/summary.html" (dict "page" . "showSummary" $showSummary "showTags" $showTags) -}}
+        </div>
+      {{- end -}}
+    {{- end -}}
+  </div>
+{{- else -}}
+  <p>{{ i18n "no_posts_yet" }}</p>
+{{- end -}}

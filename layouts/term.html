@@ -1,17 +1,32 @@
 {{ define "main" }}
-<h3 style="margin-bottom:0">
-  {{ i18n "filtering_for" }}
-  <span class="tag">#{{ .Title | lower }}</span>
-</h3>
-<small>
-  {{- with site.GetPage "/tags" -}}
-    <a rel="nofollow" href="{{ .RelPermalink }}">{{ i18n "remove_all_filters" }}</a>
-  {{- end -}}
-</small>
+<header class="page-header">
+  <h1 class="page-title">{{ i18n "tag_archive" }}: {{ .Title }}</h1>
+</header>
 
 {{ with .Content }}
   {{ . }}
 {{ end }}
 
-{{ partial "post/blog-posts.html" (dict "pages" .Pages.ByDate.Reverse) }}
+{{- $groupedPages := (.Pages.ByDate.Reverse).GroupByDate "2006" -}}
+{{- if gt (len $groupedPages) 0 -}}
+<div class="blog-archive">
+  {{- range $groupedPages -}}
+  <section class="blog-archive-year">
+    <h2 class="blog-archive-year-title">{{ .Key }}</h2>
+    <ul class="blog-archive-list">
+      {{- range .Pages.ByDate.Reverse -}}
+      <li class="blog-archive-item">
+        <time class="blog-archive-date" datetime="{{ .Date | time.Format "2006-01-02" }}">
+          {{ partial "date/format.html" (dict "page" . "date" .Date "context" "list") }}
+        </time>
+        <a class="blog-archive-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </li>
+      {{- end -}}
+    </ul>
+  </section>
+  {{- end -}}
+</div>
+{{- else -}}
+<p>{{ i18n "no_posts_yet" }}</p>
+{{- end -}}
 {{ end }}

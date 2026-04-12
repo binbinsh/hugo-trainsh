@@ -1,16 +1,18 @@
 {{ define "main" }}
+<header class="page-header">
+  <h1 class="page-title">{{ i18n "tags" }}</h1>
+</header>
+
 {{ with .Content }}
   {{ . }}
 {{ end }}
 
 {{- $terms := .Data.Terms.Alphabetical -}}
 {{- if $terms -}}
-<small>
-  <div class="tags">
-    {{ range $terms }}
-      <a rel="nofollow" href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle | lower }}</a>
-    {{ end }}
-  </div>
-</small>
+<div class="tags">
+  {{ range $terms }}
+    <a rel="nofollow" href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle | lower }}</a>
+  {{ end }}
+</div>
 {{- end -}}
 {{ end }}

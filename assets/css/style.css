@@ -1,7 +1,8 @@
 /* Trainsh Theme - A minimal, content-focused blog theme. */
+/* Fusion Pixel 12px @font-face is injected per-language via layouts/_partials/head/fonts.html */
 
 :root {
-    --width: 680px;
+    --width: 760px;
     --font-main: Verdana, sans-serif;
     --font-secondary: Verdana, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
@@ -24,6 +25,8 @@
     --shadow-color: rgba(0, 0, 0, 0.1);
     --input-bg: #fff;
     --hover-bg: rgba(0, 0, 0, 0.04);
+    --font-pixel: 'Fusion Pixel 12px', monospace;
+    --pixel-border-width: 3px;
 }
 
 /* Dark theme - applied via data-theme attribute or system preference */
@@ -66,6 +69,42 @@
         --input-bg: #1a1a1a;
         --hover-bg: rgba(255, 255, 255, 0.06);
     }
+}
+
+/* Retro theme - NES pixel art style (吞食天地 FC) */
+[data-theme="retro"] {
+    --background-color: #00237C;
+    --heading-color: #FCFCFC;
+    --text-color: #B8B8F8;
+    --link-color: #FCA044;
+    --visited-color: #FCA044;             /* same as link — NES has no visited state */
+    --accent-color: #F87858;
+    --code-background-color: #000000;
+    --code-color: #FCFCFC;
+    --blockquote-color: #A4E4FC;
+    --border-color: #FCFCFC;
+    --muted-color: #9898B8;               /* brighter for WCAG contrast on deep blue */
+    --selection-bg: #0058F8;
+    --selection-text: #FCFCFC;
+    --shadow-color: #000000;
+    --input-bg: #000000;
+    --hover-bg: rgba(0, 88, 248, 0.3);
+    --pixel-shadow: 3px 3px 0 #000000;
+    --dialog-shadow: 3px 3px 0 #000000, inset 0 0 0 2px rgba(124, 124, 124, 0.25);
+    --dialog-border: #FCFCFC;
+    --dialog-bg: #000000;
+    --gold-color: #F8B800;
+    --retro-bg-deep: var(--retro-bg-deep);
+    --border-radius: 0;
+}
+
+/* Prevent FOUT: hide body until pixel fonts are ready in retro theme */
+html.retro-fonts-loading body {
+    opacity: 0;
+}
+
+html.lang-hydrating body {
+    opacity: 0;
 }
 
 /* Text selection */
@@ -131,9 +170,19 @@ nav a:hover {
 .site-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 0.5em 1em;
+    gap: 0.5em 0.75em;
+}
+
+.site-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.35em;
+}
+
+.site-brand .title h1 {
+    margin-bottom: 0;
 }
 
 .site-nav {
@@ -141,13 +190,14 @@ nav a:hover {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.5em;
+    margin-left: auto;
 }
 
-.site-nav a {
+.site-nav > a {
     margin-right: 0.75em;
 }
 
-.site-nav a:last-child {
+.site-nav > a:last-of-type {
     margin-right: 0;
 }
 
@@ -196,8 +246,7 @@ nav a:hover {
     background: var(--background-color);
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    padding: 0.35em 0;
-    min-width: 120px;
+    padding: 0.35em;
     z-index: 100;
     box-shadow: 0 4px 12px var(--shadow-color, rgba(0, 0, 0, 0.15));
     font-size: 0.75rem;
@@ -211,22 +260,32 @@ nav a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5em 0.75em;
+    padding: 0.25em 0.75em;
     color: var(--text-color);
     text-decoration: none;
     white-space: nowrap;
-    transition: background-color 0.15s ease;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin: 0.15em 0;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .lang-menu a:hover {
-    background: var(--code-background-color);
-    color: var(--link-color);
+    background: var(--hover-bg);
+    color: var(--text-color);
+    text-decoration: none;
 }
 
 .lang-menu a.lang-active {
-    background: var(--code-background-color);
     font-weight: 600;
-    color: var(--link-color);
+    background: var(--code-background-color);
+    border-color: var(--border-color);
+}
+
+.lang-menu a.lang-active:hover {
+    background: var(--code-background-color);
+    color: var(--text-color);
 }
 
 .lang-menu a.lang-active .lang-item-check::after {
@@ -235,12 +294,13 @@ nav a:hover {
 
 .lang-item-name {
     flex: 1;
+    text-align: left;
 }
 
 .lang-item-check {
     width: 1em;
     text-align: right;
-    margin-left: 0.5em;
+    margin-left: 1em;
 }
 
 strong, b {
@@ -334,7 +394,7 @@ header {
 /* Only site header has bottom border */
 body > header {
     padding-bottom: 1em;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: none;
 }
 
 .title {
@@ -456,6 +516,30 @@ ul.blog-posts {
     }
 }
 
+@media (max-width: 768px) {
+    .site-header {
+        align-items: flex-start;
+    }
+
+    .site-brand {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .theme-toggle {
+        order: 1;
+        margin-left: auto;
+    }
+
+    .site-nav {
+        order: 2;
+        width: 100%;
+        margin-left: 0;
+        align-self: stretch;
+    }
+}
+
+
 ul.blog-posts li {
     position: relative;
 }
@@ -562,6 +646,81 @@ figure figcaption {
     background: transparent !important;
 }
 
+/* Retro theme — override Mermaid dark-theme colors for readability on deep-blue bg */
+[data-theme="retro"] .mermaid .node rect,
+[data-theme="retro"] .mermaid .node circle,
+[data-theme="retro"] .mermaid .node polygon {
+    fill: #000000 !important;
+    stroke: #FCFCFC !important;
+    stroke-width: 2px !important;
+}
+
+[data-theme="retro"] .mermaid .label,
+[data-theme="retro"] .mermaid .nodeLabel,
+[data-theme="retro"] .mermaid .edgeLabel,
+[data-theme="retro"] .mermaid text {
+    fill: #FCFCFC !important;
+    color: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .edgePath .path,
+[data-theme="retro"] .mermaid .flowchart-link {
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .arrowheadPath,
+[data-theme="retro"] .mermaid marker path {
+    fill: #B8B8F8 !important;
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .edgeLabel rect,
+[data-theme="retro"] .mermaid .labelBkg {
+    fill: #00237C !important;
+    opacity: 1 !important;
+}
+
+/* Sequence diagram overrides */
+[data-theme="retro"] .mermaid .actor {
+    fill: #000000 !important;
+    stroke: #FCFCFC !important;
+    stroke-width: 2px !important;
+}
+
+[data-theme="retro"] .mermaid text.actor > tspan {
+    fill: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .messageLine0,
+[data-theme="retro"] .mermaid .messageLine1 {
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .messageText {
+    fill: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .loopText > tspan,
+[data-theme="retro"] .mermaid .noteText > tspan {
+    fill: #FCFCFC !important;
+}
+
+[data-theme="retro"] .mermaid .loopLine {
+    stroke: #B8B8F8 !important;
+}
+
+[data-theme="retro"] .mermaid .note {
+    fill: #000000 !important;
+    stroke: #F8B800 !important;
+}
+
+[data-theme="retro"] .mermaid .activation0,
+[data-theme="retro"] .mermaid .activation1,
+[data-theme="retro"] .mermaid .activation2 {
+    fill: #0058F8 !important;
+    stroke: #FCFCFC !important;
+}
+
 /* Home: avoid flashing the server-rendered fallback list for "most popular posts". */
 #home-popular-posts[data-popular-state="loading"] {
     display: none;
@@ -572,8 +731,71 @@ figure figcaption {
     margin-bottom: 2em;
 }
 
+.blog-archive {
+    margin: 1.5em 0;
+}
+
+.blog-archive-year {
+    margin-bottom: 2.25em;
+}
+
+.blog-archive-year-title {
+    margin: 0 0 0.75em 0;
+    color: var(--muted-color);
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+}
+
+.blog-archive-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45em;
+}
+
+.blog-archive-item {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+}
+
+.blog-archive-date {
+    flex: 0 0 10.5rem;
+    color: var(--muted-color);
+    font-size: 0.875rem;
+}
+
+.blog-archive-link {
+    color: var(--heading-color);
+    text-decoration: none;
+    text-align: left;
+}
+
+.blog-archive-link:hover {
+    color: var(--link-color);
+}
+
+.blog-search-wrap {
+    margin: 0 0 1.25em;
+}
+
+@media (max-width: 640px) {
+    .blog-archive-item {
+        flex-direction: column;
+        gap: 0.1em;
+        align-items: flex-start;
+    }
+
+    .blog-archive-date {
+        flex: 0 0 auto;
+    }
+}
+
 #blog-search {
     width: 100%;
+    margin: 0;
     padding: 0.75em 1em;
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -581,6 +803,86 @@ figure figcaption {
     color: var(--text-color);
     font-size: 1rem;
     transition: border-color 0.2s;
+}
+
+.blog-empty-state {
+    margin: 0.35em 0 0;
+    color: var(--muted-color);
+    font-size: 0.95rem;
+}
+
+.post-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 0;
+}
+
+.post-feed-item {
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.post-feed-item article > h3 {
+    margin-top: 0;
+    margin-bottom: 0.35rem;
+}
+
+.post-feed-item article > p {
+    margin: 0.35rem 0;
+}
+
+.post-feed-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.pagination-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 6.5rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.pagination-link:hover {
+    border-color: var(--link-color);
+    color: var(--link-color);
+    background: var(--hover-bg);
+}
+
+.pagination-link.is-disabled {
+    opacity: 0.45;
+}
+
+.pagination-status {
+    color: var(--muted-color);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .pagination-nav {
+        flex-wrap: wrap;
+    }
+
+    .pagination-status {
+        order: -1;
+        width: 100%;
+    }
 }
 
 #blog-search:focus {
@@ -701,23 +1003,53 @@ figure figcaption {
 }
 
 /* Footer links */
+.footer-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55em;
+    margin-bottom: 1em;
+}
+
 .footer-links {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.5em 1.5em;
-    margin-bottom: 1em;
+    gap: 0.35em;
+    margin-bottom: 0;
 }
 
 .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 4px;
     color: var(--text-color);
     text-decoration: none;
-    font-size: 0.875rem;
-    transition: color 0.2s;
+    margin-right: 0;
+    transition: color 0.2s, background-color 0.2s;
 }
 
 .footer-links a:hover {
     color: var(--link-color);
+    background-color: var(--hover-bg);
+}
+
+.footer-links a:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+}
+
+.footer-links a svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.footer-lang {
+    margin-left: 0;
 }
 
 /* Article/Post page styles */
@@ -836,7 +1168,7 @@ figure figcaption {
     border: none;
     cursor: pointer;
     padding: 0.25em;
-    margin-left: 0.75em;
+    margin-left: 0.5em;
     color: var(--text-color);
     display: inline-flex;
     align-items: center;
@@ -862,27 +1194,389 @@ figure figcaption {
     display: block;
 }
 
-.theme-toggle .icon-sun {
+.theme-toggle .icon-retro {
+    width: 24px;
+    height: 24px;
+}
+
+/* Default / Retro: show gamepad (current theme) */
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: none; }
+.theme-toggle .icon-retro { display: block; }
+
+/* Light: show sun */
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+[data-theme="light"] .theme-toggle .icon-retro { display: none; }
+
+/* Dark: show moon */
+[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+[data-theme="dark"] .theme-toggle .icon-retro { display: none; }
+
+/* ===== Retro Theme — NES Pixel Style Overrides ===== */
+
+/* 3a. Global pixel style */
+[data-theme="retro"] * {
+    border-radius: 0 !important;
+    transition: none !important;
+}
+
+/* font-smoothing disabled per-element below (only on pixel-font elements, not body text) */
+
+/* 3b. Pixel font on headings and UI elements */
+[data-theme="retro"] h1,
+[data-theme="retro"] h2,
+[data-theme="retro"] h3,
+[data-theme="retro"] h4,
+[data-theme="retro"] h5,
+[data-theme="retro"] h6 {
+    font-family: var(--font-pixel);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+    text-shadow: 2px 2px 0 var(--shadow-color);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+}
+
+[data-theme="retro"] .title h1 { font-size: 1.375rem; }
+[data-theme="retro"] h1 { font-size: 1.75rem; }
+[data-theme="retro"] h2 { font-size: 1.5rem; }
+[data-theme="retro"] h3 { font-size: 1.25rem; }
+
+[data-theme="retro"] nav a,
+[data-theme="retro"] .lang-toggle,
+[data-theme="retro"] .lang-menu,
+[data-theme="retro"] footer,
+[data-theme="retro"] .post-meta,
+[data-theme="retro"] time,
+[data-theme="retro"] .blog-archive-year-title,
+[data-theme="retro"] .blog-archive-date,
+[data-theme="retro"] .blog-archive-link,
+[data-theme="retro"] #blog-search,
+[data-theme="retro"] #blog-search::placeholder {
+    font-family: var(--font-pixel);
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: unset;
+}
+
+[data-theme="retro"] nav a { font-size: 1rem; }
+
+/* RPG menu cursor ▶ — shared for nav, archive, and post cards */
+[data-theme="retro"] .site-nav > a,
+[data-theme="retro"] .blog-archive-link,
+[data-theme="retro"] ul.blog-posts li a {
+    padding-left: 1.25em;
+    position: relative;
+}
+
+[data-theme="retro"] .site-nav > a::before,
+[data-theme="retro"] .blog-archive-link::before,
+[data-theme="retro"] ul.blog-posts li a::before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    font-size: 0.65em;
+    color: var(--gold-color);
+    visibility: hidden;
+}
+
+[data-theme="retro"] .site-nav > a:hover::before,
+[data-theme="retro"] .blog-archive-link:hover::before,
+[data-theme="retro"] ul.blog-posts li:hover a::before {
+    visibility: visible;
+}
+
+[data-theme="retro"] footer { font-size: 0.875rem; line-height: 2.2; }
+[data-theme="retro"] .post-meta { font-size: 0.875rem; }
+[data-theme="retro"] .blog-archive-year-title { font-size: 1.25rem; color: var(--gold-color); }
+[data-theme="retro"] .blog-archive-date { font-size: 0.875rem; }
+[data-theme="retro"] .blog-archive-link { font-size: 1rem; }
+[data-theme="retro"] .post-feed-item {
+    border-bottom-color: var(--dialog-border);
+}
+[data-theme="retro"] .pagination-link {
+    border-radius: 0;
+    border-width: 2px;
+    background: var(--dialog-bg);
+    color: var(--gold-color);
+}
+[data-theme="retro"] .pagination-link:hover {
+    background: var(--hover-bg);
+    border-color: var(--gold-color);
+}
+[data-theme="retro"] .pagination-status {
+    color: var(--gold-color);
+}
+[data-theme="retro"] #blog-search { font-size: 1rem; }
+[data-theme="retro"] .post-title { font-size: 1.5rem; line-height: 1.8; }
+[data-theme="retro"] .page-title { font-size: 1.25rem; line-height: 1.8; }
+
+/* 3c. NES dialog borders — shared frame for all dialog-style boxes */
+[data-theme="retro"] .highlight,
+[data-theme="retro"] .code,
+[data-theme="retro"] blockquote,
+[data-theme="retro"] #blog-search,
+[data-theme="retro"] ul.blog-posts li,
+[data-theme="retro"] .lang-menu,
+[data-theme="retro"] .upvote-widget,
+[data-theme="retro"] .toc-dropdown {
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--dialog-shadow);
+    background: var(--dialog-bg);
+}
+
+[data-theme="retro"] blockquote {
+    border-color: var(--blockquote-color);
+    border-left: 5px solid var(--blockquote-color);
+    font-style: normal;
+    padding: 1.25em;
+}
+
+[data-theme="retro"] :not(pre) > code {
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="retro"] pre code {
+    border: none;
+}
+
+/* 3d. Blog post list cards */
+[data-theme="retro"] ul.blog-posts li::before {
+    content: none;
+}
+
+[data-theme="retro"] ul.blog-posts li {
+    padding: 1em;
+}
+
+[data-theme="retro"] ul.blog-posts li:hover {
+    background: var(--selection-bg);
+    border-color: var(--gold-color);
+}
+
+[data-theme="retro"] ul.blog-posts li a {
+    font-family: var(--font-pixel);
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+[data-theme="retro"] ul.blog-posts li time {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+    padding-left: 1.25em;
+}
+
+/* 3e. Tags — RPG attribute tag style */
+[data-theme="retro"] .tags a,
+[data-theme="retro"] .tags-section a,
+[data-theme="retro"] .tag-filters a,
+[data-theme="retro"] .post-tags a {
+    border: 2px solid var(--gold-color);
+    color: var(--gold-color);
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+    background: transparent;
+}
+
+[data-theme="retro"] .tags a:hover,
+[data-theme="retro"] .tags-section a:hover,
+[data-theme="retro"] .tag-filters a:hover,
+[data-theme="retro"] .post-tags a:hover {
+    background: var(--gold-color);
+    color: var(--dialog-bg);
+}
+
+[data-theme="retro"] .tag-filters a.active,
+[data-theme="retro"] .active-tag {
+    background: var(--accent-color);
+    color: var(--dialog-bg);
+    border-color: var(--accent-color);
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+}
+
+/* 3f. Buttons and interactive elements */
+[data-theme="retro"] .theme-toggle {
+    border: 2px solid var(--border-color);
+}
+
+[data-theme="retro"] .theme-toggle:hover {
+    color: var(--gold-color);
+    border-color: var(--gold-color);
+}
+
+[data-theme="retro"] .lang-toggle {
+    border: 2px solid var(--border-color);
+}
+
+[data-theme="retro"] .footer-links a:hover {
+    background-color: var(--hover-bg);
+}
+
+/* 3g. Tables */
+[data-theme="retro"] table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: var(--pixel-border-width) solid var(--border-color);
+    box-shadow: var(--pixel-shadow);
+}
+
+[data-theme="retro"] th {
+    font-family: var(--font-pixel);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    background: var(--code-background-color);
+}
+
+[data-theme="retro"] th, [data-theme="retro"] td {
+    border: 1px solid var(--border-color);
+}
+
+/* 3h. Horizontal rule — dashed pixel line */
+[data-theme="retro"] hr {
+    border: 0;
+    height: 3px;
+    background: repeating-linear-gradient(
+        to right,
+        var(--border-color) 0px, var(--border-color) 6px,
+        transparent 6px, transparent 12px
+    );
+}
+
+/* 3i. Link style */
+[data-theme="retro"] a {
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+
+[data-theme="retro"] a:hover {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+[data-theme="retro"] nav a:hover {
+    text-decoration: none;
+}
+
+/* 3j. Header/Footer frame */
+[data-theme="retro"] .site-header {
+    padding: 1em;
+    border: var(--pixel-border-width) solid var(--dialog-border);
+    box-shadow: var(--pixel-shadow);
+}
+
+[data-theme="retro"] body > footer {
+    border-top: var(--pixel-border-width) solid var(--border-color);
+}
+
+[data-theme="retro"] figcaption {
+    font-style: normal;
+}
+
+/* 3k. Upvote — RPG command menu style */
+[data-theme="retro"] .upvote-widget {
+    padding: 0.75em 1em;
+    display: inline-block;
+}
+
+[data-theme="retro"] .upvote-button {
+    color: var(--text-color);
+    gap: 0.25em;
+}
+
+[data-theme="retro"] .upvote-button:not(:disabled):hover {
+    color: var(--gold-color);
+}
+
+[data-theme="retro"] .upvote-button svg {
+    stroke-width: 3;
+}
+
+[data-theme="retro"] .upvote-button--active {
+    color: var(--gold-color);
+}
+
+[data-theme="retro"] .upvote-button--active svg {
+    fill: var(--gold-color);
+    stroke: var(--gold-color);
+}
+
+[data-theme="retro"] .upvote-count {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+}
+
+/* 3l. Strong/bold — gold to distinguish (pixel fonts have no bold weight) */
+[data-theme="retro"] strong,
+[data-theme="retro"] b {
+    color: var(--gold-color);
+}
+
+/* 3m. Code block action buttons */
+[data-theme="retro"] .codeblock-action {
+    border: 1px solid var(--border-color);
+    padding: 3px;
+}
+
+[data-theme="retro"] .codeblock-action:hover {
+    background: var(--hover-bg);
+    color: var(--gold-color);
+    border-color: var(--gold-color);
+}
+
+/* 3n. Table of contents — NES dialog frame */
+[data-theme="retro"] .toc-dropdown {
+    padding: 1em;
+}
+
+[data-theme="retro"] .toc-dropdown summary {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+    color: var(--gold-color);
+    cursor: pointer;
+    list-style: none;
+}
+
+[data-theme="retro"] .toc-dropdown summary::before {
+    content: "▶ ";
+    font-size: 0.75em;
+}
+
+[data-theme="retro"] .toc-dropdown[open] summary::before {
+    content: "▼ ";
+}
+
+[data-theme="retro"] .toc-dropdown summary::-webkit-details-marker {
     display: none;
 }
 
-.theme-toggle .icon-moon {
-    display: block;
+/* 3o. Blog empty state */
+[data-theme="retro"] .blog-empty-state {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
 }
 
-[data-theme="dark"] .theme-toggle .icon-sun {
-    display: block;
+/* 3p. Scrollbar — NES-themed */
+[data-theme="retro"] ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
 }
 
-[data-theme="dark"] .theme-toggle .icon-moon {
-    display: none;
+[data-theme="retro"] ::-webkit-scrollbar-track {
+    background: var(--retro-bg-deep);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .theme-toggle .icon-sun {
-        display: block;
-    }
-    :root:not([data-theme="light"]) .theme-toggle .icon-moon {
-        display: none;
-    }
+[data-theme="retro"] ::-webkit-scrollbar-thumb {
+    background: var(--dialog-border);
+    border: 2px solid var(--retro-bg-deep);
+}
+
+[data-theme="retro"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-color);
+}
+
+[data-theme="retro"] {
+    scrollbar-color: var(--dialog-border) var(--retro-bg-deep);
 }

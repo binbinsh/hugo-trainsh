@@ -1,11 +1,137 @@
 <!DOCTYPE html>
 <html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
 <head>
+  {{- $homePages := slice site.Home | append site.Home.AllTranslations -}}
+  {{- $defaultLang := site.Language.Lang -}}
+  {{- $languages := dict -}}
+  {{- range $home := $homePages -}}
+    {{- if eq $home.RelPermalink "/" -}}
+      {{- $defaultLang = $home.Lang -}}
+    {{- end -}}
+    {{- $prefix := strings.TrimSuffix "/" $home.RelPermalink -}}
+    {{- $languages = merge $languages (dict $home.Lang (dict
+      "prefix" $prefix
+      "htmlLang" $home.Language.LanguageCode
+    )) -}}
+  {{- end -}}
+  {{- $actualToNeutral := dict -}}
+  {{- range hugo.Sites -}}
+    {{- range .Pages -}}
+      {{- $group := slice . | append .AllTranslations -}}
+      {{- $neutral := .RelPermalink -}}
+      {{- range $group -}}
+        {{- if eq .Lang $defaultLang -}}
+          {{- $neutral = .RelPermalink -}}
+        {{- end -}}
+      {{- end -}}
+      {{- range $group -}}
+        {{- $actualToNeutral = merge $actualToNeutral (dict .RelPermalink $neutral) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $pageTranslations := dict .Lang .RelPermalink -}}
+  {{- $isPagerPath := gt (len (findRE `/page/[0-9]+/?$` .RelPermalink)) 0 -}}
+  {{- if and (not $isPagerPath) (gt (len .AllTranslations) 0) -}}
+    {{- range .AllTranslations -}}
+      {{- $pageTranslations = merge $pageTranslations (dict .Lang .RelPermalink) -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $neutralCurrent := .RelPermalink -}}
+    {{- range $lang, $info := $languages -}}
+      {{- $prefix := index $info "prefix" -}}
+      {{- if and $prefix (ne $prefix "") -}}
+        {{- if eq $neutralCurrent $prefix -}}
+          {{- $neutralCurrent = "/" -}}
+        {{- else if eq $neutralCurrent (printf "%s/" $prefix) -}}
+          {{- $neutralCurrent = "/" -}}
+        {{- else if hasPrefix $neutralCurrent (printf "%s/" $prefix) -}}
+          {{- $neutralCurrent = replaceRE (printf "^%s" $prefix) "" $neutralCurrent -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- range $lang, $info := $languages -}}
+      {{- $prefix := index $info "prefix" -}}
+      {{- $target := $neutralCurrent -}}
+      {{- if and $prefix (ne $prefix "") -}}
+        {{- if eq $neutralCurrent "/" -}}
+          {{- $target = printf "%s/" $prefix -}}
+        {{- else -}}
+          {{- $target = printf "%s%s" $prefix $neutralCurrent -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $pageTranslations = merge $pageTranslations (dict $lang $target) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $defaultColorScheme := "retro" -}}
+  {{- with site.Params.defaultColorScheme -}}
+    {{- if in (slice "light" "dark" "retro") . -}}
+      {{- $defaultColorScheme = . -}}
+    {{- end -}}
+  {{- end -}}
+  <meta name="trainsh-lang-config" content="{{ dict
+    "defaultLang" $defaultLang
+    "currentLang" .Lang
+    "languages" $languages
+    "actualToNeutral" $actualToNeutral
+    | jsonify | base64Encode }}">
+  <meta name="trainsh-page-translations" content="{{ dict
+    "current" .Lang
+    "translations" $pageTranslations
+    | jsonify | base64Encode }}">
   <script>
     (function() {
-      var theme = localStorage.getItem('theme');
-      if (theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+      function readJson(name, fallback) {
+        var el = document.querySelector('meta[name="' + name + '"]');
+        if (!el) return fallback;
+        try {
+          return JSON.parse(atob(el.getAttribute('content') || ''));
+        } catch (_) {
+          return fallback;
+        }
+      }
+      window.__TRAINSH_LANG_CONFIG__ = readJson('trainsh-lang-config', {});
+      window.__TRAINSH_PAGE_TRANSLATIONS__ = readJson('trainsh-page-translations', {});
+
+      var langConfig = window.__TRAINSH_LANG_CONFIG__ || {};
+      var preferredLang = '';
+      try {
+        preferredLang = localStorage.getItem('trainsh-preferred-lang') || '';
+      } catch (_) {}
+      var shouldHydrate = !!(preferredLang && preferredLang !== langConfig.currentLang);
+      if (!shouldHydrate) {
+        var pathname = window.location.pathname || '/';
+        var languages = langConfig.languages || {};
+        Object.keys(languages).forEach(function(lang) {
+          if (lang === langConfig.defaultLang) return;
+          var info = languages[lang] || {};
+          var prefix = info.prefix || '';
+          if (prefix && (pathname === prefix || pathname === prefix + '/' || pathname.indexOf(prefix + '/') === 0)) {
+            shouldHydrate = true;
+          }
+        });
+      }
+      if (shouldHydrate) {
+        document.documentElement.classList.add('lang-hydrating');
+      }
+
+      var defaultColorScheme = '{{ $defaultColorScheme }}';
+      var theme = localStorage.getItem('theme') || defaultColorScheme;
+      var html = document.documentElement;
+      html.setAttribute('data-theme', theme);
+      if (theme === 'retro') {
+        html.classList.add('retro-fonts-loading');
+        var revealed = false;
+        function reveal() {
+          if (revealed) return;
+          revealed = true;
+          html.classList.remove('retro-fonts-loading');
+        }
+        if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+          document.fonts.ready.then(reveal);
+          setTimeout(reveal, 3000);
+        } else {
+          setTimeout(reveal, 0);
+        }
       }
     })();
   </script>
@@ -24,41 +150,66 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Theme toggle
-      var themeToggle = document.querySelector('.theme-toggle');
-      if (themeToggle) {
-        function getEffectiveTheme() {
-          var stored = localStorage.getItem('theme');
-          if (stored) return stored;
-          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
+      var defaultColorScheme = '{{ $defaultColorScheme }}';
+      function getEffectiveTheme() {
+        return localStorage.getItem('theme') || defaultColorScheme;
+      }
+      function closeDropdowns(except) {
+        document.querySelectorAll('.lang-dropdown').forEach(function(dropdown) {
+          if (except && dropdown === except) return;
+          dropdown.classList.remove('open');
+          var btn = dropdown.querySelector('.lang-toggle');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+      }
 
-        themeToggle.addEventListener('click', function() {
+      document.addEventListener('click', function(e) {
+        var themeToggle = e.target.closest('.theme-toggle');
+        if (themeToggle) {
           var current = getEffectiveTheme();
-          var next = current === 'dark' ? 'light' : 'dark';
+          var order = ['light', 'dark', 'retro'];
+          var idx = order.indexOf(current);
+          var next = order[(idx + 1) % order.length];
           document.documentElement.setAttribute('data-theme', next);
           localStorage.setItem('theme', next);
-        });
-      }
+          try { window.dispatchEvent(new Event('themechange')); } catch (_) {}
+          return;
+        }
 
-      // Language dropdown toggle
-      var dropdown = document.querySelector('.lang-dropdown');
-      if (dropdown) {
-        var langToggle = dropdown.querySelector('.lang-toggle');
-
-        langToggle.addEventListener('click', function(e) {
+        var langToggle = e.target.closest('.lang-toggle');
+        if (langToggle) {
           e.stopPropagation();
-          dropdown.classList.toggle('open');
-          langToggle.setAttribute('aria-expanded', dropdown.classList.contains('open'));
-        });
+          var dropdown = langToggle.closest('.lang-dropdown');
+          if (!dropdown) return;
+          var open = !dropdown.classList.contains('open');
+          closeDropdowns(dropdown);
+          dropdown.classList.toggle('open', open);
+          langToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          return;
+        }
 
-        document.addEventListener('click', function(e) {
-          if (!dropdown.contains(e.target)) {
+        if (!e.target.closest('.lang-dropdown')) {
+          closeDropdowns();
+        }
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeDropdowns();
+        }
+      });
+
+      document.addEventListener('click', function(e) {
+        var link = e.target.closest('.lang-menu a');
+        if (link) {
+          var dropdown = link.closest('.lang-dropdown');
+          if (dropdown) {
             dropdown.classList.remove('open');
-            langToggle.setAttribute('aria-expanded', 'false');
+            var btn = dropdown.querySelector('.lang-toggle');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
           }
-        });
-      }
+        }
+      });
     });
   </script>
 
@@ -67,9 +218,8 @@
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
     function getTheme() {
-      var stored = localStorage.getItem('theme');
-      if (stored) return stored === 'dark' ? 'dark' : 'default';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+      var stored = localStorage.getItem('theme') || '{{ $defaultColorScheme }}';
+      return (stored === 'dark' || stored === 'retro') ? 'dark' : 'default';
     }
     mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: getTheme() });
     mermaid.run({ querySelector: '.mermaid' });

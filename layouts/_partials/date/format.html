@@ -1,6 +1,5 @@
 {{- $page := .page -}}
 {{- $date := .date -}}
-{{- $context := .context | default "" -}}
 {{- $lang := site.Language.Lang -}}
 {{- with $page -}}
   {{- $lang = .Site.Language.Lang -}}
@@ -8,15 +7,12 @@
 
 {{- if $date -}}
   {{- if hasPrefix $lang "zh" -}}
-    {{- if eq $context "single" -}}
-      {{- $date | time.Format "2006年1月2日" -}}
-    {{- else -}}
-      {{- $date | time.Format "2006-01-02" -}}
-    {{- end -}}
+    {{- $date | time.Format "2006年01月02日" -}}
+  {{- else if hasPrefix $lang "ja" -}}
+    {{- $date | time.Format "2006年01月02日" -}}
+  {{- else if hasPrefix $lang "en" -}}
+    {{- $date | time.Format "January 2, 2006" -}}
   {{- else -}}
-    {{- /* Bear Blog default: "d M, Y" (e.g. "03 Dec, 2025"). */ -}}
-    {{- $date | time.Format "02 Jan, 2006" -}}
+    {{- $date | time.Format "January 2, 2006" -}}
   {{- end -}}
 {{- end -}}
-
-

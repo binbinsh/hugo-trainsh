@@ -1,9 +1,9 @@
 {{ define "main" }}
-{{- $sections := default (slice "posts") site.Params.mainSections -}}
+{{- $sections := default (slice "posts") .Site.Params.mainSections -}}
 {{- $isPost := in $sections .Section -}}
 
 <article class="post">
-{{- if $isPost -}}
+  {{- if $isPost -}}
   <header class="post-header">
     <h1 class="post-title">{{ .Title }}</h1>
     <p class="post-meta">
@@ -12,11 +12,11 @@
       </time>
     </p>
   </header>
-{{- else -}}
+  {{- else -}}
   <header class="page-header">
     <h1 class="page-title">{{ .Title }}</h1>
   </header>
-{{- end -}}
+  {{- end -}}
 
   <div class="post-content">
     {{ .Content }}

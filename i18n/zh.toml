@@ -10,6 +10,9 @@ other = "博客"
 [tags]
 other = "所有标签"
 
+[tag_archive]
+other = "标签"
+
 [more_posts]
 other = "查看全部文章"
 
@@ -111,6 +114,15 @@ other = "移除标签"
 
 [home_most_recent_posts]
 other = "最新文章"
+
+[pagination_previous]
+other = "上一页"
+
+[pagination_next]
+other = "下一页"
+
+[pagination_page]
+other = "第 {{ .Current }} / {{ .Total }} 页"
 
 [subscribe_via]
 other = "通过 {{ .Links }} 订阅"
