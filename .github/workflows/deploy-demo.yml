@@ -43,14 +43,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "latest"
       - name: Build with Hugo (exampleSite)
         env:
           HUGO_ENVIRONMENT: production
@@ -99,18 +91,15 @@ jobs:
           CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
         run: |
           envsubst < cloudflare/wrangler.toml > cloudflare/wrangler.generated.toml
-      - name: Install workers-py (pywrangler)
-        if: env.UPVOTE_KV_NAMESPACE != ''
-        run: |
-          python -m pip install --no-cache-dir "workers-py==1.6.1"
       - name: Deploy upvote worker
         if: env.UPVOTE_KV_NAMESPACE != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare
+          command: deploy --config wrangler.generated.toml
+          secrets: |
+            UPVOTE_COOKIE_SECRET
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           UPVOTE_COOKIE_SECRET: ${{ env.UPVOTE_COOKIE_SECRET }}
-        working-directory: cloudflare
-        run: |
-          set -euo pipefail
-          printf "%s" "$UPVOTE_COOKIE_SECRET" | pywrangler secret put UPVOTE_COOKIE_SECRET --config wrangler.generated.toml >/dev/null 2>&1 || true
-          pywrangler deploy --config wrangler.generated.toml
