@@ -1,6 +1,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ printf "%s | %s" .Title .Site.Title }}{{ end }}</title>
+{{- $faviconPath := site.Params.favicon | default "favicon.svg" -}}
+{{- $faviconHref := $faviconPath | relURL -}}
+{{- with site.Params.faviconVersion -}}
+  {{- $faviconHref = printf "%s?v=%v" $faviconHref . -}}
+{{- end -}}
+<link rel="icon" href="{{ $faviconHref }}"{{ if hasSuffix $faviconPath ".svg" }} type="image/svg+xml"{{ end }} sizes="any">
 
 {{ partial "head/css.html" . }}
 {{ partial "head/fonts.html" . }}

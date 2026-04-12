@@ -1,12 +1,20 @@
 {{- $page := .page | default . -}}
 {{- $showTags := .showTags | default true -}}
 {{- $showSummary := .showSummary | default false -}}
+{{- $summary := "" -}}
+{{- with $page.Params.summary -}}
+  {{- $summary = . | plainify -}}
+{{- else -}}
+  {{- with $page.Summary -}}
+    {{- $summary = . | plainify -}}
+  {{- end -}}
+{{- end -}}
 
-<article>
-  <h3>
+<article class="post-feed-card">
+  <h3 class="post-feed-title">
     <a href="{{ $page.RelPermalink }}">{{ $page.LinkTitle }}</a>
   </h3>
-  <p>
+  <p class="post-feed-meta">
     <i>
       <time datetime="{{ $page.Date | time.Format "2006-01-02" }}">
         {{ partial "date/format.html" (dict "page" $page "date" $page.Date "context" "list") }}
@@ -14,10 +22,8 @@
     </i>
   </p>
 
-  {{- if $showSummary -}}
-    {{- with $page.Summary -}}
-      <p>{{ . | plainify }}</p>
-    {{- end -}}
+  {{- if and $showSummary $summary -}}
+    <p class="post-feed-summary">{{ $summary | truncate 220 }}</p>
   {{- end -}}
 
   {{- if $showTags -}}

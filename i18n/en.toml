@@ -109,6 +109,9 @@ other = "Previous"
 [pagination_next]
 other = "Next"
 
+[pagination_nav]
+other = "Pagination"
+
 [pagination_page]
 other = "Page {{ .Current }} of {{ .Total }}"
 
