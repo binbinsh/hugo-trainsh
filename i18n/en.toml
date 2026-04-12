@@ -115,6 +115,15 @@ other = "Remove tag"
 [home_most_recent_posts]
 other = "Recent posts"
 
+[pagination_previous]
+other = "Previous"
+
+[pagination_next]
+other = "Next"
+
+[pagination_page]
+other = "Page {{ .Current }} of {{ .Total }}"
+
 [subscribe_via]
 other = "Subscribe via {{ .Links }}"
 

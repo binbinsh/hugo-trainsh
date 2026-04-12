@@ -103,6 +103,10 @@ html.retro-fonts-loading body {
     opacity: 0;
 }
 
+html.lang-hydrating body {
+    opacity: 0;
+}
+
 /* Text selection */
 ::selection {
     background: var(--selection-bg);
@@ -807,6 +811,80 @@ figure figcaption {
     font-size: 0.95rem;
 }
 
+.post-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 0;
+}
+
+.post-feed-item {
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.post-feed-item article > h3 {
+    margin-top: 0;
+    margin-bottom: 0.35rem;
+}
+
+.post-feed-item article > p {
+    margin: 0.35rem 0;
+}
+
+.post-feed-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.pagination-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 6.5rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.pagination-link:hover {
+    border-color: var(--link-color);
+    color: var(--link-color);
+    background: var(--hover-bg);
+}
+
+.pagination-link.is-disabled {
+    opacity: 0.45;
+}
+
+.pagination-status {
+    color: var(--muted-color);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .pagination-nav {
+        flex-wrap: wrap;
+    }
+
+    .pagination-status {
+        order: -1;
+        width: 100%;
+    }
+}
+
 #blog-search:focus {
     outline: none;
     border-color: var(--link-color);
@@ -1215,6 +1293,22 @@ figure figcaption {
 [data-theme="retro"] .blog-archive-year-title { font-size: 1.25rem; color: var(--gold-color); }
 [data-theme="retro"] .blog-archive-date { font-size: 0.875rem; }
 [data-theme="retro"] .blog-archive-link { font-size: 1rem; }
+[data-theme="retro"] .post-feed-item {
+    border-bottom-color: var(--dialog-border);
+}
+[data-theme="retro"] .pagination-link {
+    border-radius: 0;
+    border-width: 2px;
+    background: var(--dialog-bg);
+    color: var(--gold-color);
+}
+[data-theme="retro"] .pagination-link:hover {
+    background: var(--hover-bg);
+    border-color: var(--gold-color);
+}
+[data-theme="retro"] .pagination-status {
+    color: var(--gold-color);
+}
 [data-theme="retro"] #blog-search { font-size: 1rem; }
 [data-theme="retro"] .post-title { font-size: 1.5rem; line-height: 1.8; }
 [data-theme="retro"] .page-title { font-size: 1.25rem; line-height: 1.8; }

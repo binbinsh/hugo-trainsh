@@ -73,7 +73,12 @@
       </button>
       <span class="lang-menu" role="menu">
         {{- range $t := $translations -}}
-          <a href="{{ $t.RelPermalink }}" role="menuitem" class="{{ if eq $t.Lang $.Lang }}lang-active{{ end }}">
+          <a
+            href="{{ $t.RelPermalink }}"
+            data-lang-code="{{ $t.Lang }}"
+            data-lang-url="{{ $t.RelPermalink }}"
+            role="menuitem"
+            class="{{ if eq $t.Lang $.Lang }}lang-active{{ end }}">
             <span class="lang-item-name">{{ $t.Site.Language.LanguageName }}</span>
             <span class="lang-item-check"></span>
           </a>

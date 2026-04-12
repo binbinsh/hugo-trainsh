@@ -1,9 +1,14 @@
 {{ define "main" }}
+  {{- $feedEnabled := site.Params.home.feed.enabled | default false -}}
   {{- if .Content -}}
-    {{ .Content }}
-  {{- else -}}
+    {{ . }}
+  {{- else if not $feedEnabled -}}
     {{- with site.Params.home.intro -}}
       {{ . | markdownify }}
     {{- end -}}
+  {{- end -}}
+
+  {{- if $feedEnabled -}}
+    {{- partial "post/feed.html" (dict "page" . "paginate" true "showSummary" true "showTags" false) -}}
   {{- end -}}
 {{ end }}
