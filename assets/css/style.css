@@ -814,9 +814,7 @@ figure figcaption {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: 1 1 0;
     min-width: 6.5rem;
-    min-height: 3.25rem;
     padding: 0.5rem 0.9rem;
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -836,34 +834,9 @@ figure figcaption {
 }
 
 .pagination-status {
-    display: flex;
-    flex: 0 0 auto;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 8.5rem;
-    min-height: 3.25rem;
-    padding: 0.5rem 0.9rem;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background: var(--code-background-color);
-    text-align: center;
-}
-
-.pagination-status-value {
-    color: var(--text-color);
-    font-size: 0.95rem;
-    line-height: 1.3;
-}
-
-.post-feed-meta {
     color: var(--muted-color);
-}
-
-.post-feed-summary {
-    max-width: 58ch;
-    color: var(--text-color);
-    text-wrap: pretty;
+    font-size: 0.9rem;
+    text-align: center;
 }
 
 @media (max-width: 640px) {
@@ -1284,84 +1257,18 @@ figure figcaption {
 [data-theme="retro"] .post-feed-item {
     border-bottom-color: var(--dialog-border);
 }
-[data-theme="retro"] .pagination-nav {
-    padding: 0.85rem;
-    border: var(--pixel-border-width) solid var(--dialog-border);
-    box-shadow: var(--dialog-shadow);
-    background: var(--dialog-bg);
-    align-items: stretch;
-}
 [data-theme="retro"] .pagination-link {
     border-radius: 0;
     border-width: 2px;
     background: var(--dialog-bg);
     color: var(--gold-color);
-    font-family: var(--font-pixel);
-    font-size: 0.875rem;
-    letter-spacing: 0.08em;
-    position: relative;
-    text-transform: uppercase;
 }
 [data-theme="retro"] .pagination-link:hover {
     background: var(--hover-bg);
     border-color: var(--gold-color);
 }
-[data-theme="retro"] .pagination-link--prev {
-    justify-content: flex-start;
-    padding-left: 1.75rem;
-}
-[data-theme="retro"] .pagination-link--next {
-    justify-content: flex-end;
-    padding-right: 1.75rem;
-}
-[data-theme="retro"] .pagination-link--prev::before,
-[data-theme="retro"] .pagination-link--next::after {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.85em;
-}
-[data-theme="retro"] .pagination-link--prev::before {
-    content: "◀";
-    left: 0.75rem;
-}
-[data-theme="retro"] .pagination-link--next::after {
-    content: "▶";
-    right: 0.75rem;
-}
-[data-theme="retro"] .pagination-link.is-disabled {
-    color: var(--muted-color);
-    opacity: 1;
-}
 [data-theme="retro"] .pagination-status {
-    border-width: 2px;
-    border-color: var(--gold-color);
-    background: linear-gradient(180deg, rgba(252, 252, 252, 0.08), rgba(252, 252, 252, 0)), var(--background-color);
-    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.45);
-}
-[data-theme="retro"] .pagination-status-value {
-    font-family: var(--font-pixel);
-}
-[data-theme="retro"] .pagination-status-value {
-    color: var(--heading-color);
-    font-size: 0.875rem;
-    letter-spacing: 0.14em;
-}
-[data-theme="retro"] .post-feed-summary {
-    max-width: 52ch;
-    color: var(--heading-color);
-    line-height: 1.9;
-    padding-left: 1.1rem;
-    position: relative;
-}
-[data-theme="retro"] .post-feed-summary::before {
-    content: "▸";
-    position: absolute;
-    left: 0;
-    top: 0;
     color: var(--gold-color);
-    font-family: var(--font-pixel);
-    font-size: 0.8rem;
 }
 [data-theme="retro"] #blog-search { font-size: 1rem; }
 [data-theme="retro"] .post-title { font-size: 1.5rem; line-height: 1.8; }

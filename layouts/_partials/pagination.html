@@ -1,21 +1,18 @@
 {{- $paginator := .paginator -}}
 {{- if and $paginator (gt $paginator.TotalPages 1) -}}
-  {{- $pageLabel := i18n "pagination_page" (dict "Current" $paginator.PageNumber "Total" $paginator.TotalPages) -}}
   <nav class="pagination-nav" aria-label='{{ i18n "pagination_nav" }}'>
     {{- if $paginator.HasPrev -}}
-      <a class="pagination-link pagination-link--prev" href="{{ $paginator.Prev.URL }}">{{ i18n "pagination_previous" }}</a>
+      <a class="pagination-link" href="{{ $paginator.Prev.URL }}">{{ i18n "pagination_previous" }}</a>
     {{- else -}}
-      <span class="pagination-link pagination-link--prev is-disabled" aria-disabled="true">{{ i18n "pagination_previous" }}</span>
+      <span class="pagination-link is-disabled" aria-disabled="true">{{ i18n "pagination_previous" }}</span>
     {{- end -}}
 
-    <span class="pagination-status" aria-label="{{ $pageLabel }}">
-      <span class="pagination-status-value">{{ printf "%02d" $paginator.PageNumber }} / {{ printf "%02d" $paginator.TotalPages }}</span>
-    </span>
+    <span class="pagination-status">{{ i18n "pagination_page" (dict "Current" $paginator.PageNumber "Total" $paginator.TotalPages) }}</span>
 
     {{- if $paginator.HasNext -}}
-      <a class="pagination-link pagination-link--next" href="{{ $paginator.Next.URL }}">{{ i18n "pagination_next" }}</a>
+      <a class="pagination-link" href="{{ $paginator.Next.URL }}">{{ i18n "pagination_next" }}</a>
     {{- else -}}
-      <span class="pagination-link pagination-link--next is-disabled" aria-disabled="true">{{ i18n "pagination_next" }}</span>
+      <span class="pagination-link is-disabled" aria-disabled="true">{{ i18n "pagination_next" }}</span>
     {{- end -}}
   </nav>
 {{- end -}}
