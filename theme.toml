@@ -7,7 +7,7 @@ description = "A minimal, multilingual Hugo blog theme with a default NES/FC ret
 homepage = "https://github.com/binbinsh/hugo-trainsh"
 
 # If you have a running demo of the theme.
-demosite = "https://hugo-trainsh.binbinsh.workers.dev"
+demosite = "https://hugo-trainsh.pages.dev"
 
 tags = ["blog", "minimal", "retro", "pixel", "dark", "multilingual", "responsive", "search", "mermaid", "math", "lightbox"]
 features = ["fast", "responsive", "dark mode", "retro theme", "multilingual", "search"]
@@ -21,4 +21,3 @@ homepage = "https://github.com/binbinsh"
 author = ""
 homepage = ""
 repo = ""
-
