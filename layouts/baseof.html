@@ -97,10 +97,37 @@
       try {
         preferredLang = localStorage.getItem('trainsh-preferred-lang') || '';
       } catch (_) {}
+      var pathname = window.location.pathname || '/';
+      var search = window.location.search || '';
+      var hash = window.location.hash || '';
+      var neutralPath = pathname;
+      var languages = langConfig.languages || {};
+      Object.keys(languages).forEach(function(lang) {
+        if (lang === langConfig.defaultLang) return;
+        var info = languages[lang] || {};
+        var prefix = info.prefix || '';
+        if (!prefix) return;
+        if (pathname === prefix || pathname === prefix + '/') {
+          neutralPath = '/';
+          if (!preferredLang) {
+            preferredLang = lang;
+            try { localStorage.setItem('trainsh-preferred-lang', lang); } catch (_) {}
+          }
+          return;
+        }
+        if (pathname.indexOf(prefix + '/') === 0) {
+          neutralPath = pathname.slice(prefix.length) || '/';
+          if (!preferredLang) {
+            preferredLang = lang;
+            try { localStorage.setItem('trainsh-preferred-lang', lang); } catch (_) {}
+          }
+        }
+      });
+      if (neutralPath !== pathname) {
+        try { window.history.replaceState(window.history.state, '', neutralPath + search + hash); } catch (_) {}
+      }
       var shouldHydrate = !!(preferredLang && preferredLang !== langConfig.currentLang);
       if (!shouldHydrate) {
-        var pathname = window.location.pathname || '/';
-        var languages = langConfig.languages || {};
         Object.keys(languages).forEach(function(lang) {
           if (lang === langConfig.defaultLang) return;
           var info = languages[lang] || {};
