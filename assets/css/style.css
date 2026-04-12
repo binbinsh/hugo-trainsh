@@ -175,6 +175,7 @@ nav a:hover {
     display: flex;
     align-items: center;
     gap: 0.35em;
+    min-width: 0;
 }
 
 .site-brand .title h1 {
@@ -518,17 +519,10 @@ ul.blog-posts {
     }
 
     .site-brand {
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-
-    .theme-toggle {
-        order: 1;
-        margin-left: auto;
+        flex-wrap: wrap;
     }
 
     .site-nav {
-        order: 2;
         width: 100%;
         margin-left: 0;
         align-self: stretch;
