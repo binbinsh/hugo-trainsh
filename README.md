@@ -62,6 +62,6 @@ Create `content/blog/_index.md` to enable the `/blog/` page.
 
 ## Theme Info
 
-- Demo: [hugo-trainsh.binbinsh.workers.dev](https://hugo-trainsh.binbinsh.workers.dev)
+- Demo: [hugo-trainsh.pages.dev](https://hugo-trainsh.pages.dev)
 - Repository: [github.com/binbinsh/hugo-trainsh](https://github.com/binbinsh/hugo-trainsh)
 - Author: [Binbin Shen](https://github.com/binbinsh)

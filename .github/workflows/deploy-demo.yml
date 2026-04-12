@@ -32,8 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.148.0' }}
-      UPVOTE_WIDGET: true
-      UPVOTE_COOKIE_SECRET: ${{ secrets.UPVOTE_COOKIE_SECRET }}
+      CLOUDFLARE_PAGES_PROJECT: hugo-trainsh
     steps:
       - name: Install Hugo CLI
         run: |
@@ -47,59 +46,35 @@ jobs:
         env:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
-          UPVOTE_WIDGET: ${{ env.UPVOTE_WIDGET }}
         run: |
-          hugo -s exampleSite --gc --minify --baseURL https://hugo-trainsh.binbinsh.workers.dev
-      - name: Check upvote cookie secret
-        run: |
-          if [ -z "${UPVOTE_COOKIE_SECRET}" ]; then
-            echo "UPVOTE_COOKIE_SECRET is required." >&2
-            exit 1
-          fi
-      - name: Ensure KV namespace exists
+          hugo -s exampleSite --gc --minify --baseURL "https://${CLOUDFLARE_PAGES_PROJECT}.pages.dev"
+      - name: Ensure Pages project exists
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/storage/kv/namespaces"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          project="${CLOUDFLARE_PAGES_PROJECT}"
 
-          existing=$(curl -sS "${auth[@]}" "$api?per_page=1000" | jq -r '.result[] | select(.title == "hugo-trainsh-UPVOTES") | .id' | head -n1 || true)
-
-          if [ -z "$existing" ]; then
-            create_resp=$(curl -sS -X POST "${auth[@]}" "$api" --data '{"title":"hugo-trainsh-UPVOTES"}')
+          status=$(curl -sS -o /tmp/project.json -w "%{http_code}" "${auth[@]}" "$api/$project")
+          if [ "$status" = "404" ]; then
+            create_resp=$(curl -sS -X POST "${auth[@]}" "$api" --data "{\"name\":\"${project}\",\"production_branch\":\"main\"}")
             success=$(echo "$create_resp" | jq -r '.success // false')
-            if [ "$success" = "true" ]; then
-              existing=$(echo "$create_resp" | jq -r '.result.id')
-            else
-              # If the API says it already exists, fall back to listing again.
-              existing=$(curl -sS "${auth[@]}" "$api?per_page=1000" | jq -r '.result[] | select(.title == "hugo-trainsh-UPVOTES") | .id' | head -n1 || true)
+            if [ "$success" != "true" ]; then
+              echo "Failed to create Pages project ${project}" >&2
+              echo "$create_resp" >&2
+              exit 1
             fi
-          fi
-
-          if [ -z "$existing" ]; then
-            echo "Failed to resolve KV namespace id for hugo-trainsh-UPVOTES" >&2
+          elif [ "$status" != "200" ]; then
+            echo "Failed to read Pages project ${project} (status=${status})" >&2
+            cat /tmp/project.json >&2
             exit 1
           fi
-
-          echo "UPVOTE_KV_NAMESPACE=$existing" >> "$GITHUB_ENV"
-      - name: Prepare Wrangler config
-        if: env.UPVOTE_KV_NAMESPACE != ''
-        env:
-          UPVOTE_KV_NAMESPACE: ${{ env.UPVOTE_KV_NAMESPACE }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-        run: |
-          envsubst < cloudflare/wrangler.toml > cloudflare/wrangler.generated.toml
-      - name: Deploy upvote worker
-        if: env.UPVOTE_KV_NAMESPACE != ''
+      - name: Deploy demo to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: cloudflare
-          command: deploy --config wrangler.generated.toml
-          secrets: |
-            UPVOTE_COOKIE_SECRET
-        env:
-          UPVOTE_COOKIE_SECRET: ${{ env.UPVOTE_COOKIE_SECRET }}
+          command: pages deploy exampleSite/public --project-name ${{ env.CLOUDFLARE_PAGES_PROJECT }} --branch main
