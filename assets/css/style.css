@@ -577,12 +577,17 @@ ul.blog-posts li time {
 /* Figures (kept minimal; compatible with Hugo render hooks). */
 figure {
     margin: 1.5em 0;
+    text-align: center;
 }
 
 figure img,
 figure video,
 figure audio {
     margin-bottom: 0;
+}
+
+figure a {
+    display: inline-block;
 }
 
 figure figcaption {
